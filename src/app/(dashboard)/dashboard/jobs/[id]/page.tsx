@@ -238,7 +238,7 @@ export default function JobDetailPage() {
           style={{ color: "rgba(255,255,255,0.2)" }}
         />
         <p style={{ color: "rgba(255,255,255,0.35)" }} className="text-[15px]">
-          Job not found.
+          Role not found.
         </p>
         <Link
           href="/dashboard/jobs"
@@ -267,7 +267,7 @@ export default function JobDetailPage() {
         }}
       >
         <CaretLeft weight="bold" size={14} />
-        Back to jobs
+        Back to roles
       </Link>
 
       {/* ── Hero header ── */}

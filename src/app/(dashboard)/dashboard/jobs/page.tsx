@@ -216,7 +216,7 @@ function EmptyState({ filter }: { filter: StatusFilter }) {
         />
       </div>
       <p className="text-[17px] font-bold mb-2 text-white">
-        {filter === "all" ? "No jobs posted yet" : `No ${filter} jobs`}
+        {filter === "all" ? "No roles posted yet" : `No ${filter} roles`}
       </p>
       <p
         className="text-[14px] max-w-xs mb-6"
@@ -224,7 +224,7 @@ function EmptyState({ filter }: { filter: StatusFilter }) {
       >
         {filter === "all"
           ? "Post your first role and start receiving AI-scored applications."
-          : "Try a different filter or create a new job posting."}
+          : "Try a different filter or post a new role."}
       </p>
       {filter === "all" && (
         <Link
@@ -235,7 +235,7 @@ function EmptyState({ filter }: { filter: StatusFilter }) {
             boxShadow: "0 0 20px rgba(124,58,237,0.3)",
           }}
         >
-          <Plus weight="bold" size={16} /> Post your first job
+          <Plus weight="bold" size={16} /> Post your first role
         </Link>
       )}
     </div>
@@ -341,14 +341,14 @@ export default function JobsPage() {
         <div className="flex items-start justify-between gap-4 anim-1">
           <div>
             <h1 className="text-[28px] font-extrabold text-white tracking-tight">
-              Jobs
+              Roles
             </h1>
             <p
               className="text-[14px] mt-1"
               style={{ color: "rgba(255,255,255,0.35)" }}
             >
-              {jobs.length} posting{jobs.length !== 1 ? "s" : ""} ·{" "}
-              {activeCount} active · {totalCVs} CVs received
+              {jobs.length} role{jobs.length !== 1 ? "s" : ""} · {activeCount}{" "}
+              active · {totalCVs} CVs received
             </p>
           </div>
           <Link
@@ -368,7 +368,7 @@ export default function JobsPage() {
             }}
           >
             <Plus weight="bold" size={16} />
-            Post a job
+            Post a role
           </Link>
         </div>
 

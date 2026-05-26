@@ -64,7 +64,7 @@ export default function NewJobPage() {
         }}
       >
         <CaretLeft weight="bold" size={14} />
-        Back to jobs
+        Back to roles
       </Link>
 
       {/* ── Hero header ── */}
@@ -94,7 +94,7 @@ export default function NewJobPage() {
             </span>
           </div>
           <h1 className="text-[26px] font-extrabold text-white tracking-tight">
-            Post a new job
+            Post a new role
           </h1>
           <p
             className="text-[14px] mt-2 max-w-xl"
@@ -113,7 +113,7 @@ export default function NewJobPage() {
           onChange={setValues}
           onSubmit={handleSubmit}
           loading={loading}
-          submitLabel="Post job"
+          submitLabel="Post role"
           onCancel={() => router.push("/dashboard/jobs")}
         />
       </div>

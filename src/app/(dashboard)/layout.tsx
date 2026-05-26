@@ -18,7 +18,7 @@ import type { StoredCompany } from "@/lib/auth";
 
 const NAV = [
   { href: "/dashboard", label: "Overview", icon: SquaresFour },
-  { href: "/dashboard/jobs", label: "Jobs", icon: BriefcaseMetal },
+  { href: "/dashboard/jobs", label: "Roles", icon: BriefcaseMetal },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
   { href: "/dashboard/settings", label: "Settings", icon: GearSix },
 ];

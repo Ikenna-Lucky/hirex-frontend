@@ -429,7 +429,7 @@ export default function OverviewPage() {
                   "0 0 24px rgba(124,58,237,0.38)";
               }}
             >
-              <Plus weight="bold" size={16} /> Post a job
+              <Plus weight="bold" size={16} /> Post a role
             </Link>
           </div>
         </div>
