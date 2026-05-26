@@ -42,6 +42,26 @@ type FormState = {
   size: string;
 };
 
+/* ─── Input style helpers ─────────────────────────────────── */
+const baseInput =
+  "w-full rounded-xl px-4 py-3 text-[13.5px] text-white placeholder-gray-700 focus:outline-none transition";
+
+const baseStyle = {
+  backgroundColor: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.08)",
+};
+
+const focusHandlers = {
+  onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+    e.currentTarget.style.border = "1px solid rgba(124,58,237,0.5)";
+    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.08)";
+  },
+  onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+    e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
+    e.currentTarget.style.boxShadow = "none";
+  },
+};
+
 export default function RegisterPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -62,17 +82,15 @@ export default function RegisterPage() {
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    if (errors[name as keyof FormState]) {
+    if (errors[name as keyof FormState])
       setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
   };
 
   const validate = () => {
     const next: typeof errors = {};
     if (!form.name.trim()) next.name = "Company name is required.";
     if (!form.email.trim()) next.email = "Email is required.";
-    if (form.password.length < 8)
-      next.password = "Password must be at least 8 characters.";
+    if (form.password.length < 8) next.password = "Min. 8 characters.";
     if (form.password !== form.confirmPassword)
       next.confirmPassword = "Passwords don't match.";
     setErrors(next);
@@ -119,18 +137,21 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="w-full max-w-[440px]">
+    <div className="w-full max-w-[400px]">
       {/* Heading */}
-      <div className="mb-8">
-        <h1 className="text-[2rem] font-bold text-white tracking-tight leading-tight mb-2">
+      <div className="mb-7">
+        <p className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.25em] mb-3">
+          Get started free
+        </p>
+        <h1 className="text-[1.85rem] font-black text-white tracking-tight leading-tight mb-2">
           Start hiring smarter
         </h1>
-        <p className="text-[15px] text-gray-500">
+        <p className="text-[14px] text-gray-600 leading-relaxed">
           Set up HireX for your company in under two minutes.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3.5">
         {/* Company name */}
         <Field label="Company name" error={errors.name}>
           <input
@@ -140,7 +161,9 @@ export default function RegisterPage() {
             onChange={handleChange}
             required
             placeholder="Acme Corp"
-            className={inputCls(!!errors.name)}
+            className={baseInput}
+            style={{ ...baseStyle }}
+            {...focusHandlers}
           />
         </Field>
 
@@ -154,18 +177,22 @@ export default function RegisterPage() {
             required
             autoComplete="email"
             placeholder="you@company.com"
-            className={inputCls(!!errors.email)}
+            className={baseInput}
+            style={{ ...baseStyle }}
+            {...focusHandlers}
           />
         </Field>
 
-        {/* Industry + Size */}
+        {/* Industry + Size — two columns */}
         <div className="grid grid-cols-2 gap-3">
           <Field label="Industry">
             <select
               name="industry"
               value={form.industry}
               onChange={handleChange}
-              className={selectCls(false)}
+              className={baseInput + " appearance-none cursor-pointer"}
+              style={{ ...baseStyle }}
+              {...focusHandlers}
             >
               <option value="">Select…</option>
               {INDUSTRIES.map((i) => (
@@ -181,7 +208,9 @@ export default function RegisterPage() {
               name="size"
               value={form.size}
               onChange={handleChange}
-              className={selectCls(false)}
+              className={baseInput + " appearance-none cursor-pointer"}
+              style={{ ...baseStyle }}
+              {...focusHandlers}
             >
               <option value="">Select…</option>
               {COMPANY_SIZES.map((s) => (
@@ -203,7 +232,9 @@ export default function RegisterPage() {
             required
             autoComplete="new-password"
             placeholder="Min. 8 characters"
-            className={inputCls(!!errors.password)}
+            className={baseInput}
+            style={{ ...baseStyle }}
+            {...focusHandlers}
           />
         </Field>
 
@@ -217,7 +248,9 @@ export default function RegisterPage() {
             required
             autoComplete="new-password"
             placeholder="Repeat your password"
-            className={inputCls(!!errors.confirmPassword)}
+            className={baseInput}
+            style={{ ...baseStyle }}
+            {...focusHandlers}
           />
         </Field>
 
@@ -225,34 +258,43 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl transition-all mt-2 shadow-lg shadow-brand-600/20"
+          className="w-full flex items-center justify-center gap-2 text-white font-bold py-3.5 rounded-xl transition-all mt-1 disabled:opacity-50 disabled:cursor-not-allowed text-[14px]"
+          style={{
+            background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
+            boxShadow:
+              "0 4px 20px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
+          }}
         >
           {loading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Creating account…
+              <Loader2 className="w-4 h-4 animate-spin" /> Creating account…
             </>
           ) : (
             <>
-              Create account
-              <ArrowRight className="w-4 h-4" />
+              Create account <ArrowRight className="w-4 h-4" />
             </>
           )}
         </button>
 
-        <p className="text-[11px] text-gray-600 text-center leading-relaxed pt-1">
+        <p
+          className="text-[11px] text-center leading-relaxed"
+          style={{ color: "rgba(255,255,255,0.2)" }}
+        >
           By creating an account you agree to our Terms of Service and Privacy
           Policy.
         </p>
       </form>
 
       {/* Sign in link */}
-      <div className="mt-7 pt-7 border-t border-white/[0.06] text-center">
-        <p className="text-sm text-gray-500">
+      <div
+        className="mt-6 pt-6 border-t text-center"
+        style={{ borderColor: "rgba(255,255,255,0.05)" }}
+      >
+        <p className="text-[13px] text-gray-600">
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-brand-400 hover:text-brand-300 font-medium transition-colors"
+            className="text-brand-400 hover:text-brand-300 font-semibold transition-colors"
           >
             Sign in
           </Link>
@@ -262,8 +304,7 @@ export default function RegisterPage() {
   );
 }
 
-// ─── Field wrapper ───────────────────────────────────────────
-
+/* ─── Field wrapper ───────────────────────────────────────── */
 function Field({
   label,
   error,
@@ -275,27 +316,11 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-[0.12em] mb-2">
+      <label className="block text-[10px] font-bold text-gray-600 uppercase tracking-[0.18em] mb-2">
         {label}
       </label>
       {children}
-      {error && <p className="mt-1.5 text-xs text-red-400">{error}</p>}
+      {error && <p className="mt-1.5 text-[11px] text-red-400">{error}</p>}
     </div>
   );
-}
-
-// ─── Input styles ────────────────────────────────────────────
-
-function inputCls(hasError: boolean) {
-  return [
-    "w-full bg-surface-900 border rounded-xl px-4 py-3.5 text-sm text-white placeholder-gray-600",
-    "focus:outline-none focus:ring-2 transition",
-    hasError
-      ? "border-red-500/50 focus:border-red-500/60 focus:ring-red-500/10"
-      : "border-white/10 focus:border-brand-600/50 focus:ring-brand-600/10",
-  ].join(" ");
-}
-
-function selectCls(hasError: boolean) {
-  return [inputCls(hasError), "appearance-none cursor-pointer"].join(" ");
 }

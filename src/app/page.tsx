@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HeroParticles from "@/components/HeroParticles";
 import {
   ArrowRight,
   Brain,
@@ -130,220 +131,8 @@ export default function LandingPage() {
             }}
           />
 
-          {/* ── Flowing dots ── */}
-          {(
-            [
-              // t=top, l=left, s=sizePx, o=opacity, c=color, d=duration, dl=delay
-              // ── solid dots (3–5 px, clearly visible) ──
-              { t: "8%", l: "22%", s: 3, o: 0.55, c: "#8b5cf6", d: 11, dl: 0 },
-              { t: "15%", l: "55%", s: 4, o: 0.5, c: "#8b5cf6", d: 9, dl: 1.4 },
-              {
-                t: "28%",
-                l: "78%",
-                s: 3,
-                o: 0.45,
-                c: "#8b5cf6",
-                d: 13,
-                dl: 3.1,
-              },
-              {
-                t: "42%",
-                l: "38%",
-                s: 3.5,
-                o: 0.48,
-                c: "#8b5cf6",
-                d: 10,
-                dl: 0.8,
-              },
-              {
-                t: "58%",
-                l: "68%",
-                s: 3,
-                o: 0.42,
-                c: "#8b5cf6",
-                d: 12,
-                dl: 5.2,
-              },
-              {
-                t: "70%",
-                l: "14%",
-                s: 4,
-                o: 0.46,
-                c: "#8b5cf6",
-                d: 9,
-                dl: 2.5,
-              },
-              {
-                t: "82%",
-                l: "82%",
-                s: 3,
-                o: 0.4,
-                c: "#8b5cf6",
-                d: 11,
-                dl: 1.8,
-              },
-              {
-                t: "90%",
-                l: "46%",
-                s: 3.5,
-                o: 0.44,
-                c: "#8b5cf6",
-                d: 14,
-                dl: 4.0,
-              },
-              {
-                t: "35%",
-                l: "92%",
-                s: 3,
-                o: 0.38,
-                c: "#8b5cf6",
-                d: 10,
-                dl: 6.2,
-              },
-              {
-                t: "12%",
-                l: "88%",
-                s: 4,
-                o: 0.42,
-                c: "#34d399",
-                d: 10,
-                dl: 2.0,
-              },
-              {
-                t: "33%",
-                l: "62%",
-                s: 3,
-                o: 0.45,
-                c: "#34d399",
-                d: 12,
-                dl: 4.5,
-              },
-              {
-                t: "50%",
-                l: "8%",
-                s: 3.5,
-                o: 0.4,
-                c: "#34d399",
-                d: 9,
-                dl: 1.1,
-              },
-              {
-                t: "65%",
-                l: "50%",
-                s: 3,
-                o: 0.38,
-                c: "#34d399",
-                d: 11,
-                dl: 7.0,
-              },
-              {
-                t: "78%",
-                l: "72%",
-                s: 4,
-                o: 0.42,
-                c: "#34d399",
-                d: 13,
-                dl: 3.4,
-              },
-              {
-                t: "22%",
-                l: "32%",
-                s: 3,
-                o: 0.35,
-                c: "#ffffff",
-                d: 11,
-                dl: 5.8,
-              },
-              { t: "45%", l: "86%", s: 3, o: 0.3, c: "#ffffff", d: 9, dl: 2.9 },
-              {
-                t: "75%",
-                l: "28%",
-                s: 3.5,
-                o: 0.32,
-                c: "#ffffff",
-                d: 14,
-                dl: 0.5,
-              },
-              {
-                t: "88%",
-                l: "60%",
-                s: 3,
-                o: 0.28,
-                c: "#ffffff",
-                d: 10,
-                dl: 6.6,
-              },
-              // ── glow orbs (8–14 px with bloom) ──
-              {
-                t: "18%",
-                l: "44%",
-                s: 10,
-                o: 0.18,
-                c: "#8b5cf6",
-                d: 15,
-                dl: 0,
-              },
-              {
-                t: "52%",
-                l: "74%",
-                s: 12,
-                o: 0.16,
-                c: "#34d399",
-                d: 17,
-                dl: 3.0,
-              },
-              {
-                t: "38%",
-                l: "18%",
-                s: 8,
-                o: 0.14,
-                c: "#8b5cf6",
-                d: 13,
-                dl: 7.5,
-              },
-              {
-                t: "72%",
-                l: "90%",
-                s: 10,
-                o: 0.15,
-                c: "#8b5cf6",
-                d: 16,
-                dl: 2.2,
-              },
-              {
-                t: "85%",
-                l: "36%",
-                s: 8,
-                o: 0.12,
-                c: "#34d399",
-                d: 14,
-                dl: 5.0,
-              },
-            ] as {
-              t: string;
-              l: string;
-              s: number;
-              o: number;
-              c: string;
-              d: number;
-              dl: number;
-            }[]
-          ).map((dot, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                top: dot.t,
-                left: dot.l,
-                width: dot.s,
-                height: dot.s,
-                backgroundColor: dot.c,
-                opacity: dot.o,
-                boxShadow: `0 0 ${dot.s * 3}px ${dot.c}`,
-                animation: `dot-float ${dot.d}s ease-in-out ${dot.dl}s infinite`,
-              }}
-            />
-          ))}
+          {/* ── Flowing particles (canvas) ── */}
+          <HeroParticles />
         </div>
 
         {/* ── Hero content — single column, spacious ── */}
@@ -449,32 +238,6 @@ export default function LandingPage() {
                   <span className="text-[11px] text-gray-700">{s.l}</span>
                 </div>
               ))}
-            </div>
-
-            {/* Divider */}
-            <div
-              className="hidden sm:block w-px h-8 self-center"
-              style={{ backgroundColor: "rgba(255,255,255,0.06)" }}
-            />
-
-            {/* Social proof */}
-            <div className="flex items-center gap-2.5">
-              <div className="flex -space-x-2">
-                {(["#7c3aed", "#10b981", "#3b82f6", "#f59e0b"] as const).map(
-                  (c, i) => (
-                    <div
-                      key={i}
-                      className="w-6 h-6 rounded-full border-2 border-[#04040e] flex items-center justify-center text-[8px] font-black text-white"
-                      style={{ backgroundColor: c, zIndex: 4 - i }}
-                    >
-                      {["A", "O", "C", "E"][i]}
-                    </div>
-                  ),
-                )}
-              </div>
-              <span className="text-[11px] text-gray-700">
-                200+ hiring managers trust HireX
-              </span>
             </div>
           </div>
         </div>
@@ -584,8 +347,8 @@ export default function LandingPage() {
               Features
             </span>
           </div>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
-            <h2 className="text-2xl md:text-[1.875rem] font-bold text-white leading-tight tracking-tight max-w-md">
+          <div className="flex flex-col md:items-start md:justify-between gap-4 mb-10">
+            <h2 className="text-2xl md:text-[1.875rem] font-bold text-white leading-tight tracking-tight max-w-2xl">
               Built for the way great teams actually hire.
             </h2>
             <p className="text-[14px] text-gray-600 max-w-xs leading-relaxed">
@@ -765,7 +528,7 @@ export default function LandingPage() {
               How it works
             </span>
           </div>
-          <h2 className="text-2xl md:text-[1.875rem] font-bold text-white tracking-tight mb-10 max-w-sm leading-tight">
+          <h2 className="text-2xl md:text-[1.875rem] font-bold text-white tracking-tight mb-10 max-w-md leading-tight">
             From post to hire. Four steps.
           </h2>
 
@@ -839,11 +602,11 @@ export default function LandingPage() {
               Pricing
             </span>
           </div>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
-            <h2 className="text-2xl md:text-[1.875rem] font-bold text-white tracking-tight max-w-xs leading-tight">
+          <div className="flex flex-col md:items-start md:justify-between gap-4 mb-10">
+            <h2 className="text-2xl md:text-[1.875rem] font-bold text-white tracking-tight max-w-lg leading-tight">
               Transparent pricing. No surprises.
             </h2>
-            <p className="text-[14px] text-gray-600 max-w-xs leading-relaxed">
+            <p className="text-[14px] text-gray-600 max-w-lg leading-relaxed">
               Every plan includes AI scoring, email notifications, and the full
               pipeline.
             </p>
@@ -975,7 +738,7 @@ export default function LandingPage() {
 
       {/* ─── CTA ────────────────────────────────────────────── */}
       <section className="py-10 px-6">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div
             className="relative rounded-2xl overflow-hidden p-14 text-center border border-brand-600/15"
             style={{
@@ -1105,10 +868,14 @@ export default function LandingPage() {
 
 function Logo() {
   return (
-    <Link href="/">
-      <span className="text-[1.15rem] font-black tracking-tight text-white">
+    <Link href="/" className="inline-flex items-center gap-2">
+      <span className="text-[1.15rem] font-black tracking-tight text-white leading-none">
         Hire<span className="text-accent-400">X</span>
       </span>
+      <span
+        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+        style={{ backgroundColor: "#34d399", boxShadow: "0 0 6px #34d399" }}
+      />
     </Link>
   );
 }
