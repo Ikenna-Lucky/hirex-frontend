@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Loader2, Mail, Lock } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { authApi } from "@/lib/api";
 import { setToken, setStoredCompany } from "@/lib/auth";
 import type { ApiResponse, Company } from "@/types";
@@ -46,75 +46,84 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-sm">
-      {/* Card */}
-      <div className="bg-surface-900 border border-white/5 rounded-2xl p-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-1">Sign in</h1>
-          <p className="text-sm text-gray-500">
-            Welcome back to your hiring dashboard.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Work email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-                placeholder="you@company.com"
-                className="w-full bg-surface-950 border border-white/10 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-600/60 focus:ring-1 focus:ring-brand-600/30 transition"
-              />
-            </div>
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-              <input
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                placeholder="••••••••"
-                className="w-full bg-surface-950 border border-white/10 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-600/60 focus:ring-1 focus:ring-brand-600/30 transition"
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition-all shadow-lg shadow-brand-600/20"
-          >
-            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {loading ? "Signing in…" : "Sign in"}
-          </button>
-        </form>
+    <div className="w-full max-w-[400px]">
+      {/* Heading */}
+      <div className="mb-8">
+        <h1 className="text-[2rem] font-bold text-white tracking-tight leading-tight mb-2">
+          Welcome back
+        </h1>
+        <p className="text-[15px] text-gray-500">
+          Sign in to your hiring dashboard.
+        </p>
       </div>
 
-      <p className="text-center text-sm text-gray-500 mt-6">
-        Don&apos;t have an account?{" "}
-        <Link
-          href="/register"
-          className="text-brand-400 hover:text-brand-300 font-medium transition-colors"
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Email */}
+        <div>
+          <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-[0.12em] mb-2">
+            Work email
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            autoComplete="email"
+            placeholder="you@company.com"
+            className="w-full bg-surface-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/10 transition"
+          />
+        </div>
+
+        {/* Password */}
+        <div>
+          <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-[0.12em] mb-2">
+            Password
+          </label>
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            autoComplete="current-password"
+            placeholder="Enter your password"
+            className="w-full bg-surface-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/10 transition"
+          />
+        </div>
+
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl transition-all mt-2 shadow-lg shadow-brand-600/20"
         >
-          Create one free
-        </Link>
-      </p>
+          {loading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Signing in…
+            </>
+          ) : (
+            <>
+              Sign in
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
+        </button>
+      </form>
+
+      {/* Divider + register link */}
+      <div className="mt-8 pt-7 border-t border-white/[0.06] text-center">
+        <p className="text-sm text-gray-500">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/register"
+            className="text-brand-400 hover:text-brand-300 font-medium transition-colors"
+          >
+            Create one free
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

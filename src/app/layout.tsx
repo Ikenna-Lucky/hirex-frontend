@@ -30,9 +30,12 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <style>{`
+          * { font-family: 'Space Grotesk', system-ui, sans-serif; }
+        `}</style>
       </head>
       <body>
         {children}
@@ -40,11 +43,12 @@ export default function RootLayout({
           position="top-right"
           toastOptions={{
             style: {
-              background: "#1f2937",
+              background: "#111118",
               color: "#f9fafb",
-              border: "1px solid #374151",
-              borderRadius: "10px",
-              fontSize: "14px",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: "12px",
+              fontSize: "13px",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
             },
             success: {
               iconTheme: { primary: "#10b981", secondary: "#f9fafb" },

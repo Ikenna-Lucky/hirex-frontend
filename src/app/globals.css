@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
-
 @layer base {
   :root {
     --background: 222 47% 3%;
@@ -26,7 +24,11 @@
   }
 
   body {
-    @apply bg-surface-950 text-gray-100 font-sans antialiased;
+    background-color: #04040e;
+    color: rgb(243 244 246);
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
@@ -34,13 +36,11 @@
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
   }
-
   ::-webkit-scrollbar-track {
-    @apply bg-surface-900;
+    background: #04040e;
   }
-
   ::-webkit-scrollbar-thumb {
     @apply bg-surface-700 rounded-full;
   }
@@ -50,12 +50,179 @@
   .gradient-text {
     @apply bg-gradient-to-r from-brand-500 to-accent-400 bg-clip-text text-transparent;
   }
-
   .glass {
     @apply bg-white/5 backdrop-blur-md border border-white/10;
   }
-
   .glow-brand {
     box-shadow: 0 0 40px rgba(124, 58, 237, 0.3);
   }
+  .shimmer-gradient {
+    background: linear-gradient(
+      90deg,
+      #8b5cf6 0%,
+      #34d399 30%,
+      #8b5cf6 60%,
+      #34d399 90%,
+      #8b5cf6 100%
+    );
+    background-size: 300% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: shimmer-move 4s linear infinite;
+  }
+}
+
+/* ─── Keyframes ───────────────────────────────────────────── */
+
+@keyframes shimmer-move {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 300% center;
+  }
+}
+
+@keyframes orb-float {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-40px) scale(1.04);
+  }
+}
+
+@keyframes orb-float-reverse {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(35px) scale(0.96);
+  }
+}
+
+@keyframes orb-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(30px, -20px);
+  }
+  66% {
+    transform: translate(-20px, 15px);
+  }
+}
+
+@keyframes fade-up-in {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes badge-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 2px rgba(124, 58, 237, 0.2);
+  }
+}
+
+@keyframes dot-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(5px, -9px) scale(1.08);
+  }
+  50% {
+    transform: translate(-4px, -16px) scale(0.94);
+  }
+  75% {
+    transform: translate(6px, -7px) scale(1.04);
+  }
+}
+
+@keyframes dot-rise {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-60px);
+    opacity: 0;
+  }
+}
+
+/* ─── Animation utility classes ──────────────────────────── */
+
+.animate-orb-float {
+  animation: orb-float 10s ease-in-out infinite;
+}
+.animate-orb-float-reverse {
+  animation: orb-float-reverse 13s ease-in-out infinite;
+}
+.animate-orb-drift {
+  animation: orb-drift 18s ease-in-out infinite;
+}
+.animate-marquee {
+  animation: marquee-scroll 40s linear infinite;
+}
+.animate-badge-glow {
+  animation: badge-glow 3s ease-in-out infinite;
+}
+
+.anim-1 {
+  animation: fade-up-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+}
+.anim-2 {
+  animation: fade-up-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+}
+.anim-3 {
+  animation: fade-up-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.31s both;
+}
+.anim-4 {
+  animation: fade-up-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.44s both;
+}
+.anim-5 {
+  animation: fade-up-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.57s both;
+}
+
+.bento-card {
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+.bento-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px rgba(124, 58, 237, 0.18),
+    0 20px 40px rgba(0, 0, 0, 0.4);
 }

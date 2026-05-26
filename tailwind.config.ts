@@ -32,7 +32,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Space Grotesk", "system-ui", "sans-serif"],
       },
       backgroundImage: {
         "gradient-brand": "linear-gradient(135deg, #7C3AED, #5B21B6)",
