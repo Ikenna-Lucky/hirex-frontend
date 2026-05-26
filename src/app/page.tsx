@@ -18,58 +18,77 @@ export default function LandingPage() {
       className="min-h-screen text-gray-100 overflow-x-hidden"
       style={{ backgroundColor: "#04040e" }}
     >
-      {/* ─── Floating Navbar ────────────────────────────────── */}
-      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-[800px] px-1">
+      {/* ─── Navbar ─────────────────────────────────────────── */}
+      <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2.5rem)] max-w-[880px]">
         <nav
-          className="flex items-center justify-between px-3 py-2 rounded-2xl border border-white/[0.07]"
+          className="flex items-center justify-between px-5 py-3 rounded-2xl"
           style={{
-            backgroundColor: "rgba(4,4,14,0.88)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(6,6,18,0.85)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255,255,255,0.07)",
             boxShadow:
-              "0 0 0 1px rgba(255,255,255,0.03), 0 8px 40px rgba(0,0,0,0.5)",
+              "0 0 0 1px rgba(255,255,255,0.02) inset, 0 12px 40px rgba(0,0,0,0.55)",
           }}
         >
-          {/* Logo */}
-          <Link href="/" className="flex items-center px-1">
-            <span className="text-[1.1rem] font-black tracking-tight text-white">
+          {/* ── Logo ── */}
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+            <span className="text-[1.2rem] font-black tracking-tight text-white leading-none">
               Hire<span className="text-accent-400">X</span>
             </span>
+            {/* Status dot */}
+            <span
+              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+              style={{
+                backgroundColor: "#34d399",
+                boxShadow: "0 0 6px #34d399",
+              }}
+            />
           </Link>
 
-          {/* Center nav links */}
-          <div className="hidden md:flex items-center gap-0.5">
+          {/* ── Center links ── */}
+          <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
             {[
-              "#features:Features",
-              "#how-it-works:How it works",
-              "#pricing:Pricing",
-            ].map((item) => {
-              const [href, label] = item.split(":");
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className="text-[13px] text-gray-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/[0.05]"
-                >
-                  {label}
-                </Link>
-              );
-            })}
+              { href: "#features", label: "Features" },
+              { href: "#how-it-works", label: "How it works" },
+              { href: "#pricing", label: "Pricing" },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="text-[13px] font-medium text-gray-500 hover:text-white transition-colors duration-150 px-4 py-2 rounded-xl hover:bg-white/[0.05]"
+              >
+                {label}
+              </Link>
+            ))}
           </div>
 
-          {/* Right CTAs */}
-          <div className="flex items-center gap-1">
+          {/* ── Right CTAs ── */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Thin divider — desktop only */}
+            <div
+              className="hidden md:block w-px h-4 mx-1"
+              style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+            />
+
             <Link
               href="/login"
-              className="text-[13px] text-gray-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/[0.05]"
+              className="hidden sm:block text-[13px] font-medium text-gray-500 hover:text-white transition-colors duration-150 px-3 py-2 rounded-xl hover:bg-white/[0.05]"
             >
               Sign in
             </Link>
+
             <Link
               href="/register"
-              className="text-[12px] font-semibold bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 rounded-xl transition-all shadow-lg shadow-brand-600/25"
+              className="inline-flex items-center gap-2 text-[13px] font-bold text-white px-4 py-2 rounded-xl transition-all duration-150"
+              style={{
+                background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
+                boxShadow:
+                  "0 2px 14px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
+              }}
             >
-              Get started →
+              Get started
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </nav>
@@ -114,201 +133,191 @@ export default function LandingPage() {
           {/* ── Flowing dots ── */}
           {(
             [
-              // [top%, left%, sizePx, opacity, color, durationS, delayS]
-              // — brand purple
-              { t: "7%", l: "38%", s: 2, o: 0.28, c: "#8b5cf6", d: 11, dl: 0 },
+              // t=top, l=left, s=sizePx, o=opacity, c=color, d=duration, dl=delay
+              // ── solid dots (3–5 px, clearly visible) ──
+              { t: "8%", l: "22%", s: 3, o: 0.55, c: "#8b5cf6", d: 11, dl: 0 },
+              { t: "15%", l: "55%", s: 4, o: 0.5, c: "#8b5cf6", d: 9, dl: 1.4 },
               {
-                t: "18%",
-                l: "62%",
-                s: 2.5,
-                o: 0.22,
-                c: "#8b5cf6",
-                d: 9,
-                dl: 1.4,
-              },
-              {
-                t: "30%",
-                l: "80%",
-                s: 1.5,
-                o: 0.18,
+                t: "28%",
+                l: "78%",
+                s: 3,
+                o: 0.45,
                 c: "#8b5cf6",
                 d: 13,
                 dl: 3.1,
               },
               {
-                t: "44%",
-                l: "54%",
-                s: 2,
-                o: 0.2,
+                t: "42%",
+                l: "38%",
+                s: 3.5,
+                o: 0.48,
                 c: "#8b5cf6",
                 d: 10,
                 dl: 0.8,
               },
               {
-                t: "57%",
-                l: "70%",
-                s: 1.5,
-                o: 0.16,
+                t: "58%",
+                l: "68%",
+                s: 3,
+                o: 0.42,
                 c: "#8b5cf6",
                 d: 12,
                 dl: 5.2,
               },
               {
-                t: "68%",
-                l: "44%",
-                s: 2,
-                o: 0.18,
+                t: "70%",
+                l: "14%",
+                s: 4,
+                o: 0.46,
                 c: "#8b5cf6",
                 d: 9,
                 dl: 2.5,
               },
               {
-                t: "80%",
-                l: "76%",
-                s: 1.5,
-                o: 0.14,
+                t: "82%",
+                l: "82%",
+                s: 3,
+                o: 0.4,
                 c: "#8b5cf6",
                 d: 11,
                 dl: 1.8,
               },
               {
-                t: "88%",
-                l: "58%",
-                s: 1,
-                o: 0.12,
+                t: "90%",
+                l: "46%",
+                s: 3.5,
+                o: 0.44,
                 c: "#8b5cf6",
                 d: 14,
                 dl: 4.0,
               },
               {
-                t: "24%",
-                l: "91%",
-                s: 1.5,
-                o: 0.15,
+                t: "35%",
+                l: "92%",
+                s: 3,
+                o: 0.38,
                 c: "#8b5cf6",
                 d: 10,
                 dl: 6.2,
               },
               {
-                t: "50%",
-                l: "87%",
-                s: 1,
-                o: 0.12,
-                c: "#8b5cf6",
-                d: 13,
-                dl: 0.3,
-              },
-              // — accent green
-              {
                 t: "12%",
-                l: "75%",
-                s: 2,
-                o: 0.22,
+                l: "88%",
+                s: 4,
+                o: 0.42,
                 c: "#34d399",
                 d: 10,
                 dl: 2.0,
               },
               {
-                t: "36%",
-                l: "66%",
-                s: 1.5,
-                o: 0.18,
+                t: "33%",
+                l: "62%",
+                s: 3,
+                o: 0.45,
                 c: "#34d399",
                 d: 12,
                 dl: 4.5,
               },
               {
-                t: "63%",
-                l: "84%",
-                s: 2,
-                o: 0.16,
+                t: "50%",
+                l: "8%",
+                s: 3.5,
+                o: 0.4,
                 c: "#34d399",
                 d: 9,
                 dl: 1.1,
               },
               {
-                t: "78%",
-                l: "48%",
-                s: 1.5,
-                o: 0.14,
+                t: "65%",
+                l: "50%",
+                s: 3,
+                o: 0.38,
                 c: "#34d399",
                 d: 11,
                 dl: 7.0,
               },
               {
-                t: "92%",
+                t: "78%",
                 l: "72%",
-                s: 1,
-                o: 0.1,
+                s: 4,
+                o: 0.42,
                 c: "#34d399",
                 d: 13,
                 dl: 3.4,
               },
-              // — white/neutral
               {
-                t: "10%",
-                l: "50%",
-                s: 1,
-                o: 0.1,
+                t: "22%",
+                l: "32%",
+                s: 3,
+                o: 0.35,
                 c: "#ffffff",
                 d: 11,
                 dl: 5.8,
               },
+              { t: "45%", l: "86%", s: 3, o: 0.3, c: "#ffffff", d: 9, dl: 2.9 },
               {
-                t: "22%",
-                l: "70%",
-                s: 1,
-                o: 0.08,
-                c: "#ffffff",
-                d: 9,
-                dl: 2.9,
-              },
-              {
-                t: "48%",
-                l: "78%",
-                s: 1,
-                o: 0.09,
+                t: "75%",
+                l: "28%",
+                s: 3.5,
+                o: 0.32,
                 c: "#ffffff",
                 d: 14,
                 dl: 0.5,
               },
               {
-                t: "72%",
+                t: "88%",
                 l: "60%",
-                s: 1,
-                o: 0.08,
+                s: 3,
+                o: 0.28,
                 c: "#ffffff",
                 d: 10,
                 dl: 6.6,
               },
+              // ── glow orbs (8–14 px with bloom) ──
               {
-                t: "84%",
-                l: "88%",
-                s: 1.5,
-                o: 0.1,
-                c: "#ffffff",
-                d: 12,
-                dl: 1.6,
+                t: "18%",
+                l: "44%",
+                s: 10,
+                o: 0.18,
+                c: "#8b5cf6",
+                d: 15,
+                dl: 0,
               },
-              // — large soft glow-dots
-              { t: "20%", l: "58%", s: 5, o: 0.06, c: "#8b5cf6", d: 15, dl: 0 },
               {
-                t: "55%",
-                l: "76%",
-                s: 6,
-                o: 0.05,
+                t: "52%",
+                l: "74%",
+                s: 12,
+                o: 0.16,
                 c: "#34d399",
                 d: 17,
                 dl: 3.0,
               },
               {
                 t: "38%",
-                l: "90%",
-                s: 4,
-                o: 0.05,
+                l: "18%",
+                s: 8,
+                o: 0.14,
                 c: "#8b5cf6",
                 d: 13,
                 dl: 7.5,
+              },
+              {
+                t: "72%",
+                l: "90%",
+                s: 10,
+                o: 0.15,
+                c: "#8b5cf6",
+                d: 16,
+                dl: 2.2,
+              },
+              {
+                t: "85%",
+                l: "36%",
+                s: 8,
+                o: 0.12,
+                c: "#34d399",
+                d: 14,
+                dl: 5.0,
               },
             ] as {
               t: string;
@@ -330,8 +339,7 @@ export default function LandingPage() {
                 height: dot.s,
                 backgroundColor: dot.c,
                 opacity: dot.o,
-                boxShadow:
-                  dot.s >= 4 ? `0 0 ${dot.s * 4}px ${dot.c}` : undefined,
+                boxShadow: `0 0 ${dot.s * 3}px ${dot.c}`,
                 animation: `dot-float ${dot.d}s ease-in-out ${dot.dl}s infinite`,
               }}
             />
