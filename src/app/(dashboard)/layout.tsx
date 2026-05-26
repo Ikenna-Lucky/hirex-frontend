@@ -70,11 +70,8 @@ export default function DashboardLayout({
 
   return (
     <div
-      className="h-screen flex overflow-hidden"
-      style={{
-        background: "#0a0a0f",
-        fontFamily: "'Inter', system-ui, sans-serif",
-      }}
+      className="font-inter h-screen flex overflow-hidden"
+      style={{ background: "#0a0a0f" }}
     >
       {/* Mobile overlay */}
       {open && (

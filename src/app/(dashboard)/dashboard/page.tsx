@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   BriefcaseMetal,
@@ -9,7 +9,6 @@ import {
   Timer,
   Plus,
   ArrowRight,
-  CircleNotch,
   Warning,
   CheckCircle,
   ArrowUpRight,
@@ -27,6 +26,9 @@ import { getStoredCompany } from "@/lib/auth";
 import { formatDate } from "@/lib/utils";
 import type { Job } from "@/types";
 
+/* ─────────────────────────────────────────
+   TYPES
+───────────────────────────────────────── */
 type Stats = {
   totalJobs: number;
   activeJobs: number;
@@ -39,6 +41,9 @@ type Sub = {
   endsAt: string | null;
 };
 
+/* ─────────────────────────────────────────
+   CONSTANTS
+───────────────────────────────────────── */
 const STATUS_MAP: Record<
   string,
   { label: string; color: string; bg: string; dot: string }
@@ -78,6 +83,49 @@ const JOB_GRADIENTS = [
   "linear-gradient(135deg,#6d28d9,#7c3aed)",
 ];
 
+/* ─────────────────────────────────────────
+   HOOKS
+───────────────────────────────────────── */
+
+/** Counts from 0 → target with an ease-out cubic curve */
+function useCountUp(target: number, duration = 1000, delay = 200) {
+  const [value, setValue] = useState(0);
+  const rafRef = useRef<number>(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    if (target === 0) {
+      setValue(0);
+      return;
+    }
+
+    timerRef.current = setTimeout(() => {
+      let startTime: number | null = null;
+
+      const tick = (ts: number) => {
+        if (!startTime) startTime = ts;
+        const elapsed = ts - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        setValue(Math.round(eased * target));
+        if (progress < 1) rafRef.current = requestAnimationFrame(tick);
+      };
+
+      rafRef.current = requestAnimationFrame(tick);
+    }, delay);
+
+    return () => {
+      clearTimeout(timerRef.current);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [target, duration, delay]);
+
+  return value;
+}
+
+/* ─────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────── */
 function getJobInitials(title: string): string {
   return title
     .split(" ")
@@ -87,11 +135,103 @@ function getJobInitials(title: string): string {
     .toUpperCase();
 }
 
+/* ─────────────────────────────────────────
+   SKELETON
+───────────────────────────────────────── */
+function Bone({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      className={`animate-pulse rounded-xl ${className ?? ""}`}
+      style={{ background: "rgba(255,255,255,0.06)", ...style }}
+    />
+  );
+}
+
+function SkeletonPage() {
+  return (
+    <div className="space-y-6">
+      {/* hero */}
+      <Bone className="h-[108px] rounded-2xl" />
+
+      {/* stat cards */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="rounded-2xl p-5 space-y-4"
+            style={{
+              background: "#111118",
+              border: "1px solid rgba(255,255,255,0.07)",
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <Bone className="h-3 w-20 rounded-md" />
+              <Bone className="w-8 h-8 rounded-xl" />
+            </div>
+            <Bone className="h-9 w-14 rounded-md" />
+            <Bone className="h-2.5 w-28 rounded-md" />
+          </div>
+        ))}
+      </div>
+
+      {/* 2-col */}
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-6">
+        {/* jobs */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <Bone className="h-5 w-32 rounded-md" />
+            <Bone className="h-7 w-20 rounded-lg" />
+          </div>
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-4 p-4 rounded-2xl"
+                style={{
+                  background: "#111118",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                <Bone className="w-11 h-11 rounded-xl flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Bone
+                    className="h-4 rounded-md"
+                    style={{ width: `${55 + (i % 3) * 15}%` }}
+                  />
+                  <Bone className="h-3 w-28 rounded-md" />
+                </div>
+                <Bone className="h-7 w-16 rounded-lg hidden sm:block" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* sidebar */}
+        <div className="space-y-4">
+          <Bone className="h-36 rounded-2xl" />
+          <Bone className="h-44 rounded-2xl" />
+          <Bone className="h-48 rounded-2xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────
+   PAGE
+───────────────────────────────────────── */
 export default function OverviewPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [sub, setSub] = useState<Sub | null>(null);
   const [loading, setLoading] = useState(true);
+  const [barsReady, setBarsReady] = useState(false);
   const company = getStoredCompany();
 
   useEffect(() => {
@@ -126,15 +266,21 @@ export default function OverviewPage() {
     })();
   }, []);
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center h-64">
-        <CircleNotch
-          className="w-6 h-6 animate-spin"
-          style={{ color: "#7c3aed" }}
-        />
-      </div>
-    );
+  /* trigger pipeline bar fill after content appears */
+  useEffect(() => {
+    if (!loading) {
+      const t = setTimeout(() => setBarsReady(true), 120);
+      return () => clearTimeout(t);
+    }
+  }, [loading]);
+
+  /* count-up hooks — must be called unconditionally */
+  const c1 = useCountUp(stats?.totalJobs ?? 0, 900, 250);
+  const c2 = useCountUp(stats?.activeJobs ?? 0, 900, 350);
+  const c3 = useCountUp(stats?.totalApplications ?? 0, 1100, 450);
+  const c4 = useCountUp(stats?.pendingScoring ?? 0, 900, 550);
+
+  if (loading) return <SkeletonPage />;
 
   const recent = [...jobs]
     .sort(
@@ -152,17 +298,16 @@ export default function OverviewPage() {
   const activeJobs = stats?.activeJobs ?? 0;
   const totalCVs = stats?.totalApplications ?? 0;
 
-  /* ─── stat card data ─── */
   const STAT_CARDS = [
     {
       label: "Total Jobs",
-      value: stats?.totalJobs ?? 0,
+      value: c1,
       icon: BriefcaseMetal,
       sub: `${activeJobs} currently active`,
     },
     {
       label: "Active Postings",
-      value: activeJobs,
+      value: c2,
       icon: Pulse,
       sub:
         totalJobs > 0
@@ -171,7 +316,7 @@ export default function OverviewPage() {
     },
     {
       label: "Applications",
-      value: totalCVs,
+      value: c3,
       icon: Users,
       sub:
         activeJobs > 0
@@ -180,26 +325,33 @@ export default function OverviewPage() {
     },
     {
       label: "Awaiting Review",
-      value: stats?.pendingScoring ?? 0,
+      value: c4,
       icon: Timer,
       sub: "AI scoring queue",
     },
   ] as const;
 
+  const PIPELINE = [
+    { label: "Total Jobs", value: totalJobs, pct: totalJobs > 0 ? 100 : 0 },
+    {
+      label: "Active",
+      value: activeJobs,
+      pct: totalJobs > 0 ? Math.round((activeJobs / totalJobs) * 100) : 0,
+    },
+    { label: "Applications", value: totalCVs, pct: totalCVs > 0 ? 100 : 0 },
+  ];
+
   return (
     <div className="space-y-6">
-      {/* ══════════════════════════════════════════
-          HERO GREETING BANNER
-      ══════════════════════════════════════════ */}
+      {/* ══ HERO GREETING ══ */}
       <div
-        className="relative rounded-2xl overflow-hidden px-8 py-7"
+        className="relative rounded-2xl overflow-hidden px-8 py-7 anim-1"
         style={{
           background:
             "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",
           border: "1px solid rgba(124,58,237,0.22)",
         }}
       >
-        {/* decorative glow orbs */}
         <div
           className="absolute -top-20 -right-20 w-72 h-72 rounded-full pointer-events-none"
           style={{
@@ -218,11 +370,7 @@ export default function OverviewPage() {
         <div className="relative flex items-center justify-between gap-6 flex-wrap">
           <div>
             <div className="flex items-center gap-2 mb-2.5">
-              <Sparkle
-                weight="fill"
-                className="w-3.5 h-3.5"
-                style={{ color: "#a78bfa" }}
-              />
+              <Sparkle weight="fill" size={14} style={{ color: "#a78bfa" }} />
               <span
                 className="text-[12px] font-semibold tracking-wide uppercase"
                 style={{ color: "#a78bfa" }}
@@ -262,7 +410,7 @@ export default function OverviewPage() {
                     "rgba(124,58,237,0.14)";
                 }}
               >
-                <Lightning weight="fill" className="w-3.5 h-3.5" /> Upgrade
+                <Lightning weight="fill" size={14} /> Upgrade
               </Link>
             )}
             <Link
@@ -281,27 +429,25 @@ export default function OverviewPage() {
                   "0 0 24px rgba(124,58,237,0.38)";
               }}
             >
-              <Plus className="w-4 h-4" /> Post a job
+              <Plus weight="bold" size={16} /> Post a job
             </Link>
           </div>
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════
-          STAT CARDS
-      ══════════════════════════════════════════ */}
+      {/* ══ STAT CARDS — staggered entrance ══ */}
       {stats && (
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-          {STAT_CARDS.map(({ label, value, icon: Icon, sub: subText }) => (
+          {STAT_CARDS.map(({ label, value, icon: Icon, sub: subText }, i) => (
             <div
               key={label}
               className="relative rounded-2xl p-5 flex flex-col gap-4 overflow-hidden"
               style={{
                 background: "#111118",
                 border: "1px solid rgba(255,255,255,0.07)",
+                animation: `fade-up-in 0.5s cubic-bezier(0.16,1,0.3,1) ${i * 80 + 100}ms both`,
               }}
             >
-              {/* single violet top line */}
               <div
                 className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
                 style={{
@@ -309,7 +455,6 @@ export default function OverviewPage() {
                     "linear-gradient(90deg,rgba(124,58,237,0.7),transparent)",
                 }}
               />
-
               <div className="flex items-center justify-between">
                 <p
                   className="text-[13px] font-medium"
@@ -328,9 +473,8 @@ export default function OverviewPage() {
                   />
                 </div>
               </div>
-
               <div>
-                <p className="text-[40px] font-black leading-none tracking-tight text-white">
+                <p className="text-[40px] font-black leading-none tracking-tight text-white tabular-nums">
                   {value.toLocaleString()}
                 </p>
                 <p
@@ -345,12 +489,10 @@ export default function OverviewPage() {
         </div>
       )}
 
-      {/* ══════════════════════════════════════════
-          MAIN 2-COLUMN LAYOUT
-      ══════════════════════════════════════════ */}
+      {/* ══ MAIN 2-COLUMN ══ */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-6">
-        {/* ── LEFT: Recent Jobs ── */}
-        <div>
+        {/* ── Recent Jobs ── */}
+        <div className="anim-3">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-[19px] font-bold text-white">Recent Jobs</h2>
@@ -441,6 +583,7 @@ export default function OverviewPage() {
                     style={{
                       background: "#111118",
                       border: "1px solid rgba(255,255,255,0.07)",
+                      animation: `fade-up-in 0.45s cubic-bezier(0.16,1,0.3,1) ${i * 60 + 300}ms both`,
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLElement).style.borderColor =
@@ -455,7 +598,6 @@ export default function OverviewPage() {
                         "#111118";
                     }}
                   >
-                    {/* Gradient icon */}
                     <div
                       className="w-11 h-11 rounded-xl flex items-center justify-center text-[13px] font-extrabold text-white flex-shrink-0"
                       style={{ background: gradient }}
@@ -463,7 +605,6 @@ export default function OverviewPage() {
                       {initials}
                     </div>
 
-                    {/* Job info */}
                     <div className="flex-1 min-w-0">
                       <p
                         className="text-[15px] font-semibold truncate"
@@ -494,7 +635,6 @@ export default function OverviewPage() {
                       </div>
                     </div>
 
-                    {/* CV count */}
                     <div className="hidden sm:flex flex-col items-end flex-shrink-0">
                       <div className="flex items-center gap-1.5">
                         <Users
@@ -517,7 +657,6 @@ export default function OverviewPage() {
                       </span>
                     </div>
 
-                    {/* Date */}
                     <div className="hidden lg:block flex-shrink-0">
                       <span
                         className="flex items-center gap-1 text-[12px]"
@@ -528,7 +667,6 @@ export default function OverviewPage() {
                       </span>
                     </div>
 
-                    {/* Status badge */}
                     <div className="flex-shrink-0">
                       <span
                         className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-lg"
@@ -563,14 +701,14 @@ export default function OverviewPage() {
 
         {/* ── RIGHT SIDEBAR ── */}
         <div
-          className="space-y-4 xl:sticky xl:top-0 xl:overflow-y-auto"
+          className="space-y-4 xl:sticky xl:top-0 xl:overflow-y-auto anim-4"
           style={{
             maxHeight: "520px",
             scrollbarWidth: "thin",
             scrollbarColor: "rgba(124,58,237,0.3) transparent",
           }}
         >
-          {/* ── Subscription card ── */}
+          {/* Subscription */}
           <div
             className="rounded-2xl p-5"
             style={{
@@ -613,7 +751,7 @@ export default function OverviewPage() {
                 </p>
                 <Link
                   href="/dashboard/billing"
-                  className="flex items-center gap-1 text-[12px] font-semibold mt-3 transition-opacity hover:opacity-100"
+                  className="flex items-center gap-1 text-[12px] font-semibold mt-3"
                   style={{ color: "rgba(52,211,153,0.65)" }}
                 >
                   Manage plan <ArrowUpRight size={12} />
@@ -649,7 +787,7 @@ export default function OverviewPage() {
             )}
           </div>
 
-          {/* ── Pipeline overview ── */}
+          {/* Pipeline — bars fill on mount */}
           <div
             className="rounded-2xl p-5"
             style={{
@@ -668,26 +806,7 @@ export default function OverviewPage() {
               </h3>
             </div>
             <div className="space-y-4">
-              {[
-                {
-                  label: "Total Jobs",
-                  value: totalJobs,
-                  pct: totalJobs > 0 ? 100 : 0,
-                },
-                {
-                  label: "Active",
-                  value: activeJobs,
-                  pct:
-                    totalJobs > 0
-                      ? Math.round((activeJobs / totalJobs) * 100)
-                      : 0,
-                },
-                {
-                  label: "Applications",
-                  value: totalCVs,
-                  pct: totalCVs > 0 ? 100 : 0,
-                },
-              ].map(({ label, value, pct }) => (
+              {PIPELINE.map(({ label, value, pct }) => (
                 <div key={label}>
                   <div className="flex justify-between items-center mb-2">
                     <span
@@ -710,11 +829,11 @@ export default function OverviewPage() {
                     <div
                       className="h-full rounded-full"
                       style={{
-                        width: `${pct}%`,
+                        width: barsReady ? `${pct}%` : "0%",
                         background:
                           "linear-gradient(90deg,#7c3aed,rgba(124,58,237,0.5))",
                         boxShadow: "0 0 8px rgba(124,58,237,0.35)",
-                        transition: "width 0.6s ease",
+                        transition: "width 0.8s cubic-bezier(0.16,1,0.3,1)",
                       }}
                     />
                   </div>
@@ -723,7 +842,7 @@ export default function OverviewPage() {
             </div>
           </div>
 
-          {/* ── Quick actions ── */}
+          {/* Quick Actions */}
           <div
             className="rounded-2xl p-5"
             style={{

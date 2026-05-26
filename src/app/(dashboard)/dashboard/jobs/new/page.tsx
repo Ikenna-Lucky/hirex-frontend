@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { ChevronLeft } from "lucide-react";
+import { CaretLeft, Sparkle } from "@phosphor-icons/react";
 import { jobsApi } from "@/lib/api";
 import JobForm, {
   JOB_FORM_DEFAULTS,
@@ -38,7 +38,7 @@ export default function NewJobPage() {
 
       const res = await jobsApi.create(payload);
       const job = res.data.data?.job ?? res.data.data;
-      toast.success("Job posted!");
+      toast.success("Job posted successfully!");
       router.push(`/dashboard/jobs/${job.id}`);
     } catch (err) {
       const error = err as AxiosError<{ message?: string }>;
@@ -49,24 +49,65 @@ export default function NewJobPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-7">
-      {/* Breadcrumb */}
-      <div>
-        <Link
-          href="/dashboard/jobs"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-white transition-colors mb-5"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-          Back to jobs
-        </Link>
-        <h1 className="text-2xl font-bold text-white">Post a new job</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Your job description becomes the AI benchmark every CV is scored
-          against — be specific.
-        </p>
+    <div className="max-w-3xl mx-auto space-y-6">
+      {/* ── Back ── */}
+      <Link
+        href="/dashboard/jobs"
+        className="inline-flex items-center gap-1.5 text-[13px] font-medium transition-colors anim-1"
+        style={{ color: "rgba(255,255,255,0.35)" }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.color = "#a78bfa";
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.color =
+            "rgba(255,255,255,0.35)";
+        }}
+      >
+        <CaretLeft weight="bold" size={14} />
+        Back to jobs
+      </Link>
+
+      {/* ── Hero header ── */}
+      <div
+        className="relative rounded-2xl overflow-hidden px-8 py-7 anim-1"
+        style={{
+          background:
+            "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",
+          border: "1px solid rgba(124,58,237,0.22)",
+        }}
+      >
+        <div
+          className="absolute -top-16 -right-16 w-64 h-64 rounded-full pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(circle,rgba(124,58,237,0.18) 0%,transparent 65%)",
+          }}
+        />
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkle weight="fill" size={14} style={{ color: "#a78bfa" }} />
+            <span
+              className="text-[12px] font-semibold tracking-wide uppercase"
+              style={{ color: "#a78bfa" }}
+            >
+              AI-Powered Screening
+            </span>
+          </div>
+          <h1 className="text-[26px] font-extrabold text-white tracking-tight">
+            Post a new job
+          </h1>
+          <p
+            className="text-[14px] mt-2 max-w-xl"
+            style={{ color: "rgba(255,255,255,0.4)" }}
+          >
+            Your job description becomes the AI benchmark every CV is scored
+            against. The more specific you are, the better the shortlist.
+          </p>
+        </div>
       </div>
 
-      <div className="bg-surface-900 border border-white/5 rounded-2xl p-7">
+      {/* ── Form ── */}
+      <div className="anim-2">
         <JobForm
           values={values}
           onChange={setValues}
