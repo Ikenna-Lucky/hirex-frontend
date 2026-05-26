@@ -13,11 +13,14 @@ import {
   Trash2,
   ToggleLeft,
   ToggleRight,
+  MapPin,
+  Calendar,
 } from "lucide-react";
 import { jobsApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import type { Job } from "@/types";
 import type { AxiosError } from "axios";
+import ConfirmModal from "@/components/ConfirmModal";
 
 type StatusFilter = "all" | "active" | "draft" | "closed" | "archived";
 
@@ -29,11 +32,30 @@ const STATUS_TABS: { key: StatusFilter; label: string }[] = [
   { key: "archived", label: "Archived" },
 ];
 
-const STATUS_STYLES: Record<string, string> = {
-  active: "bg-accent-500/10 text-accent-400 border-accent-500/20",
-  draft: "bg-gray-500/10 text-gray-400 border-gray-500/20",
-  closed: "bg-red-500/10 text-red-400 border-red-500/20",
-  archived: "bg-gray-700/20 text-gray-600 border-gray-700/20",
+const STATUS_STYLES: Record<
+  string,
+  { bg: string; color: string; border: string }
+> = {
+  active: {
+    bg: "rgba(52,211,153,0.08)",
+    color: "#34d399",
+    border: "rgba(52,211,153,0.2)",
+  },
+  draft: {
+    bg: "rgba(255,255,255,0.05)",
+    color: "#9ca3af",
+    border: "rgba(255,255,255,0.1)",
+  },
+  closed: {
+    bg: "rgba(239,68,68,0.08)",
+    color: "#f87171",
+    border: "rgba(239,68,68,0.2)",
+  },
+  archived: {
+    bg: "rgba(255,255,255,0.03)",
+    color: "#6b7280",
+    border: "rgba(255,255,255,0.06)",
+  },
 };
 
 export default function JobsPage() {
@@ -43,12 +65,12 @@ export default function JobsPage() {
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Job | null>(null);
 
   useEffect(() => {
     fetchJobs();
   }, []);
 
-  // Close menu on outside click
   useEffect(() => {
     const handler = () => setOpenMenu(null);
     document.addEventListener("click", handler);
@@ -88,8 +110,10 @@ export default function JobsPage() {
     }
   }
 
-  async function deleteJob(job: Job) {
-    if (!confirm(`Delete "${job.title}"? This cannot be undone.`)) return;
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    const job = deleteTarget;
+    setDeleteTarget(null);
     setActionLoading(job.id);
     try {
       await jobsApi.delete(job.id);
@@ -106,229 +130,398 @@ export default function JobsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 text-brand-400 animate-spin" />
+        <div className="flex flex-col items-center gap-3">
+          <Loader2
+            className="w-6 h-6 animate-spin"
+            style={{ color: "#8b5cf6" }}
+          />
+          <p className="text-[13px]" style={{ color: "rgba(255,255,255,0.3)" }}>
+            Loading jobs…
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Jobs</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {jobs.length} job{jobs.length !== 1 ? "s" : ""} total
-          </p>
-        </div>
-        <Link
-          href="/dashboard/jobs/new"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-all shadow-lg shadow-brand-600/20"
-        >
-          <Plus className="w-4 h-4" />
-          Post a job
-        </Link>
-      </div>
+    <>
+      <ConfirmModal
+        open={!!deleteTarget}
+        title="Delete this job?"
+        message={`"${deleteTarget?.title}" and all its applications will be permanently removed. This cannot be undone.`}
+        confirmLabel="Delete job"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
 
-      {/* Filter tabs */}
-      <div className="flex gap-1 bg-surface-900 border border-white/5 rounded-xl p-1 w-fit">
-        {STATUS_TABS.map((tab) => {
-          const count =
-            tab.key === "all"
-              ? jobs.length
-              : jobs.filter((j) => j.status === tab.key).length;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setFilter(tab.key)}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                filter === tab.key
-                  ? "bg-brand-600/15 text-brand-400 border border-brand-600/25"
-                  : "text-gray-500 hover:text-gray-300"
-              }`}
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-[26px] font-bold text-white tracking-tight">
+              Jobs
+            </h1>
+            <p
+              className="text-[17px] mt-1.5"
+              style={{ color: "rgba(255,255,255,0.35)" }}
             >
-              {tab.label}
-              <span
-                className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  filter === tab.key
-                    ? "bg-brand-600/20 text-brand-400"
-                    : "bg-white/5 text-gray-600"
-                }`}
-              >
-                {count}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              {jobs.length} job{jobs.length !== 1 ? "s" : ""} total
+            </p>
+          </div>
+          <Link
+            href="/dashboard/jobs/new"
+            className="flex-shrink-0 flex items-center gap-2 text-white text-[15px] font-semibold px-5 py-2.5 rounded-xl transition-all"
+            style={{
+              background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
+              boxShadow:
+                "0 4px 20px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
+            }}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Post a job
+          </Link>
+        </div>
 
-      {/* Table */}
-      {filtered.length === 0 ? (
-        <EmptyState filter={filter} />
-      ) : (
-        <div className="bg-surface-900 border border-white/5 rounded-2xl overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/5">
-                <th className="text-left text-xs font-medium text-gray-500 px-5 py-3">
-                  Role
-                </th>
-                <th className="text-left text-xs font-medium text-gray-500 px-5 py-3 hidden sm:table-cell">
-                  Type
-                </th>
-                <th className="text-right text-xs font-medium text-gray-500 px-5 py-3 hidden md:table-cell">
-                  Applications
-                </th>
-                <th className="text-left text-xs font-medium text-gray-500 px-5 py-3 hidden lg:table-cell">
-                  Posted
-                </th>
-                <th className="text-left text-xs font-medium text-gray-500 px-5 py-3">
-                  Status
-                </th>
-                <th className="px-5 py-3 w-10" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {filtered.map((job) => (
-                <tr
-                  key={job.id}
-                  className="hover:bg-white/[0.02] transition-colors group"
+        {/* Filter tabs */}
+        <div
+          className="flex gap-1 p-1 rounded-xl w-fit"
+          style={{
+            backgroundColor: "#0c0c20",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          {STATUS_TABS.map((tab) => {
+            const count =
+              tab.key === "all"
+                ? jobs.length
+                : jobs.filter((j) => j.status === tab.key).length;
+            const active = filter === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setFilter(tab.key)}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[14px] font-semibold transition-all"
+                style={
+                  active
+                    ? {
+                        backgroundColor: "rgba(124,58,237,0.15)",
+                        color: "#a78bfa",
+                        border: "1px solid rgba(124,58,237,0.25)",
+                      }
+                    : {
+                        color: "rgba(255,255,255,0.35)",
+                        border: "1px solid transparent",
+                      }
+                }
+              >
+                {tab.label}
+                <span
+                  className="text-[13px] px-1.5 py-0.5 rounded-full font-bold"
+                  style={
+                    active
+                      ? {
+                          backgroundColor: "rgba(124,58,237,0.2)",
+                          color: "#a78bfa",
+                        }
+                      : {
+                          backgroundColor: "rgba(255,255,255,0.06)",
+                          color: "rgba(255,255,255,0.3)",
+                        }
+                  }
                 >
-                  <td className="px-5 py-4">
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Table / empty */}
+        {filtered.length === 0 ? (
+          <EmptyState filter={filter} />
+        ) : (
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{
+              backgroundColor: "#0c0c20",
+              border: "1px solid rgba(255,255,255,0.06)",
+            }}
+          >
+            {/* Header row */}
+            <div
+              className="px-5 py-3 grid text-[13px] font-semibold uppercase tracking-wider"
+              style={{
+                gridTemplateColumns: "1fr 110px 80px 110px 100px 48px",
+                color: "rgba(255,255,255,0.25)",
+                borderBottom: "1px solid rgba(255,255,255,0.05)",
+              }}
+            >
+              <span>Role</span>
+              <span className="hidden sm:block">Type</span>
+              <span className="hidden md:block text-right">CVs</span>
+              <span className="hidden lg:block">Posted</span>
+              <span>Status</span>
+              <span />
+            </div>
+
+            {/* Job rows */}
+            {filtered.map((job, i) => {
+              const s = STATUS_STYLES[job.status] ?? STATUS_STYLES.draft;
+              return (
+                <div
+                  key={job.id}
+                  className="px-5 py-4 grid items-center transition-colors group"
+                  style={{
+                    gridTemplateColumns: "1fr 110px 80px 110px 100px 48px",
+                    borderTop:
+                      i === 0 ? "none" : "1px solid rgba(255,255,255,0.04)",
+                    backgroundColor: "transparent",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.backgroundColor =
+                      "rgba(255,255,255,0.02)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.backgroundColor =
+                      "transparent";
+                  }}
+                >
+                  {/* Role */}
+                  <div className="min-w-0">
                     <Link
                       href={`/dashboard/jobs/${job.id}`}
-                      className="font-medium text-white group-hover:text-brand-400 transition-colors"
+                      className="text-[15px] font-semibold text-white group-hover:text-purple-400 transition-colors block truncate"
                     >
                       {job.title}
                     </Link>
-                    {job.location && (
-                      <p className="text-xs text-gray-600 mt-0.5">
-                        {job.location}
-                      </p>
-                    )}
-                  </td>
-                  <td className="px-5 py-4 hidden sm:table-cell text-gray-400 capitalize">
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {job.location && (
+                        <span
+                          className="flex items-center gap-1 text-[13px]"
+                          style={{ color: "rgba(255,255,255,0.28)" }}
+                        >
+                          <MapPin className="w-2.5 h-2.5" />
+                          {job.location}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Type */}
+                  <span
+                    className="hidden sm:block text-[14px] capitalize"
+                    style={{ color: "rgba(255,255,255,0.4)" }}
+                  >
                     {job.type?.replace("-", " ") ?? "—"}
-                  </td>
-                  <td className="px-5 py-4 text-right hidden md:table-cell">
-                    <span className="font-medium text-white">
-                      {job.applicationCount}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 hidden lg:table-cell text-gray-500">
+                  </span>
+
+                  {/* CVs */}
+                  <span className="hidden md:flex justify-end text-[17px] font-semibold text-white">
+                    {job.applicationCount ?? 0}
+                  </span>
+
+                  {/* Posted */}
+                  <span
+                    className="hidden lg:flex items-center gap-1 text-[13px]"
+                    style={{ color: "rgba(255,255,255,0.35)" }}
+                  >
+                    <Calendar className="w-3 h-3" />
                     {formatDate(job.createdAt)}
-                  </td>
-                  <td className="px-5 py-4">
+                  </span>
+
+                  {/* Status badge */}
+                  <div>
                     <span
-                      className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full border capitalize ${
-                        STATUS_STYLES[job.status] ?? ""
-                      }`}
+                      className="text-[13px] font-semibold px-2.5 py-1 rounded-full capitalize"
+                      style={{
+                        backgroundColor: s.bg,
+                        color: s.color,
+                        border: `1px solid ${s.border}`,
+                      }}
                     >
                       {job.status}
                     </span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <div
-                      className="relative"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <button
-                        onClick={() =>
-                          setOpenMenu(openMenu === job.id ? null : job.id)
-                        }
-                        disabled={actionLoading === job.id}
-                        className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/10 transition-all disabled:opacity-40"
-                      >
-                        {actionLoading === job.id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <MoreHorizontal className="w-4 h-4" />
-                        )}
-                      </button>
+                  </div>
 
-                      {openMenu === job.id && (
-                        <div className="absolute right-0 top-full mt-1 z-20 w-44 bg-surface-900 border border-white/10 rounded-xl shadow-xl overflow-hidden">
-                          <button
-                            onClick={() => {
-                              setOpenMenu(null);
-                              router.push(`/dashboard/jobs/${job.id}`);
-                            }}
-                            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
-                          >
-                            <Briefcase className="w-3.5 h-3.5" />
-                            View pipeline
-                          </button>
-                          <button
-                            onClick={() => {
-                              setOpenMenu(null);
-                              router.push(`/dashboard/jobs/${job.id}/edit`);
-                            }}
-                            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
-                          >
-                            <Pencil className="w-3.5 h-3.5" />
-                            Edit job
-                          </button>
-                          <button
-                            onClick={() => {
-                              setOpenMenu(null);
-                              toggleStatus(job);
-                            }}
-                            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
-                          >
-                            {job.status === "active" ? (
-                              <>
-                                <ToggleLeft className="w-3.5 h-3.5" /> Close job
-                              </>
-                            ) : (
-                              <>
-                                <ToggleRight className="w-3.5 h-3.5 text-accent-400" />{" "}
-                                Activate job
-                              </>
-                            )}
-                          </button>
-                          <div className="border-t border-white/5" />
-                          <button
-                            onClick={() => {
-                              setOpenMenu(null);
-                              deleteJob(job);
-                            }}
-                            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-red-400 hover:bg-red-500/5 transition-colors"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            Delete job
-                          </button>
-                        </div>
+                  {/* Actions menu */}
+                  <div
+                    className="relative flex justify-end"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() =>
+                        setOpenMenu(openMenu === job.id ? null : job.id)
+                      }
+                      disabled={actionLoading === job.id}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-40"
+                      style={{ color: "rgba(255,255,255,0.3)" }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.color = "white";
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          "rgba(255,255,255,0.08)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.color =
+                          "rgba(255,255,255,0.3)";
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          "transparent";
+                      }}
+                    >
+                      {actionLoading === job.id ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <MoreHorizontal className="w-3.5 h-3.5" />
                       )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+                    </button>
+
+                    {openMenu === job.id && (
+                      <div
+                        className="absolute right-0 top-full mt-1.5 z-20 w-44 rounded-xl overflow-hidden"
+                        style={{
+                          backgroundColor: "#13132a",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          boxShadow: "0 16px 48px rgba(0,0,0,0.6)",
+                        }}
+                      >
+                        <MenuBtn
+                          icon={Briefcase}
+                          label="View pipeline"
+                          onClick={() => {
+                            setOpenMenu(null);
+                            router.push(`/dashboard/jobs/${job.id}`);
+                          }}
+                        />
+                        <MenuBtn
+                          icon={Pencil}
+                          label="Edit job"
+                          onClick={() => {
+                            setOpenMenu(null);
+                            router.push(`/dashboard/jobs/${job.id}/edit`);
+                          }}
+                        />
+                        <MenuBtn
+                          icon={
+                            job.status === "active" ? ToggleLeft : ToggleRight
+                          }
+                          label={
+                            job.status === "active"
+                              ? "Close job"
+                              : "Activate job"
+                          }
+                          onClick={() => {
+                            setOpenMenu(null);
+                            toggleStatus(job);
+                          }}
+                        />
+                        <div
+                          style={{
+                            height: "1px",
+                            backgroundColor: "rgba(255,255,255,0.06)",
+                            margin: "2px 0",
+                          }}
+                        />
+                        <MenuBtn
+                          icon={Trash2}
+                          label="Delete job"
+                          danger
+                          onClick={() => {
+                            setOpenMenu(null);
+                            setDeleteTarget(job);
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function MenuBtn({
+  icon: Icon,
+  label,
+  onClick,
+  danger = false,
+}: {
+  icon: React.ElementType;
+  label: string;
+  onClick: () => void;
+  danger?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-[14px] font-medium transition-colors"
+      style={{ color: danger ? "#f87171" : "rgba(255,255,255,0.6)" }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = danger
+          ? "rgba(239,68,68,0.06)"
+          : "rgba(255,255,255,0.04)";
+        (e.currentTarget as HTMLElement).style.color = danger
+          ? "#f87171"
+          : "white";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+        (e.currentTarget as HTMLElement).style.color = danger
+          ? "#f87171"
+          : "rgba(255,255,255,0.6)";
+      }}
+    >
+      <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+      {label}
+    </button>
   );
 }
 
 function EmptyState({ filter }: { filter: StatusFilter }) {
   return (
-    <div className="bg-surface-900 border border-white/5 border-dashed rounded-2xl py-16 text-center">
-      <Briefcase className="w-8 h-8 text-gray-700 mx-auto mb-3" />
-      <p className="text-sm font-medium text-gray-400 mb-1">
+    <div
+      className="rounded-2xl py-16 px-6 text-center"
+      style={{
+        backgroundColor: "#0c0c20",
+        border: "1px dashed rgba(255,255,255,0.08)",
+      }}
+    >
+      <div
+        className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4"
+        style={{
+          backgroundColor: "rgba(124,58,237,0.08)",
+          border: "1px solid rgba(124,58,237,0.15)",
+        }}
+      >
+        <Briefcase
+          className="w-5 h-5"
+          style={{ color: "rgba(139,92,246,0.6)" }}
+        />
+      </div>
+      <p className="text-[16px] font-semibold text-white mb-1">
         {filter === "all" ? "No jobs yet" : `No ${filter} jobs`}
       </p>
-      <p className="text-xs text-gray-600 mb-5">
+      <p
+        className="text-[15px] mb-5"
+        style={{ color: "rgba(255,255,255,0.3)" }}
+      >
         {filter === "all"
           ? "Post your first role and start receiving AI-scored applications."
-          : `Switch to a different filter or create a new job.`}
+          : "Switch to a different filter or create a new job."}
       </p>
       {filter === "all" && (
         <Link
           href="/dashboard/jobs/new"
-          className="inline-flex items-center gap-2 text-sm font-medium bg-brand-600/10 hover:bg-brand-600/20 text-brand-400 border border-brand-600/20 px-4 py-2 rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 text-[13px] font-bold px-4 py-2.5 rounded-xl text-white transition-all"
+          style={{
+            background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
+            boxShadow: "0 4px 16px rgba(124,58,237,0.3)",
+          }}
         >
-          <Plus className="w-4 h-4" /> Post a job
+          <Plus className="w-3.5 h-3.5" /> Post a job
         </Link>
       )}
     </div>

@@ -11,13 +11,12 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronRight,
 } from "lucide-react";
 import { removeToken, getStoredCompany } from "@/lib/auth";
 import { authApi } from "@/lib/api";
 import type { StoredCompany } from "@/lib/auth";
 
-const NAV_LINKS = [
+const NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/jobs", label: "Jobs", icon: Briefcase },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
@@ -32,79 +31,153 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [company, setCompany] = useState<StoredCompany | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
-  // Auth guard
   useEffect(() => {
-    const stored = getStoredCompany();
-    if (!stored) {
+    const s = getStoredCompany();
+    if (!s) {
       router.replace("/login");
       return;
     }
-    setCompany(stored);
+    setCompany(s);
   }, [router]);
 
-  const handleSignOut = async () => {
+  const signOut = async () => {
     try {
       await authApi.logout();
     } catch {
-      /* ignore */
+      /**/
     }
     removeToken();
     router.replace("/login");
   };
 
-  if (!company) return null; // prevents flash before redirect
+  if (!company) return null;
+
+  const initials = company.name
+    .split(" ")
+    .slice(0, 2)
+    .map((w: string) => w[0])
+    .join("")
+    .toUpperCase();
+
+  const activeLabel =
+    NAV.find((n) =>
+      n.href === "/dashboard"
+        ? pathname === "/dashboard"
+        : pathname.startsWith(n.href),
+    )?.label ?? "Dashboard";
 
   return (
-    <div className="min-h-screen bg-surface-950 text-gray-100 flex">
-      {/* ─── Mobile overlay ───────────────────────────────── */}
-      {sidebarOpen && (
+    <div
+      className="h-screen flex overflow-hidden"
+      style={{ background: "#0a0a0f" }}
+    >
+      {/* Mobile overlay */}
+      {open && (
         <div
-          className="fixed inset-0 z-20 bg-black/60 md:hidden"
-          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 z-20 md:hidden"
+          style={{
+            background: "rgba(0,0,0,0.75)",
+            backdropFilter: "blur(4px)",
+          }}
+          onClick={() => setOpen(false)}
         />
       )}
 
-      {/* ─── Sidebar ──────────────────────────────────────── */}
+      {/* ════════════════════════
+          SIDEBAR  w-[280px]
+      ════════════════════════ */}
       <aside
-        className={`fixed top-0 left-0 h-full z-30 w-60 bg-surface-900 border-r border-white/5 flex flex-col transition-transform duration-200
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:static md:z-auto`}
+        className={`
+          fixed inset-y-0 left-0 z-30 w-[280px] flex flex-col flex-shrink-0
+          transition-transform duration-200
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          md:relative md:translate-x-0
+        `}
+        style={{
+          background: "#0e0e1a",
+          borderRight: "1px solid rgba(255,255,255,0.06)",
+        }}
       >
-        {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-5 border-b border-white/5 shrink-0">
-          <Link href="/dashboard" className="flex items-center gap-1">
-            <span className="text-lg font-extrabold tracking-tight text-white">
-              Hire<span className="text-accent-400">X</span>
+        {/* ── Logo ── */}
+        <div
+          className="flex items-center justify-between px-6 flex-shrink-0"
+          style={{
+            height: "68px",
+            borderBottom: "1px solid rgba(255,255,255,0.05)",
+          }}
+        >
+          <Link href="/dashboard" className="flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{
+                background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
+              }}
+            >
+              <span className="text-[14px] font-black text-white">H</span>
+            </div>
+            <span className="text-[20px] font-bold text-white tracking-tight">
+              HireX
             </span>
           </Link>
           <button
-            onClick={() => setSidebarOpen(false)}
-            className="md:hidden text-gray-500 hover:text-white"
+            onClick={() => setOpen(false)}
+            className="md:hidden text-white/30 hover:text-white/60 transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Company info */}
-        <div className="px-4 py-4 border-b border-white/5 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-brand-600/20 flex items-center justify-center text-brand-400 font-bold text-sm shrink-0">
-              {company.name.charAt(0).toUpperCase()}
+        {/* ── Company card ── */}
+        <div className="px-4 pt-4 pb-2 flex-shrink-0">
+          <div
+            className="flex items-center gap-3 px-4 py-3.5 rounded-2xl"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.07)",
+            }}
+          >
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-bold text-white flex-shrink-0"
+              style={{
+                background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
+              }}
+            >
+              {initials}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
+              <p className="text-[15px] font-semibold text-white truncate leading-tight">
                 {company.name}
               </p>
-              <p className="text-xs text-gray-500 truncate">{company.email}</p>
+              <p
+                className="text-[12px] truncate mt-0.5"
+                style={{ color: "rgba(255,255,255,0.35)" }}
+              >
+                {company.email}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          {NAV_LINKS.map(({ href, label, icon: Icon }) => {
-            const isActive =
+        {/* ── Divider ── */}
+        <div
+          className="mx-5 my-3"
+          style={{ height: "1px", background: "rgba(255,255,255,0.05)" }}
+        />
+
+        {/* ── Nav label ── */}
+        <p
+          className="px-6 pb-2 text-[11px] font-bold uppercase tracking-widest"
+          style={{ color: "rgba(255,255,255,0.2)" }}
+        >
+          Main menu
+        </p>
+
+        {/* ── Nav items ── */}
+        <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
+          {NAV.map(({ href, label, icon: Icon }) => {
+            const active =
               href === "/dashboard"
                 ? pathname === "/dashboard"
                 : pathname.startsWith(href);
@@ -112,51 +185,118 @@ export default function DashboardLayout({
               <Link
                 key={href}
                 href={href}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  isActive
-                    ? "bg-brand-600/10 text-brand-400 border border-brand-600/20"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
-                }`}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-colors"
+                style={
+                  active
+                    ? {
+                        background: "rgba(124,58,237,0.15)",
+                        color: "#a78bfa",
+                        border: "1px solid rgba(124,58,237,0.2)",
+                      }
+                    : {
+                        color: "rgba(255,255,255,0.45)",
+                        border: "1px solid transparent",
+                      }
+                }
+                onMouseEnter={(e) => {
+                  if (!active) {
+                    (e.currentTarget as HTMLElement).style.color =
+                      "rgba(255,255,255,0.85)";
+                    (e.currentTarget as HTMLElement).style.background =
+                      "rgba(255,255,255,0.05)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) {
+                    (e.currentTarget as HTMLElement).style.color =
+                      "rgba(255,255,255,0.45)";
+                    (e.currentTarget as HTMLElement).style.background = "";
+                  }
+                }}
               >
-                <Icon className="w-4 h-4 shrink-0" />
+                <Icon className="w-5 h-5 flex-shrink-0" />
                 {label}
-                {isActive && (
-                  <ChevronRight className="w-3 h-3 ml-auto text-brand-600/60" />
-                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Sign out */}
-        <div className="p-3 border-t border-white/5 shrink-0">
+        {/* ── Sign out ── */}
+        <div
+          className="px-4 py-4 flex-shrink-0"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+        >
           <button
-            onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/5 transition-all"
+            onClick={signOut}
+            className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-colors"
+            style={{
+              color: "rgba(255,255,255,0.35)",
+              border: "1px solid transparent",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.color = "#f87171";
+              (e.currentTarget as HTMLElement).style.background =
+                "rgba(239,68,68,0.07)";
+              (e.currentTarget as HTMLElement).style.borderColor =
+                "rgba(239,68,68,0.1)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.color =
+                "rgba(255,255,255,0.35)";
+              (e.currentTarget as HTMLElement).style.background = "";
+              (e.currentTarget as HTMLElement).style.borderColor =
+                "transparent";
+            }}
           >
-            <LogOut className="w-4 h-4 shrink-0" />
+            <LogOut className="w-5 h-5 flex-shrink-0" />
             Sign out
           </button>
         </div>
       </aside>
 
-      {/* ─── Main ─────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile topbar */}
-        <header className="md:hidden h-14 px-4 flex items-center gap-3 border-b border-white/5 bg-surface-900/80 backdrop-blur sticky top-0 z-10">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="text-gray-400 hover:text-white"
+      {/* ════════════════════════
+          MAIN CONTENT
+      ════════════════════════ */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top bar */}
+        <header
+          className="flex items-center justify-between px-8 flex-shrink-0"
+          style={{
+            height: "68px",
+            background: "rgba(10,10,15,0.95)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            borderBottom: "1px solid rgba(255,255,255,0.05)",
+          }}
+        >
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setOpen(true)}
+              className="md:hidden text-white/40 hover:text-white/70 transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <span
+              className="text-[16px] font-semibold"
+              style={{ color: "rgba(255,255,255,0.7)" }}
+            >
+              {activeLabel}
+            </span>
+          </div>
+
+          <div
+            className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white"
+            style={{ background: "linear-gradient(135deg, #7c3aed, #6d28d9)" }}
           >
-            <Menu className="w-5 h-5" />
-          </button>
-          <span className="text-base font-extrabold tracking-tight text-white">
-            Hire<span className="text-accent-400">X</span>
-          </span>
+            {initials}
+          </div>
         </header>
 
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto">{children}</main>
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-8 max-w-6xl mx-auto">{children}</div>
+        </main>
       </div>
     </div>
   );
