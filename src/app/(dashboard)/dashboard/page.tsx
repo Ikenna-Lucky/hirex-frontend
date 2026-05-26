@@ -71,11 +71,11 @@ const STATUS_MAP: Record<
 
 const JOB_GRADIENTS = [
   "linear-gradient(135deg,#7c3aed,#6d28d9)",
-  "linear-gradient(135deg,#0ea5e9,#0284c7)",
-  "linear-gradient(135deg,#10b981,#059669)",
-  "linear-gradient(135deg,#f59e0b,#d97706)",
-  "linear-gradient(135deg,#ec4899,#db2777)",
+  "linear-gradient(135deg,#6d28d9,#5b21b6)",
   "linear-gradient(135deg,#8b5cf6,#7c3aed)",
+  "linear-gradient(135deg,#5b21b6,#4c1d95)",
+  "linear-gradient(135deg,#7c3aed,#8b5cf6)",
+  "linear-gradient(135deg,#6d28d9,#7c3aed)",
 ];
 
 function getJobInitials(title: string): string {
@@ -158,16 +158,12 @@ export default function OverviewPage() {
       label: "Total Jobs",
       value: stats?.totalJobs ?? 0,
       icon: Briefcase,
-      accent: "#7c3aed",
-      accentA: "rgba(124,58,237,0.12)",
       sub: `${activeJobs} currently active`,
     },
     {
       label: "Active Postings",
       value: activeJobs,
       icon: Activity,
-      accent: "#34d399",
-      accentA: "rgba(52,211,153,0.12)",
       sub:
         totalJobs > 0
           ? `${Math.round((activeJobs / totalJobs) * 100)}% of all jobs`
@@ -177,8 +173,6 @@ export default function OverviewPage() {
       label: "Applications",
       value: totalCVs,
       icon: Users,
-      accent: "#0ea5e9",
-      accentA: "rgba(14,165,233,0.12)",
       sub:
         activeJobs > 0
           ? `~${Math.round(totalCVs / Math.max(activeJobs, 1))} per active job`
@@ -188,8 +182,6 @@ export default function OverviewPage() {
       label: "Awaiting Review",
       value: stats?.pendingScoring ?? 0,
       icon: Clock,
-      accent: "#f59e0b",
-      accentA: "rgba(245,158,11,0.12)",
       sub: "AI scoring queue",
     },
   ] as const;
@@ -296,53 +288,52 @@ export default function OverviewPage() {
       ══════════════════════════════════════════ */}
       {stats && (
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-          {STAT_CARDS.map(
-            ({ label, value, icon: Icon, accent, accentA, sub: subText }) => (
+          {STAT_CARDS.map(({ label, value, icon: Icon, sub: subText }) => (
+            <div
+              key={label}
+              className="relative rounded-2xl p-5 flex flex-col gap-4 overflow-hidden"
+              style={{
+                background: "#111118",
+                border: "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              {/* single violet top line */}
               <div
-                key={label}
-                className="relative rounded-2xl p-5 flex flex-col gap-4 overflow-hidden"
+                className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
                 style={{
-                  background: "#111118",
-                  border: "1px solid rgba(255,255,255,0.07)",
+                  background:
+                    "linear-gradient(90deg,rgba(124,58,237,0.7),transparent)",
                 }}
-              >
-                {/* top accent line */}
+              />
+
+              <div className="flex items-center justify-between">
+                <p
+                  className="text-[13px] font-medium"
+                  style={{ color: "rgba(255,255,255,0.38)" }}
+                >
+                  {label}
+                </p>
                 <div
-                  className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
-                  style={{
-                    background: `linear-gradient(90deg,${accent}88,transparent)`,
-                  }}
-                />
-
-                <div className="flex items-center justify-between">
-                  <p
-                    className="text-[13px] font-medium"
-                    style={{ color: "rgba(255,255,255,0.38)" }}
-                  >
-                    {label}
-                  </p>
-                  <div
-                    className="w-8 h-8 rounded-xl flex items-center justify-center"
-                    style={{ background: accentA }}
-                  >
-                    <Icon className="w-4 h-4" style={{ color: accent }} />
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-[40px] font-black leading-none tracking-tight text-white">
-                    {value.toLocaleString()}
-                  </p>
-                  <p
-                    className="text-[12px] mt-2"
-                    style={{ color: "rgba(255,255,255,0.28)" }}
-                  >
-                    {subText}
-                  </p>
+                  className="w-8 h-8 rounded-xl flex items-center justify-center"
+                  style={{ background: "rgba(124,58,237,0.1)" }}
+                >
+                  <Icon className="w-4 h-4" style={{ color: "#a78bfa" }} />
                 </div>
               </div>
-            ),
-          )}
+
+              <div>
+                <p className="text-[40px] font-black leading-none tracking-tight text-white">
+                  {value.toLocaleString()}
+                </p>
+                <p
+                  className="text-[12px] mt-2"
+                  style={{ color: "rgba(255,255,255,0.28)" }}
+                >
+                  {subText}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -556,19 +547,20 @@ export default function OverviewPage() {
         </div>
 
         {/* ── RIGHT SIDEBAR ── */}
-        <div className="space-y-4">
+        <div
+          className="space-y-4 xl:sticky xl:top-0 xl:overflow-y-auto"
+          style={{
+            maxHeight: "520px",
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(124,58,237,0.3) transparent",
+          }}
+        >
           {/* ── Subscription card ── */}
           <div
             className="rounded-2xl p-5"
             style={{
-              background:
-                sub?.status === "active"
-                  ? "linear-gradient(135deg,rgba(52,211,153,0.07) 0%,rgba(16,185,129,0.04) 100%)"
-                  : "linear-gradient(135deg,rgba(245,158,11,0.08) 0%,rgba(234,179,8,0.04) 100%)",
-              border:
-                sub?.status === "active"
-                  ? "1px solid rgba(52,211,153,0.16)"
-                  : "1px solid rgba(245,158,11,0.2)",
+              background: "#111118",
+              border: "1px solid rgba(255,255,255,0.07)",
             }}
           >
             <div className="flex items-center gap-2 mb-3">
@@ -624,16 +616,18 @@ export default function OverviewPage() {
                 </p>
                 <Link
                   href="/dashboard/billing"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[13px] font-bold transition-all"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[13px] font-bold text-white transition-all"
                   style={{
-                    background: "linear-gradient(135deg,#f59e0b,#d97706)",
-                    color: "#000",
+                    background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
+                    boxShadow: "0 0 18px rgba(124,58,237,0.3)",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.opacity = "0.9";
+                    (e.currentTarget as HTMLElement).style.boxShadow =
+                      "0 0 26px rgba(124,58,237,0.5)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.opacity = "1";
+                    (e.currentTarget as HTMLElement).style.boxShadow =
+                      "0 0 18px rgba(124,58,237,0.3)";
                   }}
                 >
                   <Zap className="w-3.5 h-3.5" /> Choose a Plan
@@ -661,28 +655,22 @@ export default function OverviewPage() {
                 {
                   label: "Total Jobs",
                   value: totalJobs,
-                  max: Math.max(totalJobs, 1),
-                  pct: 100,
-                  color: "#7c3aed",
+                  pct: totalJobs > 0 ? 100 : 0,
                 },
                 {
                   label: "Active",
                   value: activeJobs,
-                  max: Math.max(totalJobs, 1),
                   pct:
                     totalJobs > 0
                       ? Math.round((activeJobs / totalJobs) * 100)
                       : 0,
-                  color: "#34d399",
                 },
                 {
                   label: "Applications",
                   value: totalCVs,
-                  max: Math.max(totalCVs, 1),
-                  pct: 100,
-                  color: "#0ea5e9",
+                  pct: totalCVs > 0 ? 100 : 0,
                 },
-              ].map(({ label, value, pct, color }) => (
+              ].map(({ label, value, pct }) => (
                 <div key={label}>
                   <div className="flex justify-between items-center mb-2">
                     <span
@@ -706,8 +694,9 @@ export default function OverviewPage() {
                       className="h-full rounded-full"
                       style={{
                         width: `${pct}%`,
-                        background: `linear-gradient(90deg,${color},${color}88)`,
-                        boxShadow: `0 0 8px ${color}55`,
+                        background:
+                          "linear-gradient(90deg,#7c3aed,rgba(124,58,237,0.5))",
+                        boxShadow: "0 0 8px rgba(124,58,237,0.35)",
                         transition: "width 0.6s ease",
                       }}
                     />
@@ -737,27 +726,23 @@ export default function OverviewPage() {
                   href: "/dashboard/jobs/new",
                   icon: Plus,
                   label: "Post a new job",
-                  color: "#7c3aed",
                 },
                 {
                   href: "/dashboard/jobs",
                   icon: Briefcase,
                   label: "Manage jobs",
-                  color: "#0ea5e9",
                 },
                 {
                   href: "/dashboard/billing",
                   icon: TrendingUp,
                   label: "Upgrade plan",
-                  color: "#f59e0b",
                 },
                 {
                   href: "/dashboard/settings",
                   icon: Zap,
                   label: "Company settings",
-                  color: "#34d399",
                 },
-              ].map(({ href, icon: Icon, label, color }) => (
+              ].map(({ href, icon: Icon, label }) => (
                 <Link
                   key={href}
                   href={href}
@@ -765,9 +750,9 @@ export default function OverviewPage() {
                   style={{ border: "1px solid transparent" }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.background =
-                      "rgba(255,255,255,0.04)";
+                      "rgba(124,58,237,0.07)";
                     (e.currentTarget as HTMLElement).style.borderColor =
-                      "rgba(255,255,255,0.07)";
+                      "rgba(124,58,237,0.15)";
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLElement).style.background =
@@ -778,9 +763,12 @@ export default function OverviewPage() {
                 >
                   <div
                     className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: `${color}1a` }}
+                    style={{ background: "rgba(124,58,237,0.1)" }}
                   >
-                    <Icon className="w-3.5 h-3.5" style={{ color }} />
+                    <Icon
+                      className="w-3.5 h-3.5"
+                      style={{ color: "#a78bfa" }}
+                    />
                   </div>
                   <span
                     className="text-[13px] font-medium flex-1"
