@@ -4,23 +4,23 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard,
-  Briefcase,
+  SquaresFour,
+  BriefcaseMetal,
   CreditCard,
-  Settings,
-  LogOut,
-  Menu,
+  GearSix,
+  SignOut,
+  List,
   X,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { removeToken, getStoredCompany } from "@/lib/auth";
 import { authApi } from "@/lib/api";
 import type { StoredCompany } from "@/lib/auth";
 
 const NAV = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/jobs", label: "Jobs", icon: Briefcase },
+  { href: "/dashboard", label: "Overview", icon: SquaresFour },
+  { href: "/dashboard/jobs", label: "Jobs", icon: BriefcaseMetal },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard/settings", label: "Settings", icon: GearSix },
 ];
 
 export default function DashboardLayout({
@@ -71,7 +71,10 @@ export default function DashboardLayout({
   return (
     <div
       className="h-screen flex overflow-hidden"
-      style={{ background: "#0a0a0f" }}
+      style={{
+        background: "#0a0a0f",
+        fontFamily: "'Inter', system-ui, sans-serif",
+      }}
     >
       {/* Mobile overlay */}
       {open && (
@@ -125,7 +128,7 @@ export default function DashboardLayout({
             onClick={() => setOpen(false)}
             className="md:hidden text-white/30 hover:text-white/60 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X weight="bold" size={18} />
           </button>
         </div>
 
@@ -215,7 +218,11 @@ export default function DashboardLayout({
                   }
                 }}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
+                <Icon
+                  weight={active ? "fill" : "regular"}
+                  size={18}
+                  className="flex-shrink-0"
+                />
                 {label}
               </Link>
             );
@@ -249,7 +256,7 @@ export default function DashboardLayout({
                 "transparent";
             }}
           >
-            <LogOut className="w-5 h-5 flex-shrink-0" />
+            <SignOut weight="duotone" size={18} className="flex-shrink-0" />
             Sign out
           </button>
         </div>
@@ -275,7 +282,7 @@ export default function DashboardLayout({
               onClick={() => setOpen(true)}
               className="md:hidden text-white/40 hover:text-white/70 transition-colors"
             >
-              <Menu className="w-5 h-5" />
+              <List weight="bold" size={20} />
             </button>
             <span
               className="text-[16px] font-semibold"

@@ -3,25 +3,25 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Briefcase,
+  BriefcaseMetal,
   Users,
-  TrendingUp,
-  Clock,
+  ChartLineUp,
+  Timer,
   Plus,
   ArrowRight,
-  Loader2,
-  AlertTriangle,
-  CheckCircle2,
+  CircleNotch,
+  Warning,
+  CheckCircle,
   ArrowUpRight,
-  Zap,
-  Target,
+  Lightning,
+  Crosshair,
   MapPin,
-  Calendar,
-  ChevronRight,
-  Sparkles,
-  BarChart3,
-  Activity,
-} from "lucide-react";
+  CalendarBlank,
+  CaretRight,
+  Sparkle,
+  ChartBar,
+  Pulse,
+} from "@phosphor-icons/react";
 import { jobsApi, subscriptionsApi } from "@/lib/api";
 import { getStoredCompany } from "@/lib/auth";
 import { formatDate } from "@/lib/utils";
@@ -129,7 +129,7 @@ export default function OverviewPage() {
   if (loading)
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2
+        <CircleNotch
           className="w-6 h-6 animate-spin"
           style={{ color: "#7c3aed" }}
         />
@@ -157,13 +157,13 @@ export default function OverviewPage() {
     {
       label: "Total Jobs",
       value: stats?.totalJobs ?? 0,
-      icon: Briefcase,
+      icon: BriefcaseMetal,
       sub: `${activeJobs} currently active`,
     },
     {
       label: "Active Postings",
       value: activeJobs,
-      icon: Activity,
+      icon: Pulse,
       sub:
         totalJobs > 0
           ? `${Math.round((activeJobs / totalJobs) * 100)}% of all jobs`
@@ -181,7 +181,7 @@ export default function OverviewPage() {
     {
       label: "Awaiting Review",
       value: stats?.pendingScoring ?? 0,
-      icon: Clock,
+      icon: Timer,
       sub: "AI scoring queue",
     },
   ] as const;
@@ -218,7 +218,11 @@ export default function OverviewPage() {
         <div className="relative flex items-center justify-between gap-6 flex-wrap">
           <div>
             <div className="flex items-center gap-2 mb-2.5">
-              <Sparkles className="w-3.5 h-3.5" style={{ color: "#a78bfa" }} />
+              <Sparkle
+                weight="fill"
+                className="w-3.5 h-3.5"
+                style={{ color: "#a78bfa" }}
+              />
               <span
                 className="text-[12px] font-semibold tracking-wide uppercase"
                 style={{ color: "#a78bfa" }}
@@ -258,7 +262,7 @@ export default function OverviewPage() {
                     "rgba(124,58,237,0.14)";
                 }}
               >
-                <Zap className="w-3.5 h-3.5" /> Upgrade
+                <Lightning weight="fill" className="w-3.5 h-3.5" /> Upgrade
               </Link>
             )}
             <Link
@@ -317,7 +321,11 @@ export default function OverviewPage() {
                   className="w-8 h-8 rounded-xl flex items-center justify-center"
                   style={{ background: "rgba(124,58,237,0.1)" }}
                 >
-                  <Icon className="w-4 h-4" style={{ color: "#a78bfa" }} />
+                  <Icon
+                    weight="duotone"
+                    size={18}
+                    style={{ color: "#a78bfa" }}
+                  />
                 </div>
               </div>
 
@@ -370,7 +378,7 @@ export default function OverviewPage() {
                   "rgba(124,58,237,0.1)";
               }}
             >
-              View all <ArrowRight className="w-3.5 h-3.5" />
+              View all <ArrowRight weight="bold" size={13} />
             </Link>
           </div>
 
@@ -389,7 +397,11 @@ export default function OverviewPage() {
                   border: "1px solid rgba(124,58,237,0.2)",
                 }}
               >
-                <Briefcase className="w-6 h-6" style={{ color: "#a78bfa" }} />
+                <BriefcaseMetal
+                  weight="duotone"
+                  size={24}
+                  style={{ color: "#a78bfa" }}
+                />
               </div>
               <p
                 className="text-[17px] font-bold mb-2"
@@ -412,7 +424,7 @@ export default function OverviewPage() {
                   boxShadow: "0 0 20px rgba(124,58,237,0.3)",
                 }}
               >
-                <Plus className="w-4 h-4" /> Post your first job
+                <Plus weight="bold" size={16} /> Post your first job
               </Link>
             </div>
           ) : (
@@ -465,7 +477,7 @@ export default function OverviewPage() {
                             className="flex items-center gap-1 text-[12px]"
                             style={{ color: "rgba(255,255,255,0.3)" }}
                           >
-                            <MapPin className="w-3 h-3" /> {job.location}
+                            <MapPin weight="fill" size={12} /> {job.location}
                           </span>
                         )}
                         {job.type && (
@@ -486,7 +498,8 @@ export default function OverviewPage() {
                     <div className="hidden sm:flex flex-col items-end flex-shrink-0">
                       <div className="flex items-center gap-1.5">
                         <Users
-                          className="w-3.5 h-3.5"
+                          weight="duotone"
+                          size={14}
                           style={{ color: "rgba(255,255,255,0.25)" }}
                         />
                         <span
@@ -510,7 +523,7 @@ export default function OverviewPage() {
                         className="flex items-center gap-1 text-[12px]"
                         style={{ color: "rgba(255,255,255,0.22)" }}
                       >
-                        <Calendar className="w-3 h-3" />{" "}
+                        <CalendarBlank weight="fill" size={12} />{" "}
                         {formatDate(job.createdAt)}
                       </span>
                     </div>
@@ -535,8 +548,10 @@ export default function OverviewPage() {
                       </span>
                     </div>
 
-                    <ChevronRight
-                      className="w-4 h-4 flex-shrink-0 transition-opacity opacity-0 group-hover:opacity-100"
+                    <CaretRight
+                      weight="bold"
+                      size={14}
+                      className="flex-shrink-0 transition-opacity opacity-0 group-hover:opacity-100"
                       style={{ color: "#a78bfa" }}
                     />
                   </Link>
@@ -565,15 +580,13 @@ export default function OverviewPage() {
           >
             <div className="flex items-center gap-2 mb-3">
               {sub?.status === "active" ? (
-                <CheckCircle2
-                  className="w-4 h-4"
+                <CheckCircle
+                  weight="fill"
+                  size={16}
                   style={{ color: "#34d399" }}
                 />
               ) : (
-                <AlertTriangle
-                  className="w-4 h-4"
-                  style={{ color: "#f59e0b" }}
-                />
+                <Warning weight="fill" size={16} style={{ color: "#f59e0b" }} />
               )}
               <span
                 className="text-[12px] font-bold uppercase tracking-wider"
@@ -603,7 +616,7 @@ export default function OverviewPage() {
                   className="flex items-center gap-1 text-[12px] font-semibold mt-3 transition-opacity hover:opacity-100"
                   style={{ color: "rgba(52,211,153,0.65)" }}
                 >
-                  Manage plan <ArrowUpRight className="w-3 h-3" />
+                  Manage plan <ArrowUpRight size={12} />
                 </Link>
               </>
             ) : (
@@ -630,7 +643,7 @@ export default function OverviewPage() {
                       "0 0 18px rgba(124,58,237,0.3)";
                   }}
                 >
-                  <Zap className="w-3.5 h-3.5" /> Choose a Plan
+                  <Lightning weight="fill" size={14} /> Choose a Plan
                 </Link>
               </>
             )}
@@ -645,7 +658,11 @@ export default function OverviewPage() {
             }}
           >
             <div className="flex items-center gap-2 mb-5">
-              <BarChart3 className="w-4 h-4" style={{ color: "#a78bfa" }} />
+              <ChartBar
+                weight="duotone"
+                size={16}
+                style={{ color: "#a78bfa" }}
+              />
               <h3 className="text-[14px] font-bold text-white">
                 Pipeline Overview
               </h3>
@@ -715,7 +732,11 @@ export default function OverviewPage() {
             }}
           >
             <div className="flex items-center gap-2 mb-4">
-              <Target className="w-4 h-4" style={{ color: "#a78bfa" }} />
+              <Crosshair
+                weight="duotone"
+                size={16}
+                style={{ color: "#a78bfa" }}
+              />
               <h3 className="text-[14px] font-bold text-white">
                 Quick Actions
               </h3>
@@ -726,23 +747,27 @@ export default function OverviewPage() {
                   href: "/dashboard/jobs/new",
                   icon: Plus,
                   label: "Post a new job",
+                  iconWeight: "bold",
                 },
                 {
                   href: "/dashboard/jobs",
-                  icon: Briefcase,
+                  icon: BriefcaseMetal,
                   label: "Manage jobs",
+                  iconWeight: "duotone",
                 },
                 {
                   href: "/dashboard/billing",
-                  icon: TrendingUp,
+                  icon: ChartLineUp,
                   label: "Upgrade plan",
+                  iconWeight: "duotone",
                 },
                 {
                   href: "/dashboard/settings",
-                  icon: Zap,
+                  icon: Lightning,
                   label: "Company settings",
+                  iconWeight: "fill",
                 },
-              ].map(({ href, icon: Icon, label }) => (
+              ].map(({ href, icon: Icon, label, iconWeight }) => (
                 <Link
                   key={href}
                   href={href}
@@ -766,7 +791,8 @@ export default function OverviewPage() {
                     style={{ background: "rgba(124,58,237,0.1)" }}
                   >
                     <Icon
-                      className="w-3.5 h-3.5"
+                      weight={iconWeight as "bold" | "duotone" | "fill"}
+                      size={14}
                       style={{ color: "#a78bfa" }}
                     />
                   </div>
@@ -776,8 +802,10 @@ export default function OverviewPage() {
                   >
                     {label}
                   </span>
-                  <ChevronRight
-                    className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  <CaretRight
+                    weight="bold"
+                    size={12}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ color: "rgba(255,255,255,0.35)" }}
                   />
                 </Link>
