@@ -18,8 +18,11 @@ import {
   ToggleRight,
   CircleNotch,
   FunnelSimple,
+  Lock,
+  ArrowRight,
 } from "@phosphor-icons/react";
-import { jobsApi } from "@/lib/api";
+import { jobsApi, subscriptionsApi } from "@/lib/api";
+import type { SubStatus } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import type { Job } from "@/types";
 import type { AxiosError } from "axios";
@@ -248,6 +251,7 @@ function EmptyState({ filter }: { filter: StatusFilter }) {
 export default function JobsPage() {
   const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [sub, setSub] = useState<SubStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -257,6 +261,11 @@ export default function JobsPage() {
 
   useEffect(() => {
     fetchJobs();
+    // Fetch subscription status in parallel — used for the upgrade banner
+    subscriptionsApi
+      .status()
+      .then((r) => setSub(r.data.data))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -337,6 +346,50 @@ export default function JobsPage() {
       />
 
       <div className="space-y-6">
+        {/* ══ UPGRADE BANNER — shown when free quota is exhausted ══ */}
+        {sub?.quotaExhausted && (
+          <div
+            className="flex items-center gap-4 px-5 py-4 rounded-2xl anim-1"
+            style={{
+              background:
+                "linear-gradient(135deg,rgba(124,58,237,0.1) 0%,rgba(109,40,217,0.06) 100%)",
+              border: "1px solid rgba(124,58,237,0.25)",
+            }}
+          >
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{
+                background: "rgba(124,58,237,0.15)",
+                border: "1px solid rgba(124,58,237,0.2)",
+              }}
+            >
+              <Lock weight="fill" size={16} style={{ color: "#a78bfa" }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[14px] font-semibold text-white">
+                Free post used
+              </p>
+              <p
+                className="text-[13px]"
+                style={{ color: "rgba(255,255,255,0.4)" }}
+              >
+                You've used your 1 free role post. Upgrade to post more and
+                scale your hiring.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/billing"
+              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-[13px] font-semibold text-white transition-all"
+              style={{
+                background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
+                boxShadow: "0 0 16px rgba(124,58,237,0.3)",
+              }}
+            >
+              Upgrade <ArrowRight size={13} />
+            </Link>
+          </div>
+        )}
+
         {/* ══ HEADER ══ */}
         <div className="flex items-start justify-between gap-4 anim-1">
           <div>

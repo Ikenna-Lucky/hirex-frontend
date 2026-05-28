@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   SquaresFour,
   BriefcaseMetal,
+  UsersThree,
   CreditCard,
   GearSix,
   SignOut,
@@ -19,9 +20,69 @@ import type { StoredCompany } from "@/lib/auth";
 const NAV = [
   { href: "/dashboard", label: "Overview", icon: SquaresFour },
   { href: "/dashboard/jobs", label: "Roles", icon: BriefcaseMetal },
+  { href: "/dashboard/candidates", label: "Candidates", icon: UsersThree },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
   { href: "/dashboard/settings", label: "Settings", icon: GearSix },
 ];
+
+/* ── Avatar: shows logo image or initials fallback ────────── */
+function CompanyAvatar({
+  logoUrl,
+  initials,
+  size,
+  borderRadius,
+  fontSize,
+}: {
+  logoUrl?: string | null;
+  initials: string;
+  size: number;
+  borderRadius: number | string;
+  fontSize: number;
+}) {
+  const [imgError, setImgError] = useState(false);
+
+  // Reset error state when logoUrl changes
+  useEffect(() => {
+    setImgError(false);
+  }, [logoUrl]);
+
+  if (logoUrl && !imgError) {
+    return (
+      <img
+        src={logoUrl}
+        alt="Company logo"
+        onError={() => setImgError(true)}
+        style={{
+          width: size,
+          height: size,
+          borderRadius,
+          objectFit: "cover",
+          flexShrink: 0,
+        }}
+      />
+    );
+  }
+
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius,
+        background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize,
+        fontWeight: 700,
+        color: "#fff",
+        flexShrink: 0,
+      }}
+    >
+      {initials}
+    </div>
+  );
+}
 
 export default function DashboardLayout({
   children,
@@ -33,6 +94,7 @@ export default function DashboardLayout({
   const [company, setCompany] = useState<StoredCompany | null>(null);
   const [open, setOpen] = useState(false);
 
+  // Re-read company from localStorage on every navigation so logo/name updates propagate
   useEffect(() => {
     const s = getStoredCompany();
     if (!s) {
@@ -40,7 +102,7 @@ export default function DashboardLayout({
       return;
     }
     setCompany(s);
-  }, [router]);
+  }, [router, pathname]);
 
   const signOut = async () => {
     try {
@@ -138,14 +200,13 @@ export default function DashboardLayout({
               border: "1px solid rgba(255,255,255,0.07)",
             }}
           >
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-bold text-white flex-shrink-0"
-              style={{
-                background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
-              }}
-            >
-              {initials}
-            </div>
+            <CompanyAvatar
+              logoUrl={company.logoUrl}
+              initials={initials}
+              size={40}
+              borderRadius={10}
+              fontSize={13}
+            />
             <div className="min-w-0">
               <p className="text-[15px] font-semibold text-white truncate leading-tight">
                 {company.name}
@@ -289,12 +350,13 @@ export default function DashboardLayout({
             </span>
           </div>
 
-          <div
-            className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white"
-            style={{ background: "linear-gradient(135deg, #7c3aed, #6d28d9)" }}
-          >
-            {initials}
-          </div>
+          <CompanyAvatar
+            logoUrl={company.logoUrl}
+            initials={initials}
+            size={36}
+            borderRadius="50%"
+            fontSize={12}
+          />
         </header>
 
         {/* Page content */}

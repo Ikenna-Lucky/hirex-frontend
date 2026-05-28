@@ -20,8 +20,11 @@ import {
   Sparkle,
   ChartBar,
   Pulse,
+  Gift,
+  Lock,
+  Crown,
 } from "@phosphor-icons/react";
-import { jobsApi, subscriptionsApi } from "@/lib/api";
+import { authApi, subscriptionsApi } from "@/lib/api";
 import { getStoredCompany } from "@/lib/auth";
 import { formatDate } from "@/lib/utils";
 import type { Job } from "@/types";
@@ -36,9 +39,14 @@ type Stats = {
   pendingScoring: number;
 };
 type Sub = {
-  status: "active" | "inactive" | "expired" | null;
+  status: "active" | "inactive" | "trialing" | "cancelled" | null;
   plan: string | null;
-  endsAt: string | null;
+  isActive: boolean;
+  freeLimit: number;
+  jobsUsed: number;
+  quotaLeft: number | null;
+  quotaExhausted: boolean;
+  currentPeriodEnd: string | null;
 };
 
 /* ─────────────────────────────────────────
@@ -237,26 +245,29 @@ export default function OverviewPage() {
   useEffect(() => {
     (async () => {
       try {
-        const [jr, sr] = await Promise.all([
-          jobsApi.list({ limit: 50 }),
+        const [statsRes, subRes] = await Promise.all([
+          authApi.stats(),
           subscriptionsApi.status(),
         ]);
-        const all: Job[] = jr.data.data?.jobs ?? jr.data.data ?? [];
-        setJobs(all);
+        const d = statsRes.data.data;
+        // Populate recent jobs list from the stats endpoint
+        setJobs(d.recentJobs ?? []);
         setStats({
-          totalJobs: all.length,
-          activeJobs: all.filter((j: Job) => j.status === "active").length,
-          totalApplications: all.reduce(
-            (s: number, j: Job) => s + (j.applicationCount ?? 0),
-            0,
-          ),
-          pendingScoring: 0,
+          totalJobs:         d.jobs.total          ?? 0,
+          activeJobs:        d.jobs.active         ?? 0,
+          totalApplications: d.applications.total  ?? 0,
+          pendingScoring:    d.applications.pendingScoring ?? 0,
         });
-        const d = sr.data.data;
+        const sd = subRes.data.data;
         setSub({
-          status: d?.status ?? null,
-          plan: d?.plan ?? null,
-          endsAt: d?.endsAt ?? null,
+          status:          sd?.status          ?? null,
+          plan:            sd?.plan            ?? null,
+          isActive:        sd?.isActive        ?? false,
+          freeLimit:       sd?.freeLimit       ?? 1,
+          jobsUsed:        sd?.jobsUsed        ?? 0,
+          quotaLeft:       sd?.quotaLeft       ?? null,
+          quotaExhausted:  sd?.quotaExhausted  ?? false,
+          currentPeriodEnd: sd?.currentPeriodEnd ?? null,
         });
       } catch {
         /**/
@@ -282,12 +293,8 @@ export default function OverviewPage() {
 
   if (loading) return <SkeletonPage />;
 
-  const recent = [...jobs]
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    )
-    .slice(0, 6);
+  // recentJobs already ordered by createdAt DESC (max 5) from the stats endpoint
+  const recent = jobs.slice(0, 6);
 
   const hour = new Date().getHours();
   const greeting =
@@ -392,7 +399,8 @@ export default function OverviewPage() {
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            {sub?.status !== "active" && (
+            {/* Show upgrade nudge when not subscribed */}
+            {!sub?.isActive && (
               <Link
                 href="/dashboard/billing"
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-all"
@@ -401,35 +409,28 @@ export default function OverviewPage() {
                   border: "1px solid rgba(124,58,237,0.28)",
                   color: "#a78bfa",
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background =
-                    "rgba(124,58,237,0.24)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background =
-                    "rgba(124,58,237,0.14)";
-                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.24)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.14)"; }}
               >
-                <Lightning weight="fill" size={14} /> Upgrade
+                <Lightning weight="fill" size={14} />
+                {sub?.quotaExhausted ? "Upgrade to post" : "Upgrade"}
               </Link>
             )}
+            {/* Primary CTA — links to billing when quota is exhausted */}
             <Link
-              href="/dashboard/jobs/new"
+              href={sub?.quotaExhausted ? "/dashboard/billing" : "/dashboard/jobs/new"}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[14px] font-bold text-white transition-all"
               style={{
                 background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
                 boxShadow: "0 0 24px rgba(124,58,237,0.38)",
               }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 0 36px rgba(124,58,237,0.55)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 0 24px rgba(124,58,237,0.38)";
-              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 36px rgba(124,58,237,0.55)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 24px rgba(124,58,237,0.38)"; }}
             >
-              <Plus weight="bold" size={16} /> Post a role
+              {sub?.quotaExhausted
+                ? <><Crown weight="fill" size={15} /> Unlock more roles</>
+                : <><Plus weight="bold" size={16} /> Post a role</>
+              }
             </Link>
           </div>
         </div>
@@ -708,80 +709,123 @@ export default function OverviewPage() {
             scrollbarColor: "rgba(124,58,237,0.3) transparent",
           }}
         >
-          {/* Subscription */}
+          {/* ── Plan / quota card ── */}
           <div
             className="rounded-2xl p-5"
             style={{
               background: "#111118",
-              border: "1px solid rgba(255,255,255,0.07)",
+              border: sub?.isActive
+                ? "1px solid rgba(52,211,153,0.15)"
+                : sub?.quotaExhausted
+                  ? "1px solid rgba(248,113,113,0.15)"
+                  : "1px solid rgba(124,58,237,0.15)",
             }}
           >
-            <div className="flex items-center gap-2 mb-3">
-              {sub?.status === "active" ? (
-                <CheckCircle
-                  weight="fill"
-                  size={16}
-                  style={{ color: "#34d399" }}
-                />
-              ) : (
-                <Warning weight="fill" size={16} style={{ color: "#f59e0b" }} />
-              )}
-              <span
-                className="text-[12px] font-bold uppercase tracking-wider"
-                style={{
-                  color: sub?.status === "active" ? "#34d399" : "#f59e0b",
-                }}
-              >
-                {sub?.status === "active" ? "Plan Active" : "No Active Plan"}
-              </span>
-            </div>
-
-            {sub?.status === "active" ? (
+            {/* ── STATE 1: Active paid plan ── */}
+            {sub?.isActive ? (
               <>
-                <p className="text-[24px] font-black text-white capitalize">
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle weight="fill" size={15} style={{ color: "#34d399" }} />
+                  <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "#34d399" }}>
+                    Plan active
+                  </span>
+                </div>
+                <p className="text-[22px] font-black text-white capitalize mb-1">
                   {sub.plan}
                 </p>
-                <p
-                  className="text-[12px] mt-1"
-                  style={{ color: "rgba(255,255,255,0.3)" }}
-                >
-                  {sub.endsAt
-                    ? `Renews ${formatDate(sub.endsAt)}`
+                <p className="text-[12px]" style={{ color: "rgba(255,255,255,0.3)" }}>
+                  {sub.currentPeriodEnd
+                    ? `Renews ${formatDate(sub.currentPeriodEnd)}`
                     : "Active subscription"}
                 </p>
                 <Link
                   href="/dashboard/billing"
-                  className="flex items-center gap-1 text-[12px] font-semibold mt-3"
-                  style={{ color: "rgba(52,211,153,0.65)" }}
+                  className="inline-flex items-center gap-1 text-[12px] font-semibold mt-3"
+                  style={{ color: "rgba(52,211,153,0.6)" }}
                 >
-                  Manage plan <ArrowUpRight size={12} />
+                  Manage plan <ArrowUpRight size={11} />
                 </Link>
               </>
-            ) : (
+            ) : sub?.quotaExhausted ? (
+              /* ── STATE 2: Free quota used up ── */
               <>
-                <p
-                  className="text-[14px] mb-4"
-                  style={{ color: "rgba(255,255,255,0.42)" }}
-                >
-                  Subscribe to post jobs and unlock AI-powered CV scoring.
+                <div className="flex items-center gap-2 mb-3">
+                  <Lock weight="fill" size={14} style={{ color: "#f87171" }} />
+                  <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "#f87171" }}>
+                    Free post used
+                  </span>
+                </div>
+
+                {/* Usage bar — full/red */}
+                <div className="mb-3">
+                  <div className="flex justify-between text-[11px] mb-1.5" style={{ color: "rgba(255,255,255,0.3)" }}>
+                    <span>Role posts</span>
+                    <span style={{ color: "#f87171", fontWeight: 700 }}>1/1</span>
+                  </div>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+                    <div className="h-full rounded-full w-full" style={{ background: "linear-gradient(90deg,#ef4444,#f87171)" }} />
+                  </div>
+                </div>
+
+                <p className="text-[12px] mb-4" style={{ color: "rgba(255,255,255,0.35)" }}>
+                  Upgrade to post unlimited roles and keep hiring.
                 </p>
                 <Link
                   href="/dashboard/billing"
                   className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[13px] font-bold text-white transition-all"
-                  style={{
-                    background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-                    boxShadow: "0 0 18px rgba(124,58,237,0.3)",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.boxShadow =
-                      "0 0 26px rgba(124,58,237,0.5)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.boxShadow =
-                      "0 0 18px rgba(124,58,237,0.3)";
-                  }}
+                  style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)", boxShadow: "0 0 18px rgba(124,58,237,0.3)" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 26px rgba(124,58,237,0.5)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 18px rgba(124,58,237,0.3)"; }}
                 >
-                  <Lightning weight="fill" size={14} /> Choose a Plan
+                  <Lightning weight="fill" size={13} /> View plans
+                </Link>
+              </>
+            ) : (
+              /* ── STATE 3: Free with quota remaining ── */
+              <>
+                <div className="flex items-center gap-2 mb-3">
+                  <Gift weight="duotone" size={15} style={{ color: "#a78bfa" }} />
+                  <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "#a78bfa" }}>
+                    Free plan
+                  </span>
+                </div>
+
+                {/* Usage bar */}
+                <div className="mb-3">
+                  <div className="flex justify-between text-[11px] mb-1.5" style={{ color: "rgba(255,255,255,0.3)" }}>
+                    <span>Role posts</span>
+                    <span style={{ color: "#a78bfa", fontWeight: 700 }}>
+                      {sub?.jobsUsed ?? 0}/{sub?.freeLimit ?? 1}
+                    </span>
+                  </div>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.round(((sub?.jobsUsed ?? 0) / (sub?.freeLimit ?? 1)) * 100)}%`,
+                        background: "linear-gradient(90deg,#7c3aed,#a78bfa)",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <p className="text-[12px] mb-4" style={{ color: "rgba(255,255,255,0.35)" }}>
+                  {(sub?.quotaLeft ?? 1) > 0
+                    ? "1 free role post included. Upgrade for unlimited."
+                    : "Upgrade to post more roles."}
+                </p>
+                <Link
+                  href="/dashboard/billing"
+                  className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl text-[12px] font-semibold transition-all"
+                  style={{
+                    color: "rgba(167,139,250,0.8)",
+                    background: "rgba(124,58,237,0.08)",
+                    border: "1px solid rgba(124,58,237,0.18)",
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.15)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.08)"; }}
+                >
+                  <Lightning weight="fill" size={12} /> Upgrade for unlimited
                 </Link>
               </>
             )}

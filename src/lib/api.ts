@@ -38,8 +38,15 @@ export const authApi = {
 
   me: () => api.get("/auth/me"),
 
+  stats: () => api.get("/auth/stats"),
+
   updateProfile: (data: Record<string, unknown>) =>
     api.patch("/auth/profile", data),
+
+  uploadLogo: (formData: FormData) =>
+    api.post("/auth/profile/logo", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
 
   logout: () => api.post("/auth/logout"),
 };
@@ -90,6 +97,14 @@ export const applicationsApi = {
     api.patch(`/applications/${id}/notes`, { notes }),
 };
 
+// ─── Candidates ────────────────────────────────────────
+export const candidatesApi = {
+  list: (params?: { page?: number; limit?: number; search?: string }) =>
+    api.get("/candidates", { params }),
+
+  get: (id: string) => api.get(`/candidates/${id}`),
+};
+
 // ─── Subscriptions ─────────────────────────────────────
 export const subscriptionsApi = {
   plans: () => api.get("/subscriptions/plans"),
@@ -98,3 +113,21 @@ export const subscriptionsApi = {
   verify: (reference: string) =>
     api.get(`/subscriptions/verify?reference=${reference}`),
 };
+
+// ─── Shared types ──────────────────────────────────────
+export interface SubStatus {
+  status: "active" | "inactive" | "trialing" | "cancelled" | null;
+  plan: string | null;
+  isActive: boolean;
+  freeLimit: number;
+  jobsUsed: number;
+  quotaLeft: number | null; // null when subscribed (unlimited)
+  quotaExhausted: boolean;
+  planDetails: {
+    name: string;
+    priceNGN: number;
+    jobLimit: number;
+    features: string[];
+  } | null;
+  currentPeriodEnd: string | null;
+}

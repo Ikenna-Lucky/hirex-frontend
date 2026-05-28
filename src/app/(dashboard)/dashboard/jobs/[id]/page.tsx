@@ -23,6 +23,7 @@ import {
   Sparkle,
   Robot,
   EnvelopeSimple,
+  UserCircle,
 } from "@phosphor-icons/react";
 import { jobsApi, applicationsApi } from "@/lib/api";
 import { formatDate, formatCurrency } from "@/lib/utils";
@@ -447,6 +448,7 @@ export default function JobDetailPage() {
               >
                 <ApplicationCard
                   app={app}
+                  jobId={id as string}
                   expanded={expanded === app.id}
                   onToggle={() =>
                     setExpanded(expanded === app.id ? null : app.id)
@@ -574,12 +576,14 @@ function TabBtn({
 ════════════════════════════════════════════════════════════ */
 function ApplicationCard({
   app,
+  jobId,
   expanded,
   onToggle,
   onMoveStage,
   movingStage,
 }: {
   app: Application;
+  jobId: string;
   expanded: boolean;
   onToggle: () => void;
   onMoveStage: (app: Application, stage: ApplicationStage) => void;
@@ -684,6 +688,35 @@ function ApplicationCard({
           className="flex items-center gap-2 flex-shrink-0"
           onClick={(e) => e.stopPropagation()}
         >
+          {/* View profile */}
+          <Link
+            href={`/dashboard/jobs/${jobId}/applications/${app.id}`}
+            className="w-9 h-9 rounded-xl flex items-center justify-center transition-all"
+            style={{
+              color: "rgba(255,255,255,0.3)",
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.07)",
+            }}
+            title="View profile"
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.color = "#a78bfa";
+              (e.currentTarget as HTMLElement).style.borderColor =
+                "rgba(124,58,237,0.3)";
+              (e.currentTarget as HTMLElement).style.background =
+                "rgba(124,58,237,0.08)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.color =
+                "rgba(255,255,255,0.3)";
+              (e.currentTarget as HTMLElement).style.borderColor =
+                "rgba(255,255,255,0.07)";
+              (e.currentTarget as HTMLElement).style.background =
+                "rgba(255,255,255,0.04)";
+            }}
+          >
+            <UserCircle weight="bold" size={15} />
+          </Link>
+
           {/* View CV */}
           <a
             href={app.cvUrl}
