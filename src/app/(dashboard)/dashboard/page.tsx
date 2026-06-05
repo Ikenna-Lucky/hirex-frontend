@@ -355,7 +355,7 @@ export default function OverviewPage() {
     <div className="space-y-6">
       {/* ══ HERO GREETING ══ */}
       <div
-        className="relative rounded-2xl overflow-hidden px-8 py-7 anim-1"
+        className="relative rounded-2xl overflow-hidden px-5 py-5 md:px-8 md:py-7 anim-1"
         style={{
           background:
             "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",
@@ -377,7 +377,7 @@ export default function OverviewPage() {
           }}
         />
 
-        <div className="relative flex items-center justify-between gap-6 flex-wrap">
+        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <Sparkle weight="fill" size={14} style={{ color: "#a78bfa" }} />

@@ -204,7 +204,7 @@ export default function ApplicationDetailPage() {
 
       {/* ── Hero header ── */}
       <div
-        className="relative rounded-2xl overflow-hidden px-8 py-7"
+        className="relative rounded-2xl overflow-hidden px-5 py-5 md:px-8 md:py-7"
         style={{
           background:
             "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",

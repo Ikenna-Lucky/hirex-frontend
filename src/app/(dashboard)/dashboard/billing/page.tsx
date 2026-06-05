@@ -198,7 +198,7 @@ function BillingContent() {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* ── Hero header ── */}
       <div
-        className="relative rounded-2xl overflow-hidden px-8 py-7 anim-1"
+        className="relative rounded-2xl overflow-hidden px-5 py-5 md:px-8 md:py-7 anim-1"
         style={{
           background:
             "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",
@@ -325,7 +325,7 @@ function BillingContent() {
       )}
 
       {/* ── Plan cards ── */}
-      <div className="grid md:grid-cols-4 gap-4 anim-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 anim-2">
         {/* ─ Free tier card ─ */}
         <FreePlanCard
           jobsUsed={jobsUsed}

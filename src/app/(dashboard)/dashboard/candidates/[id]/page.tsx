@@ -169,7 +169,7 @@ export default function CandidateDetailPage() {
 
       {/* ── Profile card ── */}
       <div
-        className="relative rounded-2xl overflow-hidden px-8 py-7"
+        className="relative rounded-2xl overflow-hidden px-5 py-5 md:px-8 md:py-7"
         style={{
           background:
             "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",
@@ -189,7 +189,7 @@ export default function CandidateDetailPage() {
           <Avatar name={fullName} size={64} />
 
           <div className="flex-1 min-w-0">
-            <h1 className="text-[26px] font-extrabold text-white tracking-tight">
+            <h1 className="text-[20px] md:text-[26px] font-extrabold text-white tracking-tight">
               {fullName}
             </h1>
 

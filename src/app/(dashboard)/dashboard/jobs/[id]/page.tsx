@@ -273,7 +273,7 @@ export default function JobDetailPage() {
 
       {/* ── Hero header ── */}
       <div
-        className="relative rounded-2xl overflow-hidden px-8 py-7 anim-1"
+        className="relative rounded-2xl overflow-hidden px-5 py-5 md:px-8 md:py-7 anim-1"
         style={{
           background:
             "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",
@@ -289,7 +289,7 @@ export default function JobDetailPage() {
           }}
         />
 
-        <div className="relative flex items-start justify-between gap-6 flex-wrap">
+        <div className="relative flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6">
           <div className="min-w-0 flex-1">
             {/* Status + title */}
             <div className="flex items-center gap-3 flex-wrap mb-1">
@@ -312,7 +312,7 @@ export default function JobDetailPage() {
                 {job.status}
               </span>
             </div>
-            <h1 className="text-[26px] font-extrabold text-white tracking-tight leading-tight">
+            <h1 className="text-[20px] md:text-[26px] font-extrabold text-white tracking-tight leading-tight">
               {job.title}
             </h1>
 
@@ -414,7 +414,10 @@ export default function JobDetailPage() {
       </div>
 
       {/* ── Stage filter tabs ── */}
-      <div className="anim-2 flex gap-1.5 flex-wrap">
+      <div
+        className="anim-2 flex gap-1.5 overflow-x-auto pb-1 scrollbar-none"
+        style={{ scrollbarWidth: "none" }}
+      >
         <TabBtn
           active={stageFilter === "all"}
           onClick={() => setStageFilter("all")}

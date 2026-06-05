@@ -115,7 +115,7 @@ export default function PublicJobBoardPage() {
 
       {/* ── Hero ────────────────────────────────────── */}
       <div
-        className="relative overflow-hidden px-6 md:px-12 py-16"
+        className="relative overflow-hidden px-4 md:px-12 py-10 md:py-16"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
       >
         {/* Background orbs */}

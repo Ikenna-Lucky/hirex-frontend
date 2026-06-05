@@ -226,7 +226,7 @@ export default function SettingsPage() {
 
       {/* ── Hero header ─────────────────────────────────── */}
       <div
-        className="relative rounded-2xl overflow-hidden px-8 py-7 anim-1"
+        className="relative rounded-2xl overflow-hidden px-5 py-5 md:px-8 md:py-7 anim-1"
         style={{
           background:
             "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",
@@ -604,7 +604,7 @@ export default function SettingsPage() {
         </SettingsSection>
 
         {/* ── Save button ───────────────────────────────── */}
-        <div className="flex items-center justify-between pt-1 anim-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1 anim-4">
           <p className="text-[12px]" style={{ color: "rgba(255,255,255,0.2)" }}>
             Changes are applied immediately after saving.
           </p>

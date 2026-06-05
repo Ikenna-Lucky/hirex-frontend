@@ -393,7 +393,7 @@ export default function JobsPage() {
         {/* ══ HEADER ══ */}
         <div className="flex items-start justify-between gap-4 anim-1">
           <div>
-            <h1 className="text-[28px] font-extrabold text-white tracking-tight">
+            <h1 className="text-[22px] md:text-[28px] font-extrabold text-white tracking-tight">
               Roles
             </h1>
             <p
@@ -426,7 +426,10 @@ export default function JobsPage() {
         </div>
 
         {/* ══ FILTER TABS ══ */}
-        <div className="flex items-center gap-2 flex-wrap anim-2">
+        <div
+          className="flex items-center gap-2 overflow-x-auto pb-1 anim-2"
+          style={{ scrollbarWidth: "none" }}
+        >
           <FunnelSimple
             weight="duotone"
             size={15}

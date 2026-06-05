@@ -8,13 +8,13 @@ import {
   MapPin,
   Briefcase,
   Clock,
-  Building2,
-  Loader2,
-  Upload,
-  CheckCircle2,
+  Buildings,
+  CircleNotch,
+  UploadSimple,
+  CheckCircle,
   XCircle,
-  ChevronLeft,
-} from "lucide-react";
+  CaretLeft,
+} from "@phosphor-icons/react";
 import { jobsApi, applicationsApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import type { Job } from "@/types";
@@ -90,7 +90,6 @@ export default function PublicJobPage() {
       setCvError("Please attach your CV.");
       return;
     }
-
     setSubmitting(true);
     try {
       const fd = new FormData();
@@ -102,7 +101,6 @@ export default function PublicJobPage() {
       if (form.portfolioUrl) fd.append("portfolioUrl", form.portfolioUrl);
       if (form.coverLetter) fd.append("coverLetter", form.coverLetter);
       fd.append("cv", form.cv);
-
       await applicationsApi.submit(id, fd);
       setSubmitted(true);
     } catch (err) {
@@ -119,160 +117,252 @@ export default function PublicJobPage() {
     }
   };
 
+  /* ── Loading ── */
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-950 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-brand-400 animate-spin" />
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "#0a0a0f" }}
+      >
+        <CircleNotch
+          size={28}
+          className="animate-spin"
+          style={{ color: "#a78bfa" }}
+        />
       </div>
     );
   }
 
+  /* ── Not found ── */
   if (!job) {
     return (
-      <div className="min-h-screen bg-surface-950 flex flex-col items-center justify-center gap-3 text-gray-400">
-        <XCircle className="w-10 h-10 text-gray-700" />
-        <p className="font-medium">Job not found.</p>
-        <Link
-          href="/jobs"
-          className="text-sm text-brand-400 hover:text-brand-300 transition-colors"
-        >
-          Browse all jobs
+      <div
+        className="min-h-screen flex flex-col items-center justify-center gap-4 px-6"
+        style={{ background: "#0a0a0f", color: "rgba(255,255,255,0.4)" }}
+      >
+        <XCircle size={40} style={{ color: "rgba(255,255,255,0.15)" }} />
+        <p className="text-[15px] font-semibold text-white">Job not found</p>
+        <Link href="/jobs" className="text-[13px]" style={{ color: "#a78bfa" }}>
+          ← Browse all jobs
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface-950 text-gray-100">
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 border-b border-white/5 bg-surface-950/80 backdrop-blur-lg">
-        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center gap-4">
-          <Link
-            href="/jobs"
-            className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors"
-          >
-            <ChevronLeft className="w-3.5 h-3.5" /> All jobs
-          </Link>
-          <span className="text-gray-700">/</span>
-          <span className="text-sm text-gray-400 truncate">{job.title}</span>
-        </div>
+    <div
+      className="min-h-screen"
+      style={{ background: "#0a0a0f", color: "#e5e7eb" }}
+    >
+      {/* ── Navbar ── */}
+      <nav
+        className="sticky top-0 z-50 flex items-center gap-3 px-4 md:px-8"
+        style={{
+          height: "56px",
+          background: "rgba(10,10,15,0.9)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
+        }}
+      >
+        <Link
+          href="/jobs"
+          className="flex items-center gap-1.5 text-[13px] font-medium transition-colors flex-shrink-0"
+          style={{ color: "rgba(255,255,255,0.4)" }}
+          onMouseEnter={(e) =>
+            ((e.currentTarget as HTMLElement).style.color = "#fff")
+          }
+          onMouseLeave={(e) =>
+            ((e.currentTarget as HTMLElement).style.color =
+              "rgba(255,255,255,0.4)")
+          }
+        >
+          <CaretLeft size={13} weight="bold" /> All jobs
+        </Link>
+        <span style={{ color: "rgba(255,255,255,0.15)" }}>/</span>
+        <span
+          className="text-[13px] truncate"
+          style={{ color: "rgba(255,255,255,0.4)" }}
+        >
+          {job.title}
+        </span>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-6 py-10 grid lg:grid-cols-[1fr_420px] gap-10 items-start">
-        {/* ─── Job info ─────────────────────────────────── */}
-        <div className="space-y-8">
-          {/* Header */}
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-brand-600/10 flex items-center justify-center text-brand-400 font-bold shrink-0">
-                {job.company?.name?.charAt(0).toUpperCase() ?? (
-                  <Building2 className="w-5 h-5" />
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12">
+        {/* ── 2-col on large, single col on mobile ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-10 items-start">
+          {/* ─── Job info ─── */}
+          <div className="space-y-7">
+            {/* Company + title */}
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-[15px] font-bold text-white flex-shrink-0"
+                  style={{
+                    background: "rgba(124,58,237,0.15)",
+                    border: "1px solid rgba(124,58,237,0.25)",
+                  }}
+                >
+                  {job.company?.name?.charAt(0).toUpperCase() ?? (
+                    <Buildings
+                      weight="duotone"
+                      size={20}
+                      style={{ color: "#a78bfa" }}
+                    />
+                  )}
+                </div>
+                <div>
+                  <p
+                    className="text-[14px] font-semibold"
+                    style={{ color: "rgba(255,255,255,0.8)" }}
+                  >
+                    {job.company?.name}
+                  </p>
+                  {job.company?.industry && (
+                    <p
+                      className="text-[12px]"
+                      style={{ color: "rgba(255,255,255,0.3)" }}
+                    >
+                      {job.company.industry}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <h1 className="text-[22px] md:text-[28px] font-bold text-white mb-4 leading-tight">
+                {job.title}
+              </h1>
+
+              <div className="flex flex-wrap gap-2">
+                {job.location && (
+                  <Tag>
+                    <MapPin weight="duotone" size={12} /> {job.location}
+                  </Tag>
+                )}
+                {job.type && (
+                  <Tag className="capitalize">
+                    <Briefcase weight="duotone" size={12} />{" "}
+                    {job.type.replace("-", " ")}
+                  </Tag>
+                )}
+                <Tag>
+                  <Clock weight="duotone" size={12} /> Posted{" "}
+                  {formatDate(job.createdAt)}
+                </Tag>
+                {isClosed && (
+                  <span
+                    className="flex items-center gap-1.5 text-[12px] px-2.5 py-1 rounded-full"
+                    style={{
+                      color: "#f87171",
+                      background: "rgba(248,113,113,0.1)",
+                      border: "1px solid rgba(248,113,113,0.2)",
+                    }}
+                  >
+                    <XCircle size={12} /> Applications closed
+                  </span>
                 )}
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-300">
-                  {job.company?.name}
+            </div>
+
+            {/* Salary */}
+            {(job.salaryMin || job.salaryMax) && (
+              <div
+                className="p-4 rounded-xl"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                <p
+                  className="text-[11px] mb-1"
+                  style={{ color: "rgba(255,255,255,0.3)" }}
+                >
+                  Compensation
                 </p>
-                <p className="text-xs text-gray-600">{job.company?.industry}</p>
+                <p className="text-[15px] font-semibold text-white">
+                  {job.salaryCurrency}{" "}
+                  {job.salaryMin && job.salaryMax
+                    ? `${Number(job.salaryMin).toLocaleString()} – ${Number(job.salaryMax).toLocaleString()}`
+                    : job.salaryMin
+                      ? `from ${Number(job.salaryMin).toLocaleString()}`
+                      : `up to ${Number(job.salaryMax).toLocaleString()}`}
+                  <span
+                    className="text-[13px] font-normal"
+                    style={{ color: "rgba(255,255,255,0.3)" }}
+                  >
+                    {" "}
+                    /month
+                  </span>
+                </p>
               </div>
-            </div>
+            )}
 
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">
-              {job.title}
-            </h1>
+            {/* Description */}
+            <Section title="About this role">
+              <p
+                className="text-[14px] leading-relaxed whitespace-pre-line"
+                style={{ color: "rgba(255,255,255,0.55)" }}
+              >
+                {job.description}
+              </p>
+            </Section>
 
-            <div className="flex flex-wrap gap-3">
-              {job.location && (
-                <Tag icon={<MapPin className="w-3.5 h-3.5" />}>
-                  {job.location}
-                </Tag>
-              )}
-              {job.type && (
-                <Tag icon={<Briefcase className="w-3.5 h-3.5" />} capitalize>
-                  {job.type.replace("-", " ")}
-                </Tag>
-              )}
-              <Tag icon={<Clock className="w-3.5 h-3.5" />}>
-                Posted {formatDate(job.createdAt)}
-              </Tag>
-              {isClosed && (
-                <span className="flex items-center gap-1.5 text-xs text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-full">
-                  <XCircle className="w-3.5 h-3.5" /> Applications closed
-                </span>
-              )}
-            </div>
+            {job.responsibilities && (
+              <Section title="Responsibilities">
+                <p
+                  className="text-[14px] leading-relaxed whitespace-pre-line"
+                  style={{ color: "rgba(255,255,255,0.55)" }}
+                >
+                  {job.responsibilities}
+                </p>
+              </Section>
+            )}
+
+            {job.requirements && (
+              <Section title="Requirements">
+                <p
+                  className="text-[14px] leading-relaxed whitespace-pre-line"
+                  style={{ color: "rgba(255,255,255,0.55)" }}
+                >
+                  {job.requirements}
+                </p>
+              </Section>
+            )}
+
+            {job.closesAt && (
+              <p
+                className="text-[12px]"
+                style={{ color: "rgba(255,255,255,0.25)" }}
+              >
+                Applications close on {formatDate(job.closesAt)}.
+              </p>
+            )}
           </div>
 
-          {/* Salary */}
-          {(job.salaryMin || job.salaryMax) && (
-            <div className="p-4 rounded-xl bg-surface-900 border border-white/5">
-              <p className="text-xs text-gray-500 mb-1">Compensation</p>
-              <p className="text-sm font-semibold text-white">
-                {job.salaryCurrency}{" "}
-                {job.salaryMin && job.salaryMax
-                  ? `${Number(job.salaryMin).toLocaleString()} – ${Number(job.salaryMax).toLocaleString()}`
-                  : job.salaryMin
-                    ? `from ${Number(job.salaryMin).toLocaleString()}`
-                    : `up to ${Number(job.salaryMax).toLocaleString()}`}
-                <span className="text-gray-500 font-normal"> /month</span>
-              </p>
-            </div>
-          )}
-
-          {/* Description */}
-          <Section title="About this role">
-            <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
-              {job.description}
-            </p>
-          </Section>
-
-          {job.responsibilities && (
-            <Section title="Responsibilities">
-              <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
-                {job.responsibilities}
-              </p>
-            </Section>
-          )}
-
-          {job.requirements && (
-            <Section title="Requirements">
-              <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
-                {job.requirements}
-              </p>
-            </Section>
-          )}
-
-          {job.closesAt && (
-            <p className="text-xs text-gray-600">
-              Applications close on {formatDate(job.closesAt)}.
-            </p>
-          )}
-        </div>
-
-        {/* ─── Apply form ───────────────────────────────── */}
-        <div className="lg:sticky lg:top-20">
-          {submitted ? (
-            <SuccessCard name={form.firstName} />
-          ) : isClosed ? (
-            <ClosedCard />
-          ) : (
-            <ApplyForm
-              form={form}
-              cvError={cvError}
-              submitting={submitting}
-              onChange={handleChange}
-              onFile={handleFile}
-              onSubmit={handleSubmit}
-            />
-          )}
+          {/* ─── Apply form — sticky on large screens ─── */}
+          <div className="lg:sticky lg:top-20">
+            {submitted ? (
+              <SuccessCard name={form.firstName} />
+            ) : isClosed ? (
+              <ClosedCard />
+            ) : (
+              <ApplyForm
+                form={form}
+                cvError={cvError}
+                submitting={submitting}
+                onChange={handleChange}
+                onFile={handleFile}
+                onSubmit={handleSubmit}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-// ─── Sub-components ──────────────────────────────────────────
-
+/* ── Apply form ──────────────────────────────────────────── */
 function ApplyForm({
   form,
   cvError,
@@ -290,12 +380,33 @@ function ApplyForm({
   onFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
 }) {
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "10px",
+    padding: "10px 14px",
+    fontSize: "14px",
+    color: "#fff",
+    outline: "none",
+    fontFamily: "inherit",
+    boxSizing: "border-box",
+  };
+
   return (
-    <div className="bg-surface-900 border border-white/5 rounded-2xl p-6">
-      <h2 className="text-lg font-bold text-white mb-6">Apply for this role</h2>
+    <div
+      className="rounded-2xl p-5 md:p-6"
+      style={{
+        background: "#111118",
+        border: "1px solid rgba(255,255,255,0.07)",
+      }}
+    >
+      <h2 className="text-[17px] font-bold text-white mb-5">
+        Apply for this role
+      </h2>
       <form onSubmit={onSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <ApplyField label="First name" required>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="First name" required>
             <input
               type="text"
               name="firstName"
@@ -303,10 +414,16 @@ function ApplyForm({
               onChange={onChange}
               required
               placeholder="Ada"
-              className={inputCls}
+              style={inputStyle}
+              onFocus={(e) =>
+                (e.target.style.borderColor = "rgba(124,58,237,0.5)")
+              }
+              onBlur={(e) =>
+                (e.target.style.borderColor = "rgba(255,255,255,0.1)")
+              }
             />
-          </ApplyField>
-          <ApplyField label="Last name" required>
+          </Field>
+          <Field label="Last name" required>
             <input
               type="text"
               name="lastName"
@@ -314,12 +431,18 @@ function ApplyForm({
               onChange={onChange}
               required
               placeholder="Okonkwo"
-              className={inputCls}
+              style={inputStyle}
+              onFocus={(e) =>
+                (e.target.style.borderColor = "rgba(124,58,237,0.5)")
+              }
+              onBlur={(e) =>
+                (e.target.style.borderColor = "rgba(255,255,255,0.1)")
+              }
             />
-          </ApplyField>
+          </Field>
         </div>
 
-        <ApplyField label="Email" required>
+        <Field label="Email" required>
           <input
             type="email"
             name="email"
@@ -327,62 +450,95 @@ function ApplyForm({
             onChange={onChange}
             required
             placeholder="you@email.com"
-            className={inputCls}
+            style={inputStyle}
+            onFocus={(e) =>
+              (e.target.style.borderColor = "rgba(124,58,237,0.5)")
+            }
+            onBlur={(e) =>
+              (e.target.style.borderColor = "rgba(255,255,255,0.1)")
+            }
           />
-        </ApplyField>
+        </Field>
 
-        <ApplyField label="Phone">
+        <Field label="Phone">
           <input
             type="tel"
             name="phone"
             value={form.phone}
             onChange={onChange}
             placeholder="+234 800 000 0000"
-            className={inputCls}
+            style={inputStyle}
+            onFocus={(e) =>
+              (e.target.style.borderColor = "rgba(124,58,237,0.5)")
+            }
+            onBlur={(e) =>
+              (e.target.style.borderColor = "rgba(255,255,255,0.1)")
+            }
           />
-        </ApplyField>
+        </Field>
 
-        <ApplyField label="LinkedIn">
+        <Field label="LinkedIn URL">
           <input
             type="url"
             name="linkedinUrl"
             value={form.linkedinUrl}
             onChange={onChange}
-            placeholder="https://linkedin.com/in/yourprofile"
-            className={inputCls}
+            placeholder="https://linkedin.com/in/you"
+            style={inputStyle}
+            onFocus={(e) =>
+              (e.target.style.borderColor = "rgba(124,58,237,0.5)")
+            }
+            onBlur={(e) =>
+              (e.target.style.borderColor = "rgba(255,255,255,0.1)")
+            }
           />
-        </ApplyField>
+        </Field>
 
-        <ApplyField label="Portfolio / GitHub">
+        <Field label="Portfolio / GitHub">
           <input
             type="url"
             name="portfolioUrl"
             value={form.portfolioUrl}
             onChange={onChange}
             placeholder="https://github.com/you"
-            className={inputCls}
+            style={inputStyle}
+            onFocus={(e) =>
+              (e.target.style.borderColor = "rgba(124,58,237,0.5)")
+            }
+            onBlur={(e) =>
+              (e.target.style.borderColor = "rgba(255,255,255,0.1)")
+            }
           />
-        </ApplyField>
+        </Field>
 
-        <ApplyField label="Cover letter">
+        <Field label="Cover letter">
           <textarea
             name="coverLetter"
             value={form.coverLetter}
             onChange={onChange}
             rows={4}
             placeholder="Why are you the right fit for this role?"
-            className={`${inputCls} resize-y`}
+            style={{ ...inputStyle, resize: "vertical" }}
+            onFocus={(e) =>
+              (e.target.style.borderColor = "rgba(124,58,237,0.5)")
+            }
+            onBlur={(e) =>
+              (e.target.style.borderColor = "rgba(255,255,255,0.1)")
+            }
           />
-        </ApplyField>
+        </Field>
 
-        {/* CV Upload */}
-        <ApplyField label="CV / Résumé" required error={cvError}>
+        {/* CV upload */}
+        <Field label="CV / Résumé (PDF)" required error={cvError}>
           <label
-            className={`flex flex-col items-center gap-2 border-2 border-dashed rounded-xl px-4 py-5 cursor-pointer transition-colors ${
-              form.cv
-                ? "border-accent-500/40 bg-accent-500/5"
-                : "border-white/10 hover:border-brand-600/40 hover:bg-brand-600/5"
-            }`}
+            className="flex flex-col items-center gap-2 rounded-xl cursor-pointer transition-all"
+            style={{
+              padding: "20px 16px",
+              border: `2px dashed ${form.cv ? "rgba(52,211,153,0.4)" : "rgba(255,255,255,0.1)"}`,
+              background: form.cv
+                ? "rgba(52,211,153,0.04)"
+                : "rgba(255,255,255,0.02)",
+            }}
           >
             <input
               type="file"
@@ -392,86 +548,152 @@ function ApplyForm({
             />
             {form.cv ? (
               <>
-                <CheckCircle2 className="w-5 h-5 text-accent-400" />
-                <p className="text-xs text-accent-400 font-medium text-center truncate max-w-full">
+                <CheckCircle
+                  weight="fill"
+                  size={20}
+                  style={{ color: "#34d399" }}
+                />
+                <p
+                  className="text-[12px] font-medium text-center truncate max-w-full"
+                  style={{ color: "#34d399" }}
+                >
                   {form.cv.name}
                 </p>
-                <p className="text-xs text-gray-600">Click to replace</p>
+                <p
+                  className="text-[11px]"
+                  style={{ color: "rgba(255,255,255,0.3)" }}
+                >
+                  Click to replace
+                </p>
               </>
             ) : (
               <>
-                <Upload className="w-5 h-5 text-gray-500" />
-                <p className="text-xs text-gray-400 font-medium">
+                <UploadSimple
+                  size={20}
+                  style={{ color: "rgba(255,255,255,0.3)" }}
+                />
+                <p
+                  className="text-[13px] font-medium"
+                  style={{ color: "rgba(255,255,255,0.5)" }}
+                >
                   Click to upload PDF
                 </p>
-                <p className="text-xs text-gray-600">Max 5 MB</p>
+                <p
+                  className="text-[11px]"
+                  style={{ color: "rgba(255,255,255,0.25)" }}
+                >
+                  Max 5 MB
+                </p>
               </>
             )}
           </label>
-        </ApplyField>
+        </Field>
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-brand-600/20 mt-2"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-[14px] font-bold text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          style={{
+            background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
+            boxShadow: "0 4px 20px rgba(124,58,237,0.3)",
+          }}
         >
-          {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+          {submitting && <CircleNotch size={16} className="animate-spin" />}
           {submitting ? "Submitting…" : "Submit application"}
         </button>
 
-        <p className="text-xs text-gray-600 text-center leading-relaxed">
-          Your application will be reviewed by the hiring team. You&apos;ll
-          receive a confirmation email shortly.
+        <p
+          className="text-[11px] text-center"
+          style={{ color: "rgba(255,255,255,0.2)" }}
+        >
+          Your application will be reviewed by the hiring team.
         </p>
       </form>
     </div>
   );
 }
 
+/* ── Success card ────────────────────────────────────────── */
 function SuccessCard({ name }: { name: string }) {
   return (
-    <div className="bg-surface-900 border border-white/5 rounded-2xl p-8 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-accent-500/10 flex items-center justify-center mx-auto mb-4">
-        <CheckCircle2 className="w-7 h-7 text-accent-400" />
+    <div
+      className="rounded-2xl p-8 text-center"
+      style={{
+        background: "#111118",
+        border: "1px solid rgba(52,211,153,0.15)",
+      }}
+    >
+      <div
+        className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+        style={{
+          background: "rgba(52,211,153,0.1)",
+          border: "1px solid rgba(52,211,153,0.2)",
+        }}
+      >
+        <CheckCircle weight="fill" size={26} style={{ color: "#34d399" }} />
       </div>
-      <h2 className="text-lg font-bold text-white mb-2">
+      <h2 className="text-[18px] font-bold text-white mb-2">
         Application received!
       </h2>
-      <p className="text-sm text-gray-400 leading-relaxed">
+      <p
+        className="text-[13px] leading-relaxed"
+        style={{ color: "rgba(255,255,255,0.4)" }}
+      >
         Thanks{name ? `, ${name}` : ""}! Your CV is being scored by our AI.
-        You&apos;ll hear from the team soon.
+        You'll hear from the team soon.
       </p>
       <Link
         href="/jobs"
-        className="inline-flex items-center gap-2 mt-6 text-sm font-medium text-brand-400 hover:text-brand-300 transition-colors"
+        className="inline-flex items-center gap-1.5 mt-6 text-[13px] font-semibold"
+        style={{ color: "#a78bfa" }}
       >
-        Browse more jobs
+        Browse more jobs →
       </Link>
     </div>
   );
 }
 
+/* ── Closed card ─────────────────────────────────────────── */
 function ClosedCard() {
   return (
-    <div className="bg-surface-900 border border-white/5 rounded-2xl p-8 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-gray-500/10 flex items-center justify-center mx-auto mb-4">
-        <XCircle className="w-7 h-7 text-gray-500" />
+    <div
+      className="rounded-2xl p-8 text-center"
+      style={{
+        background: "#111118",
+        border: "1px solid rgba(255,255,255,0.07)",
+      }}
+    >
+      <div
+        className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        <XCircle size={26} style={{ color: "rgba(255,255,255,0.3)" }} />
       </div>
-      <h2 className="text-lg font-bold text-white mb-2">Applications closed</h2>
-      <p className="text-sm text-gray-400 leading-relaxed">
+      <h2 className="text-[18px] font-bold text-white mb-2">
+        Applications closed
+      </h2>
+      <p
+        className="text-[13px] leading-relaxed"
+        style={{ color: "rgba(255,255,255,0.4)" }}
+      >
         This role is no longer accepting applications. Check back for other
         openings.
       </p>
       <Link
         href="/jobs"
-        className="inline-flex items-center gap-2 mt-6 text-sm font-medium text-brand-400 hover:text-brand-300 transition-colors"
+        className="inline-flex items-center gap-1.5 mt-6 text-[13px] font-semibold"
+        style={{ color: "#a78bfa" }}
       >
-        Browse all jobs
+        Browse all jobs →
       </Link>
     </div>
   );
 }
 
+/* ── Section ─────────────────────────────────────────────── */
 function Section({
   title,
   children,
@@ -481,34 +703,36 @@ function Section({
 }) {
   return (
     <div>
-      <h3 className="text-base font-semibold text-white mb-3">{title}</h3>
+      <h3 className="text-[15px] font-semibold text-white mb-3">{title}</h3>
       {children}
     </div>
   );
 }
 
+/* ── Tag ─────────────────────────────────────────────────── */
 function Tag({
-  icon,
   children,
-  capitalize,
+  className,
 }: {
-  icon?: React.ReactNode;
   children: React.ReactNode;
-  capitalize?: boolean;
+  className?: string;
 }) {
   return (
     <span
-      className={`flex items-center gap-1.5 text-xs text-gray-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full ${
-        capitalize ? "capitalize" : ""
-      }`}
+      className={`flex items-center gap-1.5 text-[12px] px-2.5 py-1 rounded-full ${className ?? ""}`}
+      style={{
+        color: "rgba(255,255,255,0.4)",
+        background: "rgba(255,255,255,0.05)",
+        border: "1px solid rgba(255,255,255,0.08)",
+      }}
     >
-      {icon}
       {children}
     </span>
   );
 }
 
-function ApplyField({
+/* ── Field ───────────────────────────────────────────────── */
+function Field({
   label,
   required,
   error,
@@ -521,15 +745,19 @@ function ApplyField({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-400 mb-1.5">
+      <label
+        className="block text-[12px] font-medium mb-1.5"
+        style={{ color: "rgba(255,255,255,0.45)" }}
+      >
         {label}
-        {required && <span className="text-brand-400 ml-0.5">*</span>}
+        {required && <span style={{ color: "#a78bfa", marginLeft: 2 }}>*</span>}
       </label>
       {children}
-      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+      {error && (
+        <p className="mt-1 text-[11px]" style={{ color: "#f87171" }}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }
-
-const inputCls =
-  "w-full bg-surface-950 border border-white/10 rounded-lg px-3.5 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-600/60 focus:ring-1 focus:ring-brand-600/30 transition";

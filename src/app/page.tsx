@@ -138,8 +138,8 @@ export default function LandingPage() {
 
         {/* ── Hero content — single column, spacious ── */}
         <div className="relative z-10 max-w-5xl mx-auto w-full">
-          {/* Chapter marker */}
-          <div className="anim-1 flex items-center gap-3 mb-12">
+          {/* Chapter marker — desktop only */}
+          <div className="anim-1 hidden md:flex items-center gap-3 mb-12">
             <span
               className="text-[9px] font-bold tracking-[0.35em] uppercase"
               style={{ color: "rgba(255,255,255,0.13)" }}
@@ -167,18 +167,30 @@ export default function LandingPage() {
               </span>
             </div>
           </div>
+          {/* Mobile badge — compact replacement */}
+          <div className="anim-1 flex md:hidden items-center gap-2 mb-8">
+            <div
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-brand-600/20"
+              style={{ backgroundColor: "rgba(124,58,237,0.07)" }}
+            >
+              <Sparkles className="w-3 h-3 text-brand-400" />
+              <span className="text-[10px] font-bold text-brand-400 tracking-wide uppercase">
+                AI Recruitment · Gemini Powered
+              </span>
+            </div>
+          </div>
 
           {/* Headline */}
           <h1 className="anim-2 leading-[1.06] tracking-tight">
             <span
               className="block font-light text-gray-500"
-              style={{ fontSize: "clamp(2.8rem, 5.8vw, 5.2rem)" }}
+              style={{ fontSize: "clamp(2rem, 5.8vw, 5.2rem)" }}
             >
               Hire the right person.
             </span>
             <span
               className="block font-black text-white mt-2"
-              style={{ fontSize: "clamp(2.8rem, 5.8vw, 5.2rem)" }}
+              style={{ fontSize: "clamp(2rem, 5.8vw, 5.2rem)" }}
             >
               Not just the <span className="shimmer-gradient">next one.</span>
             </span>
@@ -226,17 +238,19 @@ export default function LandingPage() {
             style={{ borderColor: "rgba(255,255,255,0.05)" }}
           >
             {/* Mini stats */}
-            <div className="flex items-center gap-10">
+            <div className="flex items-center gap-6 sm:gap-10">
               {[
                 { n: "< 60s", l: "per CV scored" },
                 { n: "0–100", l: "fit score" },
                 { n: "5×", l: "faster to hire" },
               ].map((s) => (
                 <div key={s.n} className="flex flex-col gap-0.5">
-                  <span className="text-[1.3rem] font-black gradient-text leading-none tracking-tight">
+                  <span className="text-[1.1rem] sm:text-[1.3rem] font-black gradient-text leading-none tracking-tight">
                     {s.n}
                   </span>
-                  <span className="text-[11px] text-gray-700">{s.l}</span>
+                  <span className="text-[10px] sm:text-[11px] text-gray-700">
+                    {s.l}
+                  </span>
                 </div>
               ))}
             </div>
@@ -321,7 +335,7 @@ export default function LandingPage() {
           ].map((s) => (
             <div
               key={s.value}
-              className="flex flex-col justify-center px-7 py-8"
+              className="flex flex-col justify-center px-4 py-6 md:px-7 md:py-8"
               style={{ backgroundColor: "#04040e" }}
             >
               <p className="text-3xl font-black gradient-text mb-1 tracking-tight">
@@ -614,7 +628,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
             {/* ── Free tier ── */}
             <div
               className="bento-card relative flex flex-col rounded-2xl border p-6"
@@ -831,7 +845,7 @@ export default function LandingPage() {
       <section className="py-10 px-6">
         <div className="max-w-6xl mx-auto">
           <div
-            className="relative rounded-2xl overflow-hidden p-14 text-center border border-brand-600/15"
+            className="relative rounded-2xl overflow-hidden p-8 md:p-14 text-center border border-brand-600/15"
             style={{
               background:
                 "linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(91,33,182,0.08) 40%, rgba(16,185,129,0.06) 100%)",
@@ -896,7 +910,7 @@ export default function LandingPage() {
                 AI-powered recruitment for companies that move fast.
               </p>
             </div>
-            <div className="flex gap-14">
+            <div className="flex gap-8 sm:gap-14">
               <div>
                 <p className="text-[10px] font-bold text-gray-700 uppercase tracking-[0.15em] mb-4">
                   Product

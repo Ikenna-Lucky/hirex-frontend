@@ -16,8 +16,6 @@ export default function AuthLayout({
       <div
         className="w-full max-w-[1040px] flex rounded-3xl overflow-hidden"
         style={{
-          minHeight: "600px",
-          maxHeight: "calc(100vh - 4rem)",
           border: "1px solid rgba(255,255,255,0.07)",
           boxShadow:
             "0 0 0 1px rgba(255,255,255,0.02) inset, 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(124,58,237,0.06)",
