@@ -16,6 +16,7 @@ import {
 import { removeToken, getStoredCompany } from "@/lib/auth";
 import { authApi } from "@/lib/api";
 import type { StoredCompany } from "@/lib/auth";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const NAV = [
   { href: "/dashboard", label: "Overview", icon: SquaresFour },
@@ -170,17 +171,17 @@ export default function DashboardLayout({
             borderBottom: "1px solid rgba(255,255,255,0.05)",
           }}
         >
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+          <Link href="/dashboard">
+            <span
               style={{
-                background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
+                fontSize: "21px",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                color: "#fff",
+                fontFamily: "'Syne', system-ui, sans-serif",
               }}
             >
-              <span className="text-[14px] font-black text-white">H</span>
-            </div>
-            <span className="text-[20px] font-bold text-white tracking-tight">
-              HireX
+              Hire<span style={{ color: "#a78bfa" }}>X</span>
             </span>
           </Link>
           <button
@@ -361,7 +362,9 @@ export default function DashboardLayout({
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="p-8 max-w-6xl mx-auto">{children}</div>
+          <div className="p-8 max-w-6xl mx-auto">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </div>
         </main>
       </div>
     </div>

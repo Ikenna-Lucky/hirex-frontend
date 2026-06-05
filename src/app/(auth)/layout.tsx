@@ -30,17 +30,19 @@ export default function AuthLayout({
         >
           {/* Logo */}
           <div className="px-8 md:px-10 pt-8 flex-shrink-0">
-            <Link href="/" className="inline-flex items-center gap-2">
-              <span className="text-[1.2rem] font-black tracking-tight text-white leading-none">
-                Hire<span className="text-accent-400">X</span>
-              </span>
+            <Link href="/">
               <span
-                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                 style={{
-                  backgroundColor: "#34d399",
-                  boxShadow: "0 0 6px #34d399",
+                  fontSize: "20px",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  color: "#fff",
+                  fontFamily: "'Syne', system-ui, sans-serif",
+                  lineHeight: 1,
                 }}
-              />
+              >
+                Hire<span style={{ color: "#a78bfa" }}>X</span>
+              </span>
             </Link>
           </div>
 

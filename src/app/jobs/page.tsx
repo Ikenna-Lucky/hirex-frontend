@@ -68,15 +68,17 @@ export default function PublicJobBoardPage() {
           borderBottom: "1px solid rgba(255,255,255,0.05)",
         }}
       >
-        <Link href="/" className="flex items-center gap-2.5">
-          <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, #7c3aed, #6d28d9)" }}
+        <Link href="/">
+          <span
+            style={{
+              fontSize: "20px",
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+              color: "#fff",
+              fontFamily: "'Syne', system-ui, sans-serif",
+            }}
           >
-            <span className="text-[13px] font-black text-white">H</span>
-          </div>
-          <span className="text-[18px] font-bold text-white tracking-tight">
-            HireX
+            Hire<span style={{ color: "#a78bfa" }}>X</span>
           </span>
         </Link>
 
@@ -273,7 +275,7 @@ function JobCard({ job }: { job: Job }) {
   return (
     <Link
       href={`/jobs/${job.id}`}
-      className="flex items-center gap-4 px-6 py-5 rounded-2xl group block transition-all"
+      className="flex items-center gap-4 px-6 py-5 rounded-2xl group transition-all"
       style={{
         background: "#111118",
         border: "1px solid rgba(255,255,255,0.06)",

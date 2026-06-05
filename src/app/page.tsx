@@ -33,18 +33,19 @@ export default function LandingPage() {
           }}
         >
           {/* ── Logo ── */}
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-[1.2rem] font-black tracking-tight text-white leading-none">
-              Hire<span className="text-accent-400">X</span>
-            </span>
-            {/* Status dot */}
+          <Link href="/" className="flex-shrink-0">
             <span
-              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
               style={{
-                backgroundColor: "#34d399",
-                boxShadow: "0 0 6px #34d399",
+                fontSize: "20px",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                color: "#fff",
+                fontFamily: "'Syne', system-ui, sans-serif",
+                lineHeight: 1,
               }}
-            />
+            >
+              Hire<span style={{ color: "#a78bfa" }}>X</span>
+            </span>
           </Link>
 
           {/* ── Center links ── */}
@@ -607,32 +608,41 @@ export default function LandingPage() {
               Start free. Scale when you're ready.
             </h2>
             <p className="text-[14px] text-gray-600 max-w-lg leading-relaxed">
-              Post your first role at no cost — no credit card needed. Every plan
-              includes full AI scoring, email notifications, and the complete hiring
-              pipeline.
+              Post your first role at no cost — no credit card needed. Every
+              plan includes full AI scoring, email notifications, and the
+              complete hiring pipeline.
             </p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-2.5">
-
             {/* ── Free tier ── */}
             <div
               className="bento-card relative flex flex-col rounded-2xl border p-6"
-              style={{ backgroundColor: "#09090f", borderColor: "rgba(124,58,237,0.2)" }}
+              style={{
+                backgroundColor: "#09090f",
+                borderColor: "rgba(124,58,237,0.2)",
+              }}
             >
               {/* "Start here" ribbon */}
               <div
                 className="absolute -top-[1px] left-1/2 -translate-x-1/2 text-white text-[10px] font-bold px-3.5 py-1 rounded-full"
-                style={{ background: "rgba(124,58,237,0.8)", boxShadow: "0 0 12px rgba(124,58,237,0.4)" }}
+                style={{
+                  background: "rgba(124,58,237,0.8)",
+                  boxShadow: "0 0 12px rgba(124,58,237,0.4)",
+                }}
               >
                 Start here
               </div>
 
               <div className="mb-5 mt-2">
                 <h3 className="text-[15px] font-bold text-white mb-1">Free</h3>
-                <p className="text-[11px] text-gray-600 mb-4">Try before you commit</p>
+                <p className="text-[11px] text-gray-600 mb-4">
+                  Try before you commit
+                </p>
                 <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl font-black text-white tracking-tight">₦0</span>
+                  <span className="text-3xl font-black text-white tracking-tight">
+                    ₦0
+                  </span>
                   <span className="text-[12px] text-gray-600">/mo</span>
                 </div>
               </div>
@@ -644,20 +654,37 @@ export default function LandingPage() {
                   { text: "Hiring pipeline", muted: false },
                   { text: "Candidate emails", muted: false },
                 ].map(({ text, muted }) => (
-                  <li key={text} className="flex items-center gap-2.5 text-[13px] text-gray-500">
+                  <li
+                    key={text}
+                    className="flex items-center gap-2.5 text-[13px] text-gray-500"
+                  >
                     <div
                       className="w-3.5 h-3.5 rounded-full flex items-center justify-center flex-shrink-0"
                       style={{
-                        backgroundColor: muted ? "rgba(255,255,255,0.04)" : "rgba(124,58,237,0.12)",
-                        border: muted ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(124,58,237,0.25)",
+                        backgroundColor: muted
+                          ? "rgba(255,255,255,0.04)"
+                          : "rgba(124,58,237,0.12)",
+                        border: muted
+                          ? "1px solid rgba(255,255,255,0.08)"
+                          : "1px solid rgba(124,58,237,0.25)",
                       }}
                     >
                       <div
                         className="w-1.5 h-1.5 rounded-full"
-                        style={{ backgroundColor: muted ? "rgba(255,255,255,0.2)" : "rgb(167,139,250)" }}
+                        style={{
+                          backgroundColor: muted
+                            ? "rgba(255,255,255,0.2)"
+                            : "rgb(167,139,250)",
+                        }}
                       />
                     </div>
-                    <span style={{ color: muted ? "rgba(255,255,255,0.25)" : undefined }}>{text}</span>
+                    <span
+                      style={{
+                        color: muted ? "rgba(255,255,255,0.25)" : undefined,
+                      }}
+                    >
+                      {text}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -666,7 +693,8 @@ export default function LandingPage() {
                 href="/register"
                 className="text-center text-[13px] font-semibold py-2.5 rounded-xl transition-all"
                 style={{
-                  background: "linear-gradient(135deg,rgba(124,58,237,0.25),rgba(109,40,217,0.15))",
+                  background:
+                    "linear-gradient(135deg,rgba(124,58,237,0.25),rgba(109,40,217,0.15))",
                   color: "#a78bfa",
                   border: "1px solid rgba(124,58,237,0.3)",
                 }}
@@ -723,16 +751,25 @@ export default function LandingPage() {
                 key={plan.name}
                 className="bento-card relative flex flex-col rounded-2xl border p-6"
                 style={{
-                  backgroundColor: plan.highlight ? "rgba(124,58,237,0.06)" : "#09090f",
-                  borderColor: plan.highlight ? "rgba(124,58,237,0.35)" : "rgba(255,255,255,0.06)",
-                  boxShadow: plan.highlight ? "0 0 40px rgba(124,58,237,0.1)" : undefined,
+                  backgroundColor: plan.highlight
+                    ? "rgba(124,58,237,0.06)"
+                    : "#09090f",
+                  borderColor: plan.highlight
+                    ? "rgba(124,58,237,0.35)"
+                    : "rgba(255,255,255,0.06)",
+                  boxShadow: plan.highlight
+                    ? "0 0 40px rgba(124,58,237,0.1)"
+                    : undefined,
                 }}
               >
                 {plan.highlight && (
                   <>
                     <div
                       className="absolute inset-0 rounded-2xl pointer-events-none"
-                      style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.1) 0%, transparent 60%)" }}
+                      style={{
+                        background:
+                          "radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.1) 0%, transparent 60%)",
+                      }}
                     />
                     <div className="absolute -top-[1px] left-1/2 -translate-x-1/2 bg-brand-600 text-white text-[10px] font-bold px-3.5 py-1 rounded-full shadow-lg shadow-brand-600/30">
                       Most popular
@@ -740,16 +777,25 @@ export default function LandingPage() {
                   </>
                 )}
                 <div className="relative z-10 mb-5">
-                  <h3 className="text-[15px] font-bold text-white mb-1">{plan.name}</h3>
-                  <p className="text-[11px] text-gray-600 mb-4">{plan.tagline}</p>
+                  <h3 className="text-[15px] font-bold text-white mb-1">
+                    {plan.name}
+                  </h3>
+                  <p className="text-[11px] text-gray-600 mb-4">
+                    {plan.tagline}
+                  </p>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black text-white tracking-tight">{plan.price}</span>
+                    <span className="text-3xl font-black text-white tracking-tight">
+                      {plan.price}
+                    </span>
                     <span className="text-[12px] text-gray-600">/mo</span>
                   </div>
                 </div>
                 <ul className="relative z-10 space-y-2.5 mb-7 flex-1">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2.5 text-[13px] text-gray-500">
+                    <li
+                      key={f}
+                      className="flex items-center gap-2.5 text-[13px] text-gray-500"
+                    >
                       <div
                         className="w-3.5 h-3.5 rounded-full border border-accent-500/30 flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: "rgba(16,185,129,0.07)" }}
@@ -913,14 +959,19 @@ export default function LandingPage() {
 
 function Logo() {
   return (
-    <Link href="/" className="inline-flex items-center gap-2">
-      <span className="text-[1.15rem] font-black tracking-tight text-white leading-none">
-        Hire<span className="text-accent-400">X</span>
-      </span>
+    <Link href="/">
       <span
-        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-        style={{ backgroundColor: "#34d399", boxShadow: "0 0 6px #34d399" }}
-      />
+        style={{
+          fontSize: "20px",
+          fontWeight: 800,
+          letterSpacing: "-0.03em",
+          color: "#fff",
+          fontFamily: "'Syne', system-ui, sans-serif",
+          lineHeight: 1,
+        }}
+      >
+        Hire<span style={{ color: "#a78bfa" }}>X</span>
+      </span>
     </Link>
   );
 }

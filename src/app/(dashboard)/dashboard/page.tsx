@@ -23,6 +23,9 @@ import {
   Gift,
   Lock,
   Crown,
+  RocketLaunch,
+  GearSix,
+  Globe,
 } from "@phosphor-icons/react";
 import { authApi, subscriptionsApi } from "@/lib/api";
 import { getStoredCompany } from "@/lib/auth";
@@ -253,20 +256,20 @@ export default function OverviewPage() {
         // Populate recent jobs list from the stats endpoint
         setJobs(d.recentJobs ?? []);
         setStats({
-          totalJobs:         d.jobs.total          ?? 0,
-          activeJobs:        d.jobs.active         ?? 0,
-          totalApplications: d.applications.total  ?? 0,
-          pendingScoring:    d.applications.pendingScoring ?? 0,
+          totalJobs: d.jobs.total ?? 0,
+          activeJobs: d.jobs.active ?? 0,
+          totalApplications: d.applications.total ?? 0,
+          pendingScoring: d.applications.pendingScoring ?? 0,
         });
         const sd = subRes.data.data;
         setSub({
-          status:          sd?.status          ?? null,
-          plan:            sd?.plan            ?? null,
-          isActive:        sd?.isActive        ?? false,
-          freeLimit:       sd?.freeLimit       ?? 1,
-          jobsUsed:        sd?.jobsUsed        ?? 0,
-          quotaLeft:       sd?.quotaLeft       ?? null,
-          quotaExhausted:  sd?.quotaExhausted  ?? false,
+          status: sd?.status ?? null,
+          plan: sd?.plan ?? null,
+          isActive: sd?.isActive ?? false,
+          freeLimit: sd?.freeLimit ?? 1,
+          jobsUsed: sd?.jobsUsed ?? 0,
+          quotaLeft: sd?.quotaLeft ?? null,
+          quotaExhausted: sd?.quotaExhausted ?? false,
           currentPeriodEnd: sd?.currentPeriodEnd ?? null,
         });
       } catch {
@@ -409,8 +412,14 @@ export default function OverviewPage() {
                   border: "1px solid rgba(124,58,237,0.28)",
                   color: "#a78bfa",
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.24)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.14)"; }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background =
+                    "rgba(124,58,237,0.24)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background =
+                    "rgba(124,58,237,0.14)";
+                }}
               >
                 <Lightning weight="fill" size={14} />
                 {sub?.quotaExhausted ? "Upgrade to post" : "Upgrade"}
@@ -418,19 +427,34 @@ export default function OverviewPage() {
             )}
             {/* Primary CTA — links to billing when quota is exhausted */}
             <Link
-              href={sub?.quotaExhausted ? "/dashboard/billing" : "/dashboard/jobs/new"}
+              href={
+                sub?.quotaExhausted
+                  ? "/dashboard/billing"
+                  : "/dashboard/jobs/new"
+              }
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[14px] font-bold text-white transition-all"
               style={{
                 background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
                 boxShadow: "0 0 24px rgba(124,58,237,0.38)",
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 36px rgba(124,58,237,0.55)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 24px rgba(124,58,237,0.38)"; }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow =
+                  "0 0 36px rgba(124,58,237,0.55)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow =
+                  "0 0 24px rgba(124,58,237,0.38)";
+              }}
             >
-              {sub?.quotaExhausted
-                ? <><Crown weight="fill" size={15} /> Unlock more roles</>
-                : <><Plus weight="bold" size={16} /> Post a role</>
-              }
+              {sub?.quotaExhausted ? (
+                <>
+                  <Crown weight="fill" size={15} /> Unlock more roles
+                </>
+              ) : (
+                <>
+                  <Plus weight="bold" size={16} /> Post a role
+                </>
+              )}
             </Link>
           </div>
         </div>
@@ -725,15 +749,25 @@ export default function OverviewPage() {
             {sub?.isActive ? (
               <>
                 <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle weight="fill" size={15} style={{ color: "#34d399" }} />
-                  <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "#34d399" }}>
+                  <CheckCircle
+                    weight="fill"
+                    size={15}
+                    style={{ color: "#34d399" }}
+                  />
+                  <span
+                    className="text-[11px] font-bold uppercase tracking-wider"
+                    style={{ color: "#34d399" }}
+                  >
                     Plan active
                   </span>
                 </div>
                 <p className="text-[22px] font-black text-white capitalize mb-1">
                   {sub.plan}
                 </p>
-                <p className="text-[12px]" style={{ color: "rgba(255,255,255,0.3)" }}>
+                <p
+                  className="text-[12px]"
+                  style={{ color: "rgba(255,255,255,0.3)" }}
+                >
                   {sub.currentPeriodEnd
                     ? `Renews ${formatDate(sub.currentPeriodEnd)}`
                     : "Active subscription"}
@@ -751,31 +785,59 @@ export default function OverviewPage() {
               <>
                 <div className="flex items-center gap-2 mb-3">
                   <Lock weight="fill" size={14} style={{ color: "#f87171" }} />
-                  <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "#f87171" }}>
+                  <span
+                    className="text-[11px] font-bold uppercase tracking-wider"
+                    style={{ color: "#f87171" }}
+                  >
                     Free post used
                   </span>
                 </div>
 
                 {/* Usage bar — full/red */}
                 <div className="mb-3">
-                  <div className="flex justify-between text-[11px] mb-1.5" style={{ color: "rgba(255,255,255,0.3)" }}>
+                  <div
+                    className="flex justify-between text-[11px] mb-1.5"
+                    style={{ color: "rgba(255,255,255,0.3)" }}
+                  >
                     <span>Role posts</span>
-                    <span style={{ color: "#f87171", fontWeight: 700 }}>1/1</span>
+                    <span style={{ color: "#f87171", fontWeight: 700 }}>
+                      1/1
+                    </span>
                   </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
-                    <div className="h-full rounded-full w-full" style={{ background: "linear-gradient(90deg,#ef4444,#f87171)" }} />
+                  <div
+                    className="h-1.5 rounded-full overflow-hidden"
+                    style={{ background: "rgba(255,255,255,0.07)" }}
+                  >
+                    <div
+                      className="h-full rounded-full w-full"
+                      style={{
+                        background: "linear-gradient(90deg,#ef4444,#f87171)",
+                      }}
+                    />
                   </div>
                 </div>
 
-                <p className="text-[12px] mb-4" style={{ color: "rgba(255,255,255,0.35)" }}>
+                <p
+                  className="text-[12px] mb-4"
+                  style={{ color: "rgba(255,255,255,0.35)" }}
+                >
                   Upgrade to post unlimited roles and keep hiring.
                 </p>
                 <Link
                   href="/dashboard/billing"
                   className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[13px] font-bold text-white transition-all"
-                  style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)", boxShadow: "0 0 18px rgba(124,58,237,0.3)" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 26px rgba(124,58,237,0.5)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 18px rgba(124,58,237,0.3)"; }}
+                  style={{
+                    background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
+                    boxShadow: "0 0 18px rgba(124,58,237,0.3)",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.boxShadow =
+                      "0 0 26px rgba(124,58,237,0.5)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.boxShadow =
+                      "0 0 18px rgba(124,58,237,0.3)";
+                  }}
                 >
                   <Lightning weight="fill" size={13} /> View plans
                 </Link>
@@ -784,21 +846,34 @@ export default function OverviewPage() {
               /* ── STATE 3: Free with quota remaining ── */
               <>
                 <div className="flex items-center gap-2 mb-3">
-                  <Gift weight="duotone" size={15} style={{ color: "#a78bfa" }} />
-                  <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "#a78bfa" }}>
+                  <Gift
+                    weight="duotone"
+                    size={15}
+                    style={{ color: "#a78bfa" }}
+                  />
+                  <span
+                    className="text-[11px] font-bold uppercase tracking-wider"
+                    style={{ color: "#a78bfa" }}
+                  >
                     Free plan
                   </span>
                 </div>
 
                 {/* Usage bar */}
                 <div className="mb-3">
-                  <div className="flex justify-between text-[11px] mb-1.5" style={{ color: "rgba(255,255,255,0.3)" }}>
+                  <div
+                    className="flex justify-between text-[11px] mb-1.5"
+                    style={{ color: "rgba(255,255,255,0.3)" }}
+                  >
                     <span>Role posts</span>
                     <span style={{ color: "#a78bfa", fontWeight: 700 }}>
                       {sub?.jobsUsed ?? 0}/{sub?.freeLimit ?? 1}
                     </span>
                   </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+                  <div
+                    className="h-1.5 rounded-full overflow-hidden"
+                    style={{ background: "rgba(255,255,255,0.07)" }}
+                  >
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -809,7 +884,10 @@ export default function OverviewPage() {
                   </div>
                 </div>
 
-                <p className="text-[12px] mb-4" style={{ color: "rgba(255,255,255,0.35)" }}>
+                <p
+                  className="text-[12px] mb-4"
+                  style={{ color: "rgba(255,255,255,0.35)" }}
+                >
                   {(sub?.quotaLeft ?? 1) > 0
                     ? "1 free role post included. Upgrade for unlimited."
                     : "Upgrade to post more roles."}
@@ -822,8 +900,14 @@ export default function OverviewPage() {
                     background: "rgba(124,58,237,0.08)",
                     border: "1px solid rgba(124,58,237,0.18)",
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.15)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.08)"; }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      "rgba(124,58,237,0.15)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      "rgba(124,58,237,0.08)";
+                  }}
                 >
                   <Lightning weight="fill" size={12} /> Upgrade for unlimited
                 </Link>
@@ -831,60 +915,157 @@ export default function OverviewPage() {
             )}
           </div>
 
-          {/* Pipeline — bars fill on mount */}
-          <div
-            className="rounded-2xl p-5"
-            style={{
-              background: "#111118",
-              border: "1px solid rgba(255,255,255,0.07)",
-            }}
-          >
-            <div className="flex items-center gap-2 mb-5">
-              <ChartBar
-                weight="duotone"
-                size={16}
-                style={{ color: "#a78bfa" }}
-              />
-              <h3 className="text-[14px] font-bold text-white">
-                Pipeline Overview
-              </h3>
-            </div>
-            <div className="space-y-4">
-              {PIPELINE.map(({ label, value, pct }) => (
-                <div key={label}>
-                  <div className="flex justify-between items-center mb-2">
-                    <span
-                      className="text-[12px]"
-                      style={{ color: "rgba(255,255,255,0.38)" }}
-                    >
-                      {label}
-                    </span>
-                    <span
-                      className="text-[13px] font-bold"
-                      style={{ color: "rgba(255,255,255,0.75)" }}
-                    >
-                      {value}
-                    </span>
-                  </div>
-                  <div
-                    className="h-1.5 rounded-full overflow-hidden"
-                    style={{ background: "rgba(255,255,255,0.06)" }}
+          {/* Getting Started — only shown for brand-new accounts */}
+          {totalJobs === 0 && (
+            <div
+              className="rounded-2xl p-5"
+              style={{
+                background: "#111118",
+                border: "1px solid rgba(124,58,237,0.18)",
+              }}
+            >
+              <div className="flex items-center gap-2 mb-4">
+                <RocketLaunch
+                  weight="duotone"
+                  size={16}
+                  style={{ color: "#a78bfa" }}
+                />
+                <h3 className="text-[14px] font-bold text-white">
+                  Getting Started
+                </h3>
+              </div>
+              <div className="space-y-3">
+                {[
+                  {
+                    step: 1,
+                    label: "Complete your profile",
+                    sub: "Add your company name, logo, and description.",
+                    href: "/dashboard/settings",
+                    icon: GearSix,
+                  },
+                  {
+                    step: 2,
+                    label: "Post your first role",
+                    sub: "Create a job listing and go live in minutes.",
+                    href: "/dashboard/jobs/new",
+                    icon: BriefcaseMetal,
+                  },
+                  {
+                    step: 3,
+                    label: "Share your job board",
+                    sub: "Send applicants to your public listings page.",
+                    href: "/jobs",
+                    icon: Globe,
+                  },
+                ].map(({ step, label, sub, href, icon: Icon }) => (
+                  <Link
+                    key={step}
+                    href={href}
+                    target={step === 3 ? "_blank" : undefined}
+                    className="flex items-start gap-3 p-3 rounded-xl transition-all group"
+                    style={{ border: "1px solid transparent" }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.background =
+                        "rgba(124,58,237,0.07)";
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        "rgba(124,58,237,0.18)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.background =
+                        "transparent";
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        "transparent";
+                    }}
                   >
                     <div
-                      className="h-full rounded-full"
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 mt-0.5"
                       style={{
-                        width: barsReady ? `${pct}%` : "0%",
-                        background:
-                          "linear-gradient(90deg,#7c3aed,rgba(124,58,237,0.5))",
-                        boxShadow: "0 0 8px rgba(124,58,237,0.35)",
-                        transition: "width 0.8s cubic-bezier(0.16,1,0.3,1)",
+                        background: "rgba(124,58,237,0.15)",
+                        border: "1px solid rgba(124,58,237,0.3)",
+                        color: "#a78bfa",
                       }}
+                    >
+                      {step}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-semibold text-white group-hover:text-violet-300 transition-colors">
+                        {label}
+                      </p>
+                      <p
+                        className="text-[11px] mt-0.5"
+                        style={{ color: "rgba(255,255,255,0.3)" }}
+                      >
+                        {sub}
+                      </p>
+                    </div>
+                    <Icon
+                      weight="duotone"
+                      size={14}
+                      style={{ color: "rgba(255,255,255,0.2)" }}
+                      className="flex-shrink-0 mt-1"
                     />
-                  </div>
-                </div>
-              ))}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Pipeline — bars fill on mount */}
+          {totalJobs > 0 && (
+            <div
+              className="rounded-2xl p-5"
+              style={{
+                background: "#111118",
+                border: "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              <div className="flex items-center gap-2 mb-5">
+                <ChartBar
+                  weight="duotone"
+                  size={16}
+                  style={{ color: "#a78bfa" }}
+                />
+                <h3 className="text-[14px] font-bold text-white">
+                  Pipeline Overview
+                </h3>
+              </div>
+              <div className="space-y-4">
+                {PIPELINE.map(({ label, value, pct }) => (
+                  <div key={label}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span
+                        className="text-[12px]"
+                        style={{ color: "rgba(255,255,255,0.38)" }}
+                      >
+                        {label}
+                      </span>
+                      <span
+                        className="text-[13px] font-bold"
+                        style={{ color: "rgba(255,255,255,0.75)" }}
+                      >
+                        {value}
+                      </span>
+                    </div>
+                    <div
+                      className="h-1.5 rounded-full overflow-hidden"
+                      style={{ background: "rgba(255,255,255,0.06)" }}
+                    >
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: barsReady ? `${pct}%` : "0%",
+                          background:
+                            "linear-gradient(90deg,#7c3aed,rgba(124,58,237,0.5))",
+                          boxShadow: "0 0 8px rgba(124,58,237,0.35)",
+                          transition: "width 0.8s cubic-bezier(0.16,1,0.3,1)",
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Quick Actions */}
           <div
