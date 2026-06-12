@@ -59,9 +59,12 @@ export default function PublicJobPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const closesAtStr = job?.closesAt
+    ? new Date(job.closesAt).toISOString().slice(0, 10)
+    : null;
   const isClosed =
-    job?.status !== "active" ||
-    (!!job.closesAt && new Date(job.closesAt) < new Date());
+    job?.status !== "active" || (!!closesAtStr && closesAtStr < todayStr);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
