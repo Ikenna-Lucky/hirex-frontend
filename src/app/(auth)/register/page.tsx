@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Loader2, ArrowRight } from "lucide-react";
 import { authApi } from "@/lib/api";
-import { setToken, setStoredCompany } from "@/lib/auth";
+import { setToken, setRefreshToken, setStoredCompany } from "@/lib/auth";
 import type { ApiResponse, Company } from "@/types";
 import type { AxiosError } from "axios";
 
@@ -109,9 +109,14 @@ export default function RegisterPage() {
         industry: form.industry || undefined,
         size: form.size || undefined,
       });
-      const body = res.data as ApiResponse<{ token: string; company: Company }>;
+      const body = res.data as ApiResponse<{
+        token: string;
+        refreshToken: string;
+        company: Company;
+      }>;
       if (body.data) {
         setToken(body.data.token);
+        setRefreshToken(body.data.refreshToken);
         setStoredCompany({
           id: body.data.company.id,
           name: body.data.company.name,

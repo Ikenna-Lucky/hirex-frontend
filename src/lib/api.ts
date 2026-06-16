@@ -1,24 +1,83 @@
 import axios from "axios";
-import { getToken } from "./auth";
+import {
+  getToken,
+  setToken,
+  setRefreshToken,
+  getRefreshToken,
+  removeToken,
+} from "./auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 export const api = axios.create({ baseURL: API_URL });
 
-// Attach JWT on every request
+// Attach access token on every request
 api.interceptors.request.use((config) => {
   const token = getToken();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Redirect to login on 401
+// On 401, attempt a silent token refresh before giving up
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (v: unknown) => void;
+  reject: (e: unknown) => void;
+}> = [];
+
+function processQueue(error: unknown, token: string | null = null) {
+  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve(token)));
+  failedQueue = [];
+}
+
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
-    if (err.response?.status === 401 && typeof window !== "undefined") {
-      window.location.href = "/login";
+  async (err) => {
+    const original = err.config;
+
+    if (err.response?.status === 401 && !original._retry) {
+      const refreshToken = getRefreshToken();
+
+      if (!refreshToken) {
+        removeToken();
+        if (typeof window !== "undefined") window.location.href = "/login";
+        return Promise.reject(err);
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then((token) => {
+          original.headers.Authorization = `Bearer ${token}`;
+          return api(original);
+        });
+      }
+
+      original._retry = true;
+      isRefreshing = true;
+
+      try {
+        const { data } = await axios.post(`${API_URL}/auth/refresh`, {
+          refreshToken,
+        });
+        const { token, refreshToken: newRefreshToken } = data.data;
+
+        setToken(token);
+        setRefreshToken(newRefreshToken);
+        processQueue(null, token);
+
+        original.headers.Authorization = `Bearer ${token}`;
+        return api(original);
+      } catch (refreshErr) {
+        processQueue(refreshErr, null);
+        removeToken();
+        if (typeof window !== "undefined") window.location.href = "/login";
+        return Promise.reject(refreshErr);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
     return Promise.reject(err);
   },
 );
@@ -48,7 +107,11 @@ export const authApi = {
       headers: { "Content-Type": "multipart/form-data" },
     }),
 
-  logout: () => api.post("/auth/logout"),
+  refresh: (refreshToken: string) =>
+    api.post("/auth/refresh", { refreshToken }),
+
+  logout: (refreshToken?: string | null) =>
+    api.post("/auth/logout", { refreshToken }),
 };
 
 // ─── Jobs ──────────────────────────────────────────────

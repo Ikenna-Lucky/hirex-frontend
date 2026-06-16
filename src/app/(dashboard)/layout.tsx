@@ -13,7 +13,7 @@ import {
   List,
   X,
 } from "@phosphor-icons/react";
-import { removeToken, getStoredCompany } from "@/lib/auth";
+import { removeToken, getStoredCompany, getRefreshToken } from "@/lib/auth";
 import { authApi } from "@/lib/api";
 import type { StoredCompany } from "@/lib/auth";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -107,7 +107,7 @@ export default function DashboardLayout({
 
   const signOut = async () => {
     try {
-      await authApi.logout();
+      await authApi.logout(getRefreshToken());
     } catch {
       /**/
     }
