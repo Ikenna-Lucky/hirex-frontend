@@ -1,22 +1,10 @@
 import axios from "axios";
-import {
-  getToken,
-  setToken,
-  setRefreshToken,
-  getRefreshToken,
-  removeToken,
-} from "./auth";
+import { clearStoredCompany } from "./auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
-export const api = axios.create({ baseURL: API_URL });
-
-// Attach access token on every request
-api.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+// withCredentials ensures httpOnly cookies are sent on every cross-origin request
+export const api = axios.create({ baseURL: API_URL, withCredentials: true });
 
 // On 401, attempt a silent token refresh before giving up
 let isRefreshing = false;
@@ -25,8 +13,8 @@ let failedQueue: Array<{
   reject: (e: unknown) => void;
 }> = [];
 
-function processQueue(error: unknown, token: string | null = null) {
-  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve(token)));
+function processQueue(error: unknown) {
+  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve(null)));
   failedQueue = [];
 }
 
@@ -36,41 +24,27 @@ api.interceptors.response.use(
     const original = err.config;
 
     if (err.response?.status === 401 && !original._retry) {
-      const refreshToken = getRefreshToken();
-
-      if (!refreshToken) {
-        removeToken();
-        if (typeof window !== "undefined") window.location.href = "/login";
-        return Promise.reject(err);
-      }
-
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        }).then((token) => {
-          original.headers.Authorization = `Bearer ${token}`;
-          return api(original);
-        });
+        }).then(() => api(original));
       }
 
       original._retry = true;
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post(`${API_URL}/auth/refresh`, {
-          refreshToken,
-        });
-        const { token, refreshToken: newRefreshToken } = data.data;
-
-        setToken(token);
-        setRefreshToken(newRefreshToken);
-        processQueue(null, token);
-
-        original.headers.Authorization = `Bearer ${token}`;
+        // Refresh token is sent automatically via httpOnly cookie
+        await axios.post(
+          `${API_URL}/auth/refresh`,
+          {},
+          { withCredentials: true },
+        );
+        processQueue(null);
         return api(original);
       } catch (refreshErr) {
-        processQueue(refreshErr, null);
-        removeToken();
+        processQueue(refreshErr);
+        clearStoredCompany();
         if (typeof window !== "undefined") window.location.href = "/login";
         return Promise.reject(refreshErr);
       } finally {
@@ -107,11 +81,9 @@ export const authApi = {
       headers: { "Content-Type": "multipart/form-data" },
     }),
 
-  refresh: (refreshToken: string) =>
-    api.post("/auth/refresh", { refreshToken }),
+  refresh: () => api.post("/auth/refresh"),
 
-  logout: (refreshToken?: string | null) =>
-    api.post("/auth/logout", { refreshToken }),
+  logout: () => api.post("/auth/logout"),
 };
 
 // ─── Jobs ──────────────────────────────────────────────

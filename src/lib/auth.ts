@@ -1,5 +1,3 @@
-const TOKEN_KEY = "hirex_token";
-const REFRESH_TOKEN_KEY = "hirex_refresh_token";
 const COMPANY_KEY = "hirex_company";
 
 export interface StoredCompany {
@@ -11,29 +9,8 @@ export interface StoredCompany {
   isVerified?: boolean;
 }
 
-export function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-export function setToken(token: string): void {
-  localStorage.setItem(TOKEN_KEY, token);
-}
-
-export function getRefreshToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(REFRESH_TOKEN_KEY);
-}
-
-export function setRefreshToken(token: string): void {
-  localStorage.setItem(REFRESH_TOKEN_KEY, token);
-}
-
-export function removeToken(): void {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(REFRESH_TOKEN_KEY);
-  localStorage.removeItem(COMPANY_KEY);
-}
+// Tokens are now httpOnly cookies set by the API — JS cannot read them.
+// We only store non-sensitive company display data in localStorage.
 
 export function getStoredCompany(): StoredCompany | null {
   if (typeof window === "undefined") return null;
@@ -50,6 +27,11 @@ export function setStoredCompany(company: StoredCompany): void {
   localStorage.setItem(COMPANY_KEY, JSON.stringify(company));
 }
 
+export function clearStoredCompany(): void {
+  localStorage.removeItem(COMPANY_KEY);
+}
+
+// Used for client-side UI decisions only — actual security is enforced by the API cookie
 export function isAuthenticated(): boolean {
-  return !!getToken();
+  return !!getStoredCompany();
 }
