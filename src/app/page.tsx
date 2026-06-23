@@ -961,9 +961,17 @@ export default function LandingPage() {
             <p className="text-[11px] text-gray-800">
               © {new Date().getFullYear()} HireX. All rights reserved.
             </p>
-            <p className="text-[11px] text-gray-800">
-              Built for companies that refuse to hire slowly.
-            </p>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/privacy"
+                className="text-[11px] text-gray-700 hover:text-gray-400 transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <p className="text-[11px] text-gray-800">
+                Built for companies that refuse to hire slowly.
+              </p>
+            </div>
           </div>
         </div>
       </footer>
