@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://hirex-api-vh5i.onrender.com/api/:path*"
+    }
+  ]
+}
