@@ -1,9 +1,17 @@
 import axios from "axios";
 import { clearStoredCompany } from "./auth";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+// In production, all requests go through the Next.js rewrite proxy at /api
+// so cookies are same-origin and always sent by the browser.
+// In local dev, talk directly to the Bun server.
+const isLocalDev =
+  typeof window !== "undefined" && window.location.hostname === "localhost";
 
-// withCredentials ensures httpOnly cookies are sent on every cross-origin request
+const API_URL = isLocalDev
+  ? process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"
+  : "/api";
+
+// withCredentials still needed for local dev (cross-origin localhost → :3001)
 export const api = axios.create({ baseURL: API_URL, withCredentials: true });
 
 // On 401, attempt a silent token refresh before giving up
