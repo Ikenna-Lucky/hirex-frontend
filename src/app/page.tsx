@@ -130,7 +130,6 @@ export default function LandingPage() {
                 "radial-gradient(ellipse 70% 55% at 65% 45%, black 10%, transparent 75%)",
             }}
           />
-
         </div>
 
         {/* ── Hero content — single column, spacious ── */}
@@ -144,7 +143,7 @@ export default function LandingPage() {
               01
             </span>
             <div
-              className="h-px w-4"
+              className="h-px w-2"
               style={{ backgroundColor: "rgba(124,58,237,0.7)" }}
             />
             <span className="text-[9px] font-bold text-gray-700 uppercase tracking-[0.25em]">
@@ -276,19 +275,7 @@ export default function LandingPage() {
             "Background Processing",
             "Application Deadlines",
             "Audit Trail",
-            "Gemini Powered",
-            "Instant Confirmations",
-            "Stage Management",
-            "Email Alerts",
-            "Fit Score 0–100",
-            "Smart Shortlisting",
-            "AI CV Scoring",
-            "Ranked Pipeline",
-            "Auto Notifications",
-            "Background Processing",
-            "Application Deadlines",
-            "Audit Trail",
-            "Gemini Powered",
+            "Claude Powered",
             "Instant Confirmations",
             "Stage Management",
             "Email Alerts",
@@ -351,10 +338,6 @@ export default function LandingPage() {
       <section id="features" className="py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-3">
-            <div
-              className="h-px w-6"
-              style={{ backgroundColor: "rgba(124,58,237,0.5)" }}
-            />
             <span className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.22em]">
               Features
             </span>
@@ -532,10 +515,6 @@ export default function LandingPage() {
       <section id="how-it-works" className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-3">
-            <div
-              className="h-px w-6"
-              style={{ backgroundColor: "rgba(124,58,237,0.5)" }}
-            />
             <span className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.22em]">
               How it works
             </span>
@@ -606,10 +585,6 @@ export default function LandingPage() {
       <section id="pricing" className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-3">
-            <div
-              className="h-px w-6"
-              style={{ backgroundColor: "rgba(124,58,237,0.5)" }}
-            />
             <span className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.22em]">
               Pricing
             </span>
