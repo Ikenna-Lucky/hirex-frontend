@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Brain, BarChart3, Mail } from "lucide-react";
-import HeroParticles from "@/components/HeroParticles";
 
 export default function AuthLayout({
   children,
@@ -14,7 +13,7 @@ export default function AuthLayout({
     >
       {/* ── Floating centered card ── */}
       <div
-        className="w-full max-w-[1040px] flex rounded-3xl overflow-hidden"
+        className="w-full max-w-[1040px] flex rounded-3xl overflow-hidden md:h-[680px] md:max-h-[85vh]"
         style={{
           border: "1px solid rgba(255,255,255,0.07)",
           boxShadow:
@@ -39,7 +38,15 @@ export default function AuthLayout({
                   lineHeight: 1,
                 }}
               >
-                Hire<span style={{ color: "#a78bfa" }}>X</span>
+                Hire
+                <span
+                  style={{
+                    color: "#a78bfa",
+                    fontFamily: "'Syne', system-ui, sans-serif",
+                  }}
+                >
+                  X
+                </span>
               </span>
             </Link>
           </div>
@@ -62,8 +69,21 @@ export default function AuthLayout({
           className="hidden lg:flex w-[460px] xl:w-[500px] flex-shrink-0 relative overflow-hidden"
           style={{ backgroundColor: "#06061a" }}
         >
-          {/* Live particle canvas */}
-          <HeroParticles />
+          {/* Soft static glows — brand + accent, matching the landing hero */}
+          <div
+            className="absolute -top-[15%] -right-[20%] w-[420px] h-[420px] rounded-full pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(124,58,237,0.16) 0%, transparent 60%)",
+            }}
+          />
+          <div
+            className="absolute bottom-[-10%] -left-[15%] w-[360px] h-[360px] rounded-full pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 60%)",
+            }}
+          />
 
           {/* Dark gradient overlay so text reads clearly */}
           <div

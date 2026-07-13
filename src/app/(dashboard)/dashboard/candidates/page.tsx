@@ -129,9 +129,7 @@ function ScoreBadge({ app }: { app: LatestApplication }) {
   );
 }
 
-/* ════════════════════════════════════════════════════════
-   PAGE
-════════════════════════════════════════════════════════ */
+/* PAGE */
 export default function CandidatesPage() {
   const [candidates, setCandidates] = useState<CandidateRow[]>([]);
   const [loading, setLoading] = useState(true);

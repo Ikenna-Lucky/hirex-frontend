@@ -65,7 +65,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
             className="text-[13px] mb-6 max-w-sm"
             style={{ color: "rgba(255,255,255,0.35)" }}
           >
-            {this.state.error.message || "An unexpected error occurred."}
+            This section couldn&apos;t load. Your data is safe — try again in
+            a moment.
           </p>
           <button
             onClick={this.reset}

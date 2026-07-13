@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LandingNavbar from "@/components/LandingNavbar";
 import {
   ArrowRight,
   Brain,
@@ -19,81 +20,7 @@ export default function LandingPage() {
       style={{ backgroundColor: "#04040e" }}
     >
       {/* ─── Navbar ─────────────────────────────────────────── */}
-      <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2.5rem)] max-w-[880px]">
-        <nav
-          className="flex items-center justify-between px-5 py-3 rounded-2xl"
-          style={{
-            backgroundColor: "rgba(6,6,18,0.85)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            boxShadow:
-              "0 0 0 1px rgba(255,255,255,0.02) inset, 0 12px 40px rgba(0,0,0,0.55)",
-          }}
-        >
-          {/* ── Logo ── */}
-          <Link href="/" className="flex-shrink-0">
-            <span
-              style={{
-                fontSize: "20px",
-                fontWeight: 800,
-                letterSpacing: "-0.03em",
-                color: "#fff",
-                fontFamily: "'Syne', system-ui, sans-serif",
-                lineHeight: 1,
-              }}
-            >
-              Hire<span style={{ color: "#a78bfa" }}>X</span>
-            </span>
-          </Link>
-
-          {/* ── Center links ── */}
-          <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
-            {[
-              { href: "#features", label: "Features" },
-              { href: "#how-it-works", label: "How it works" },
-              { href: "#pricing", label: "Pricing" },
-            ].map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="text-[13px] font-medium text-gray-500 hover:text-white transition-colors duration-150 px-4 py-2 rounded-xl hover:bg-white/[0.05]"
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-
-          {/* ── Right CTAs ── */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Thin divider — desktop only */}
-            <div
-              className="hidden md:block w-px h-4 mx-1"
-              style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
-            />
-
-            <Link
-              href="/login"
-              className="hidden sm:block text-[13px] font-medium text-gray-500 hover:text-white transition-colors duration-150 px-3 py-2 rounded-xl hover:bg-white/[0.05]"
-            >
-              Sign in
-            </Link>
-
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 text-[13px] font-bold text-white px-4 py-2 rounded-xl transition-all duration-150"
-              style={{
-                background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
-                boxShadow:
-                  "0 2px 14px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
-              }}
-            >
-              Get started
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        </nav>
-      </div>
+      <LandingNavbar />
 
       {/* ─── Hero ───────────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center px-6 pt-28 pb-24 overflow-hidden">
@@ -159,7 +86,7 @@ export default function LandingPage() {
             >
               <Sparkles className="w-2.5 h-2.5 text-brand-400" />
               <span className="text-[9px] font-bold text-brand-400 tracking-wide uppercase">
-                Gemini Powered
+                Anthropic Claude
               </span>
             </div>
           </div>
@@ -539,8 +466,8 @@ export default function LandingPage() {
               },
               {
                 n: "03",
-                title: "Gemini scores every CV",
-                body: "Google Gemini analyses each application against your requirements. Match score, summary, strengths, gaps — automatically, in the background, in under 60 seconds.",
+                title: "Claude scores every CV",
+                body: "Claude AI analyses each application against your requirements. Match score, summary, strengths, gaps — automatically, in the background, in under 60 seconds.",
                 tint: "from-brand-600/10 to-transparent",
               },
               {
@@ -964,7 +891,15 @@ function Logo() {
           lineHeight: 1,
         }}
       >
-        Hire<span style={{ color: "#a78bfa" }}>X</span>
+        Hire
+        <span
+          style={{
+            color: "#a78bfa",
+            fontFamily: "'Syne', system-ui, sans-serif",
+          }}
+        >
+          X
+        </span>
       </span>
     </Link>
   );

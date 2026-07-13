@@ -45,8 +45,8 @@ export default function DashboardError({
         className="text-[14px] mb-8 max-w-sm leading-relaxed"
         style={{ color: "rgba(255,255,255,0.35)" }}
       >
-        {error.message ||
-          "An unexpected error occurred on this page. Your data is safe — this is just a display issue."}
+        This page ran into a problem loading. Your data is safe — this is
+        just a display issue. Try again, or head back to your overview.
       </p>
 
       <div className="flex items-center gap-3">

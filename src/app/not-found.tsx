@@ -1,27 +1,14 @@
-"use client";
-
-import { useEffect } from "react";
 import Link from "next/link";
 
 /**
- * App-level error boundary for public routes (landing page, job board, etc.)
+ * Custom 404 — shown for any route that doesn't match, anywhere in the app.
  */
-export default function AppError({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
-  useEffect(() => {
-    console.error("[AppError]", error);
-  }, [error]);
-
+export default function NotFound() {
   return (
     <div
       style={{
         minHeight: "100vh",
-        background: "#0a0a0f",
+        background: "#04040e",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -45,7 +32,7 @@ export default function AppError({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          marginBottom: 20,
+          marginBottom: 24,
         }}
       >
         <span
@@ -62,7 +49,20 @@ export default function AppError({
         </span>
       </div>
 
-      <h2
+      <p
+        style={{
+          fontSize: 13,
+          fontWeight: 700,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: "#a78bfa",
+          marginBottom: 12,
+        }}
+      >
+        404
+      </p>
+
+      <h1
         style={{
           fontSize: 22,
           fontWeight: 700,
@@ -70,8 +70,8 @@ export default function AppError({
           marginBottom: 8,
         }}
       >
-        We hit a snag
-      </h2>
+        We can&apos;t find that page
+      </h1>
 
       <p
         style={{
@@ -82,13 +82,13 @@ export default function AppError({
           maxWidth: 360,
         }}
       >
-        This page ran into a problem loading. Nothing you did caused this —
-        try again, or head back home.
+        It may have been moved, closed, or the link might be out of date.
+        Let&apos;s get you back on track.
       </p>
 
       <div style={{ display: "flex", gap: 12 }}>
-        <button
-          onClick={reset}
+        <Link
+          href="/"
           style={{
             padding: "10px 20px",
             borderRadius: 12,
@@ -97,15 +97,15 @@ export default function AppError({
             color: "#a78bfa",
             fontSize: 14,
             fontWeight: 600,
-            cursor: "pointer",
+            textDecoration: "none",
             fontFamily: "inherit",
           }}
         >
-          Try again
-        </button>
+          Go home
+        </Link>
 
         <Link
-          href="/"
+          href="/jobs"
           style={{
             padding: "10px 20px",
             borderRadius: 12,
@@ -118,22 +118,9 @@ export default function AppError({
             fontFamily: "inherit",
           }}
         >
-          Go home
+          Browse jobs
         </Link>
       </div>
-
-      {error.digest && (
-        <p
-          style={{
-            marginTop: 24,
-            fontSize: 11,
-            fontFamily: "monospace",
-            color: "rgba(255,255,255,0.15)",
-          }}
-        >
-          Reference: {error.digest}
-        </p>
-      )}
     </div>
   );
 }
