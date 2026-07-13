@@ -1,5 +1,4 @@
 import Link from "next/link";
-import HeroParticles from "@/components/HeroParticles";
 import {
   ArrowRight,
   Brain,
@@ -132,8 +131,6 @@ export default function LandingPage() {
             }}
           />
 
-          {/* ── Flowing particles (canvas) ── */}
-          <HeroParticles />
         </div>
 
         {/* ── Hero content — single column, spacious ── */}
