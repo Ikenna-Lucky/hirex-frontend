@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { Loader2, ArrowRight } from "lucide-react";
 import { authApi } from "@/lib/api";
 import { setStoredCompany } from "@/lib/auth";
+import { getErrorMessage } from "@/lib/utils";
 import type { ApiResponse, Company } from "@/types";
 import type { AxiosError } from "axios";
 
@@ -128,7 +129,9 @@ export default function RegisterPage() {
       if (msg?.toLowerCase().includes("email")) {
         setErrors({ email: "This email is already registered." });
       } else {
-        toast.error(msg ?? "Something went wrong. Please try again.");
+        toast.error(
+          getErrorMessage(err, "Something went wrong. Please try again."),
+        );
       }
     } finally {
       setLoading(false);
