@@ -37,7 +37,15 @@ export default function PrivacyPolicyPage() {
                 lineHeight: 1,
               }}
             >
-              Hire<span style={{ color: "#a78bfa" }}>X</span>
+              Hire
+              <span
+                style={{
+                  color: "#a78bfa",
+                  fontFamily: "'Syne', system-ui, sans-serif",
+                }}
+              >
+                X
+              </span>
             </span>
           </Link>
 

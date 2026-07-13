@@ -181,7 +181,15 @@ export default function DashboardLayout({
                 fontFamily: "'Syne', system-ui, sans-serif",
               }}
             >
-              Hire<span style={{ color: "#a78bfa" }}>X</span>
+              Hire
+              <span
+                style={{
+                  color: "#a78bfa",
+                  fontFamily: "'Syne', system-ui, sans-serif",
+                }}
+              >
+                X
+              </span>
             </span>
           </Link>
           <button

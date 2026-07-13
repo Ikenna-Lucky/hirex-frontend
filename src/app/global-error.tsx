@@ -35,22 +35,33 @@ export default function GlobalError({
         }}
       >
         <div style={{ maxWidth: 400 }}>
-          {/* Icon */}
+          {/* HireX mark */}
           <div
             style={{
-              width: 64,
-              height: 64,
-              borderRadius: 20,
-              background: "rgba(239,68,68,0.1)",
-              border: "1px solid rgba(239,68,68,0.2)",
+              width: 56,
+              height: 56,
+              borderRadius: 16,
+              background:
+                "linear-gradient(135deg, rgba(124,58,237,0.14), rgba(109,40,217,0.06))",
+              border: "1px solid rgba(124,58,237,0.25)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              margin: "0 auto 20px",
-              fontSize: 28,
+              margin: "0 auto 24px",
             }}
           >
-            ⚠️
+            <span
+              style={{
+                fontSize: 19,
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                fontFamily: "'Syne', ui-sans-serif, system-ui, sans-serif",
+                color: "#fff",
+                lineHeight: 1,
+              }}
+            >
+              Hire<span style={{ color: "#a78bfa" }}>X</span>
+            </span>
           </div>
 
           <h1
@@ -61,7 +72,7 @@ export default function GlobalError({
               marginBottom: 8,
             }}
           >
-            Something went wrong
+            We hit a snag
           </h1>
 
           <p
@@ -72,29 +83,50 @@ export default function GlobalError({
               marginBottom: 28,
             }}
           >
-            {error.message ||
-              "A critical error occurred. Please refresh the page to continue."}
+            Something went wrong loading HireX. Nothing you did caused this —
+            please refresh to try again.
           </p>
 
-          <button
-            onClick={reset}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "10px 20px",
-              borderRadius: 12,
-              border: "1px solid rgba(124,58,237,0.3)",
-              background: "rgba(124,58,237,0.15)",
-              color: "#a78bfa",
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: "pointer",
-              fontFamily: "inherit",
-            }}
-          >
-            Try again
-          </button>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+            <button
+              onClick={reset}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "10px 20px",
+                borderRadius: 12,
+                border: "1px solid rgba(124,58,237,0.3)",
+                background: "rgba(124,58,237,0.15)",
+                color: "#a78bfa",
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              Try again
+            </button>
+
+            <a
+              href="/"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                padding: "10px 20px",
+                borderRadius: 12,
+                border: "1px solid rgba(255,255,255,0.1)",
+                background: "rgba(255,255,255,0.05)",
+                color: "rgba(255,255,255,0.5)",
+                fontSize: 14,
+                fontWeight: 500,
+                textDecoration: "none",
+                fontFamily: "inherit",
+              }}
+            >
+              Go home
+            </a>
+          </div>
 
           {error.digest && (
             <p
@@ -105,7 +137,7 @@ export default function GlobalError({
                 color: "rgba(255,255,255,0.15)",
               }}
             >
-              Error ID: {error.digest}
+              Reference: {error.digest}
             </p>
           )}
         </div>
