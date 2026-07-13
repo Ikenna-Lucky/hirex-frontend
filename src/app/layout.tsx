@@ -3,7 +3,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "HireX — AI-Powered Recruitment", template: "%s | HireX" },
+  title: { default: "HireX | AI-Powered Recruitment", template: "%s | HireX" },
   description:
     "Stop drowning in CVs. HireX reads every application, scores it against your job requirements, and tells you exactly who to call.",
   keywords: [
