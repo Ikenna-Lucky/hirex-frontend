@@ -43,7 +43,7 @@ type FormState = {
   size: string;
 };
 
-/* ─── Input style helpers ─────────────────────────────────── */
+/* Input style helpers */
 const baseInput =
   "w-full rounded-xl px-4 py-3 text-[13.5px] text-white placeholder-gray-700 focus:outline-none transition";
 
@@ -306,7 +306,7 @@ export default function RegisterPage() {
   );
 }
 
-/* ─── Field wrapper ───────────────────────────────────────── */
+/* Field wrapper */
 function Field({
   label,
   error,

@@ -16,6 +16,8 @@ import {
   Storefront,
   Lock,
   Camera,
+  CheckCircle,
+  WarningCircle,
 } from "@phosphor-icons/react";
 import { authApi } from "@/lib/api";
 import { getStoredCompany, setStoredCompany } from "@/lib/auth";
@@ -63,6 +65,8 @@ export default function SettingsPage() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [hovering, setHovering] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -83,6 +87,7 @@ export default function SettingsPage() {
     if (stored?.logoUrl) {
       setLogoUrl(stored.logoUrl);
     }
+    if (stored) setIsVerified(!!stored.isVerified);
 
     authApi
       .me()
@@ -97,6 +102,7 @@ export default function SettingsPage() {
           description: c.description ?? "",
         });
         if (c.logoUrl) setLogoUrl(c.logoUrl);
+        setIsVerified(!!c.isVerified);
       })
       .catch(() => {
         if (stored) {
@@ -198,6 +204,22 @@ export default function SettingsPage() {
       toast.error(error.response?.data?.message ?? "Failed to save changes.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  /* ── Resend verification email ───────────────────────── */
+  const handleResendVerification = async () => {
+    setResending(true);
+    try {
+      await authApi.resendVerification();
+      toast.success("Verification email sent — check your inbox.");
+    } catch (err) {
+      const error = err as AxiosError<{ message?: string }>;
+      toast.error(
+        error.response?.data?.message ?? "Failed to send verification email.",
+      );
+    } finally {
+      setResending(false);
     }
   };
 
@@ -600,6 +622,54 @@ export default function SettingsPage() {
               Email address cannot be changed. Contact support if you need to
               update it.
             </p>
+          </Field>
+
+          <Field label="Email verification">
+            {isVerified ? (
+              <div
+                className="flex items-center gap-2 px-4 py-3 rounded-xl text-[13px] font-medium"
+                style={{
+                  background: "rgba(16,185,129,0.08)",
+                  border: "1px solid rgba(16,185,129,0.2)",
+                  color: "#34d399",
+                }}
+              >
+                <CheckCircle weight="fill" size={16} />
+                Your email is verified
+              </div>
+            ) : (
+              <div
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 rounded-xl"
+                style={{
+                  background: "rgba(245,158,11,0.08)",
+                  border: "1px solid rgba(245,158,11,0.2)",
+                }}
+              >
+                <div
+                  className="flex items-center gap-2 text-[13px] font-medium"
+                  style={{ color: "#fbbf24" }}
+                >
+                  <WarningCircle weight="fill" size={16} />
+                  Your email isn&apos;t verified yet
+                </div>
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  disabled={resending}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "#fff",
+                  }}
+                >
+                  {resending ? (
+                    <CircleNotch size={13} className="animate-spin" />
+                  ) : null}
+                  {resending ? "Sending…" : "Resend verification email"}
+                </button>
+              </div>
+            )}
           </Field>
         </SettingsSection>
 
