@@ -24,7 +24,7 @@ import { candidatesApi, applicationsApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import type { ApplicationStage } from "@/types";
 
-/* ── Types ─────────────────────────────────────────────── */
+/* Types */
 interface CandidateApplication {
   id: string;
   stage: ApplicationStage;
@@ -54,7 +54,7 @@ interface CandidateDetail {
   applicationCount: number;
 }
 
-/* ── Helpers ────────────────────────────────────────────── */
+/* Helpers */
 function hue(name: string) {
   return name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
 }
@@ -84,7 +84,7 @@ function scoreColor(score: number) {
   return score >= 75 ? "#34d399" : score >= 50 ? "#fbbf24" : "#f87171";
 }
 
-/* ── Avatar ─────────────────────────────────────────────── */
+/* Avatar */
 function Avatar({ name, size = 56 }: { name: string; size?: number }) {
   const h = hue(name);
   const parts = name.trim().split(" ");
@@ -107,9 +107,7 @@ function Avatar({ name, size = 56 }: { name: string; size?: number }) {
   );
 }
 
-/* ════════════════════════════════════════════════════════
-   PAGE
-════════════════════════════════════════════════════════ */
+/* PAGE */
 export default function CandidateDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [candidate, setCandidate] = useState<CandidateDetail | null>(null);
@@ -330,7 +328,7 @@ export default function CandidateDetailPage() {
   );
 }
 
-/* ── Application card ───────────────────────────────────── */
+/* Application card */
 function ApplicationCard({
   app,
   candidateId,
@@ -371,7 +369,7 @@ function ApplicationCard({
           : "1px solid rgba(255,255,255,0.06)",
       }}
     >
-      {/* ── Main row ── */}
+      {/* Main row */}
       <div className="flex items-center gap-4 px-5 py-4">
         {/* AI score */}
         {hasAi ? (
@@ -527,7 +525,7 @@ function ApplicationCard({
         </div>
       </div>
 
-      {/* ── Expanded content ── */}
+      {/* Expanded content */}
       {expanded && (
         <div
           className="px-5 py-5 space-y-5"
@@ -702,7 +700,7 @@ function ApplicationCard({
   );
 }
 
-/* ── Skeleton ───────────────────────────────────────────── */
+/* Skeleton */
 function Bone({ style }: { style?: React.CSSProperties }) {
   return (
     <div

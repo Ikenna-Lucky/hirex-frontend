@@ -19,7 +19,7 @@ import {
 } from "@phosphor-icons/react";
 import { candidatesApi } from "@/lib/api";
 
-/* ── Types ─────────────────────────────────────────────── */
+/* Types */
 interface LatestApplication {
   id: string;
   stage: string;
@@ -42,7 +42,7 @@ interface CandidateRow {
   latestApplication: LatestApplication;
 }
 
-/* ── Helpers ────────────────────────────────────────────── */
+/* Helpers */
 function hue(name: string) {
   return name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
 }
@@ -61,7 +61,7 @@ function stageColor(stage: string) {
   return STAGE_COLORS[stage] ?? "#a78bfa";
 }
 
-/* ── Avatar ─────────────────────────────────────────────── */
+/* Avatar */
 function Avatar({
   firstName,
   lastName,
@@ -83,7 +83,7 @@ function Avatar({
   );
 }
 
-/* ── Score badge ────────────────────────────────────────── */
+/* Score badge */
 function ScoreBadge({ app }: { app: LatestApplication }) {
   if (app.scoringStatus === "completed" && app.aiScore != null) {
     const color =
@@ -266,7 +266,7 @@ export default function CandidatesPage() {
   );
 }
 
-/* ── Candidate row card ─────────────────────────────────── */
+/* Candidate row card */
 function CandidateRowCard({ candidate: c }: { candidate: CandidateRow }) {
   const app = c.latestApplication;
   const router = useRouter();
@@ -297,7 +297,7 @@ function CandidateRowCard({ candidate: c }: { candidate: CandidateRow }) {
       <Avatar firstName={c.firstName} lastName={c.lastName} />
       <ScoreBadge app={app} />
 
-      {/* Name + meta ─────────────────────────────── */}
+      {/* Name + meta  */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2.5 flex-wrap">
           <p className="text-[15px] font-semibold text-white group-hover:text-violet-300 transition-colors">
@@ -339,7 +339,7 @@ function CandidateRowCard({ candidate: c }: { candidate: CandidateRow }) {
         </div>
       </div>
 
-      {/* Social links ───────────────────────────────── */}
+      {/* Social links */}
       <div className="flex items-center gap-3 flex-shrink-0">
         {c.linkedinUrl && (
           <a
@@ -383,7 +383,7 @@ function CandidateRowCard({ candidate: c }: { candidate: CandidateRow }) {
   );
 }
 
-/* ── Empty state ────────────────────────────────────────── */
+/* Empty state */
 function EmptyState({ hasSearch }: { hasSearch: boolean }) {
   return (
     <div
@@ -426,7 +426,7 @@ function EmptyState({ hasSearch }: { hasSearch: boolean }) {
   );
 }
 
-/* ── Pagination button ──────────────────────────────────── */
+/* Pagination button */
 function PagBtn({
   disabled,
   onClick,
@@ -452,7 +452,7 @@ function PagBtn({
   );
 }
 
-/* ── Skeleton ───────────────────────────────────────────── */
+/* Skeleton */
 function Bone({ style }: { style?: React.CSSProperties }) {
   return (
     <div

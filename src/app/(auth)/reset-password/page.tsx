@@ -1,77 +1,110 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, ArrowRight } from "lucide-react";
+import toast from "react-hot-toast";
 import { authApi } from "@/lib/api";
-import { setStoredCompany } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/utils";
-import type { ApiResponse, Company } from "@/types";
 
-export default function LoginPage() {
+function ResetPasswordForm() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "" });
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") ?? "";
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ password: "", confirmPassword: "" });
+  const [errors, setErrors] = useState<{
+    password?: string;
+    confirmPassword?: string;
+  }>({});
+
+  const validate = () => {
+    const next: typeof errors = {};
+    if (form.password.length < 8) next.password = "Min. 8 characters.";
+    if (form.password !== form.confirmPassword)
+      next.confirmPassword = "Passwords don't match.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!token) {
+      toast.error("This reset link is missing its token. Request a new one.");
+      return;
+    }
+    if (!validate()) return;
+
     setLoading(true);
     try {
-      const res = await authApi.login(form);
-      const body = res.data as ApiResponse<{ company: Company }>;
-      if (body.data) {
-        setStoredCompany({
-          id: body.data.company.id,
-          name: body.data.company.name,
-          email: body.data.company.email,
-          logoUrl: body.data.company.logoUrl,
-          industry: body.data.company.industry,
-          isVerified: body.data.company.isVerified,
-        });
-        toast.success("Welcome back!");
-        router.push("/dashboard");
-      }
+      await authApi.resetPassword(token, form.password);
+      toast.success("Password reset. Please sign in.");
+      router.push("/login");
     } catch (err) {
-      toast.error(getErrorMessage(err, "Invalid credentials."));
+      toast.error(
+        getErrorMessage(err, "This reset link is invalid or has expired."),
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  if (!token) {
+    return (
+      <div className="w-full max-w-[380px]">
+        <div className="mb-8">
+          <p className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.25em] mb-3">
+            Invalid link
+          </p>
+          <h1 className="text-[1.85rem] font-black text-white tracking-tight leading-tight mb-2">
+            This link isn&apos;t valid
+          </h1>
+          <p className="text-[14px] text-gray-600 leading-relaxed">
+            It may have expired, or the link is incomplete. Request a new one
+            below.
+          </p>
+        </div>
+        <Link
+          href="/forgot-password"
+          className="inline-flex items-center gap-2 text-[13px] font-semibold text-brand-400 hover:text-brand-300 transition-colors"
+        >
+          Request a new link
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-[380px]">
-      {/* Heading */}
       <div className="mb-8">
         <p className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.25em] mb-3">
-          Welcome back
+          Reset password
         </p>
         <h1 className="text-[1.85rem] font-black text-white tracking-tight leading-tight mb-2">
-          Sign in to HireX
+          Choose a new password
         </h1>
         <p className="text-[14px] text-gray-600 leading-relaxed">
-          Your hiring pipeline is waiting.
+          Make it something you haven&apos;t used before.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Email */}
         <div>
           <label className="block text-[10px] font-bold text-gray-600 uppercase tracking-[0.18em] mb-2">
-            Work email
+            New password
           </label>
           <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
+            type="password"
+            value={form.password}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, password: e.target.value }))
+            }
             required
-            autoComplete="email"
-            placeholder="you@company.com"
+            autoComplete="new-password"
+            placeholder="Min. 8 characters"
             className="w-full rounded-xl px-4 py-3.5 text-[14px] text-white placeholder-gray-700 focus:outline-none transition"
             style={{
               backgroundColor: "rgba(255,255,255,0.04)",
@@ -87,29 +120,24 @@ export default function LoginPage() {
               e.currentTarget.style.boxShadow = "none";
             }}
           />
+          {errors.password && (
+            <p className="mt-1.5 text-[11px] text-red-400">{errors.password}</p>
+          )}
         </div>
 
-        {/* Password */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-[10px] font-bold text-gray-600 uppercase tracking-[0.18em]">
-              Password
-            </label>
-            <Link
-              href="/forgot-password"
-              className="text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition-colors"
-            >
-              Forgot password?
-            </Link>
-          </div>
+          <label className="block text-[10px] font-bold text-gray-600 uppercase tracking-[0.18em] mb-2">
+            Confirm new password
+          </label>
           <input
             type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
+            value={form.confirmPassword}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, confirmPassword: e.target.value }))
+            }
             required
-            autoComplete="current-password"
-            placeholder="Enter your password"
+            autoComplete="new-password"
+            placeholder="Repeat your password"
             className="w-full rounded-xl px-4 py-3.5 text-[14px] text-white placeholder-gray-700 focus:outline-none transition"
             style={{
               backgroundColor: "rgba(255,255,255,0.04)",
@@ -125,9 +153,13 @@ export default function LoginPage() {
               e.currentTarget.style.boxShadow = "none";
             }}
           />
+          {errors.confirmPassword && (
+            <p className="mt-1.5 text-[11px] text-red-400">
+              {errors.confirmPassword}
+            </p>
+          )}
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
@@ -141,32 +173,24 @@ export default function LoginPage() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Signing in…
+              Resetting…
             </>
           ) : (
             <>
-              Sign in
+              Reset password
               <ArrowRight className="w-4 h-4" />
             </>
           )}
         </button>
       </form>
-
-      {/* Divider + register link */}
-      <div
-        className="mt-8 pt-7 border-t text-center"
-        style={{ borderColor: "rgba(255,255,255,0.05)" }}
-      >
-        <p className="text-[13px] text-gray-600">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/register"
-            className="text-brand-400 hover:text-brand-300 font-semibold transition-colors"
-          >
-            Create one free
-          </Link>
-        </p>
-      </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

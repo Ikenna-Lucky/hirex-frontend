@@ -2,64 +2,76 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Loader2, ArrowRight, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
-import { Loader2, ArrowRight } from "lucide-react";
 import { authApi } from "@/lib/api";
-import { setStoredCompany } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/utils";
-import type { ApiResponse, Company } from "@/types";
 
-export default function LoginPage() {
-  const router = useRouter();
+export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "" });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const [sent, setSent] = useState(false);
+  const [email, setEmail] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await authApi.login(form);
-      const body = res.data as ApiResponse<{ company: Company }>;
-      if (body.data) {
-        setStoredCompany({
-          id: body.data.company.id,
-          name: body.data.company.name,
-          email: body.data.company.email,
-          logoUrl: body.data.company.logoUrl,
-          industry: body.data.company.industry,
-          isVerified: body.data.company.isVerified,
-        });
-        toast.success("Welcome back!");
-        router.push("/dashboard");
-      }
+      await authApi.forgotPassword(email);
+      // API always returns a generic success message, whether or not the
+      // email exists — don't let this screen leak which emails are registered.
+      setSent(true);
     } catch (err) {
-      toast.error(getErrorMessage(err, "Invalid credentials."));
+      toast.error(
+        getErrorMessage(err, "Something went wrong. Please try again."),
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  if (sent) {
+    return (
+      <div className="w-full max-w-[380px]">
+        <div className="mb-8">
+          <p className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.25em] mb-3">
+            Check your inbox
+          </p>
+          <h1 className="text-[1.85rem] font-black text-white tracking-tight leading-tight mb-2">
+            Reset link sent
+          </h1>
+          <p className="text-[14px] text-gray-600 leading-relaxed">
+            If an account exists for{" "}
+            <span className="text-gray-400">{email}</span>, a password reset
+            link is on its way. It expires in 1 hour.
+          </p>
+        </div>
+
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-2 text-[13px] font-semibold text-brand-400 hover:text-brand-300 transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Back to sign in
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-[380px]">
-      {/* Heading */}
       <div className="mb-8">
         <p className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.25em] mb-3">
-          Welcome back
+          Forgot password
         </p>
         <h1 className="text-[1.85rem] font-black text-white tracking-tight leading-tight mb-2">
-          Sign in to HireX
+          Reset your password
         </h1>
         <p className="text-[14px] text-gray-600 leading-relaxed">
-          Your hiring pipeline is waiting.
+          Enter your work email and we&apos;ll send you a link to reset it.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Email */}
         <div>
           <label className="block text-[10px] font-bold text-gray-600 uppercase tracking-[0.18em] mb-2">
             Work email
@@ -67,8 +79,8 @@ export default function LoginPage() {
           <input
             type="email"
             name="email"
-            value={form.email}
-            onChange={handleChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
             placeholder="you@company.com"
@@ -89,45 +101,6 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* Password */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-[10px] font-bold text-gray-600 uppercase tracking-[0.18em]">
-              Password
-            </label>
-            <Link
-              href="/forgot-password"
-              className="text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition-colors"
-            >
-              Forgot password?
-            </Link>
-          </div>
-          <input
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            autoComplete="current-password"
-            placeholder="Enter your password"
-            className="w-full rounded-xl px-4 py-3.5 text-[14px] text-white placeholder-gray-700 focus:outline-none transition"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.border = "1px solid rgba(124,58,237,0.5)";
-              e.currentTarget.style.boxShadow =
-                "0 0 0 3px rgba(124,58,237,0.08)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          />
-        </div>
-
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
@@ -141,29 +114,28 @@ export default function LoginPage() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Signing in…
+              Sending…
             </>
           ) : (
             <>
-              Sign in
+              Send reset link
               <ArrowRight className="w-4 h-4" />
             </>
           )}
         </button>
       </form>
 
-      {/* Divider + register link */}
       <div
         className="mt-8 pt-7 border-t text-center"
         style={{ borderColor: "rgba(255,255,255,0.05)" }}
       >
         <p className="text-[13px] text-gray-600">
-          Don&apos;t have an account?{" "}
+          Remembered it after all?{" "}
           <Link
-            href="/register"
+            href="/login"
             className="text-brand-400 hover:text-brand-300 font-semibold transition-colors"
           >
-            Create one free
+            Sign in
           </Link>
         </p>
       </div>

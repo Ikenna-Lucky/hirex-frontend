@@ -86,9 +86,7 @@ const PAID_PLANS = [
   },
 ];
 
-/* ════════════════════════════════════════════════════════════
-   PAGE WRAPPER  (required for useSearchParams)
-════════════════════════════════════════════════════════════ */
+/* PAGE WRAPPER  (required for useSearchParams) */
 export default function BillingPage() {
   return (
     <Suspense
@@ -107,9 +105,7 @@ export default function BillingPage() {
   );
 }
 
-/* ════════════════════════════════════════════════════════════
-   BILLING CONTENT
-════════════════════════════════════════════════════════════ */
+/* BILLING CONTENT */
 function BillingContent() {
   const searchParams = useSearchParams();
   const [sub, setSub] = useState<SubStatus | null>(null);
@@ -166,7 +162,7 @@ function BillingContent() {
     }
   }
 
-  /* ── Loading ── */
+  /* Loading */
   if (loading || verifying) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-3">
@@ -196,7 +192,7 @@ function BillingContent() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* ── Hero header ── */}
+      {/* Hero header */}
       <div
         className="relative rounded-2xl overflow-hidden px-5 py-5 md:px-8 md:py-7 anim-1"
         style={{
@@ -246,7 +242,7 @@ function BillingContent() {
         </div>
       </div>
 
-      {/* ── Active subscription banner ── */}
+      {/* Active subscription banner */}
       {isActive && (
         <div
           className="flex items-center gap-4 p-5 rounded-2xl anim-2"
@@ -291,7 +287,7 @@ function BillingContent() {
         </div>
       )}
 
-      {/* ── Free quota exhausted banner ── */}
+      {/* Free quota exhausted banner */}
       {!isActive && quotaExhausted && (
         <div
           className="flex items-center gap-4 p-5 rounded-2xl anim-2"
@@ -324,16 +320,16 @@ function BillingContent() {
         </div>
       )}
 
-      {/* ── Plan cards ── */}
+      {/* Plan cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 anim-2">
-        {/* ─ Free tier card ─ */}
+        {/* Free tier card */}
         <FreePlanCard
           jobsUsed={jobsUsed}
           freeLimit={freeLimit}
           isCurrent={!isActive}
         />
 
-        {/* ─ Paid plans ─ */}
+        {/* Paid plans */}
         {PAID_PLANS.map((plan) => {
           const isCurrent = isActive && currentPlanKey === plan.key;
           const isLoading = initiating === plan.key;
@@ -515,7 +511,7 @@ function BillingContent() {
         })}
       </div>
 
-      {/* ── Footer note ── */}
+      {/* Footer note */}
       <div
         className="flex items-center justify-center gap-2 pb-2 anim-4"
         style={{ color: "rgba(255,255,255,0.18)" }}
@@ -530,9 +526,7 @@ function BillingContent() {
   );
 }
 
-/* ════════════════════════════════════════════════════════════
-   FREE PLAN CARD
-════════════════════════════════════════════════════════════ */
+/* FREE PLAN CARD */
 function FreePlanCard({
   jobsUsed,
   freeLimit,

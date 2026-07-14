@@ -11,7 +11,7 @@ export default function AuthLayout({
       className="min-h-screen flex items-start md:items-center justify-center p-4 md:p-8"
       style={{ backgroundColor: "#04040e" }}
     >
-      {/* ── Floating centered card ── */}
+      {/* Floating centered card */}
       <div
         className="w-full max-w-[1040px] flex rounded-3xl overflow-hidden md:h-[680px] md:max-h-[85vh]"
         style={{
@@ -20,7 +20,7 @@ export default function AuthLayout({
             "0 0 0 1px rgba(255,255,255,0.02) inset, 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(124,58,237,0.06)",
         }}
       >
-        {/* ─── Left — Form panel ─────────────────────────────── */}
+        {/* Left — Form panel */}
         <div
           className="flex-1 flex flex-col min-w-0 min-h-0"
           style={{ backgroundColor: "#08081a" }}
@@ -64,7 +64,7 @@ export default function AuthLayout({
           </div>
         </div>
 
-        {/* ─── Right — Visual panel ──────────────────────────── */}
+        {/* Right — Visual panel */}
         <div
           className="hidden lg:flex w-[460px] xl:w-[500px] flex-shrink-0 relative overflow-hidden"
           style={{ backgroundColor: "#06061a" }}
