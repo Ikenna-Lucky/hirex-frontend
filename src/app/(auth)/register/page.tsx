@@ -4,7 +4,18 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Loader2, ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  Briefcase,
+  Building2,
+  ChevronDown,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  Mail,
+  Users,
+} from "lucide-react";
 import { authApi } from "@/lib/api";
 import { setStoredCompany } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/utils";
@@ -27,10 +38,10 @@ const INDUSTRIES = [
 ];
 
 const COMPANY_SIZES = [
-  { value: "1-10", label: "1–10 employees" },
-  { value: "11-50", label: "11–50 employees" },
-  { value: "51-200", label: "51–200 employees" },
-  { value: "201-500", label: "201–500 employees" },
+  { value: "1-10", label: "1-10 employees" },
+  { value: "11-50", label: "11-50 employees" },
+  { value: "51-200", label: "51-200 employees" },
+  { value: "201-500", label: "201-500 employees" },
   { value: "500+", label: "500+ employees" },
 ];
 
@@ -43,29 +54,14 @@ type FormState = {
   size: string;
 };
 
-/* Input style helpers */
-const baseInput =
-  "w-full rounded-xl px-4 py-3 text-[13.5px] text-white placeholder-gray-700 focus:outline-none transition";
-
-const baseStyle = {
-  backgroundColor: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
-};
-
-const focusHandlers = {
-  onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
-    e.currentTarget.style.border = "1px solid rgba(124,58,237,0.5)";
-    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.08)";
-  },
-  onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
-    e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
-    e.currentTarget.style.boxShadow = "none";
-  },
-};
+const inputClass =
+  "w-full rounded-xl border border-white/[0.08] bg-white/[0.045] px-4 py-2.5 text-[13.5px] text-white outline-none transition placeholder:text-gray-700 focus:border-violet-400/55 focus:bg-white/[0.065] focus:shadow-[0_0_0_3px_rgba(124,58,237,0.1)]";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
@@ -83,17 +79,19 @@ export default function RegisterPage() {
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    if (errors[name as keyof FormState])
+    if (errors[name as keyof FormState]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const validate = () => {
     const next: typeof errors = {};
     if (!form.name.trim()) next.name = "Company name is required.";
     if (!form.email.trim()) next.email = "Email is required.";
-    if (form.password.length < 8) next.password = "Min. 8 characters.";
-    if (form.password !== form.confirmPassword)
-      next.confirmPassword = "Passwords don't match.";
+    if (form.password.length < 8) next.password = "Use at least 8 characters.";
+    if (form.password !== form.confirmPassword) {
+      next.confirmPassword = "Passwords do not match.";
+    }
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -120,7 +118,7 @@ export default function RegisterPage() {
           industry: body.data.company.industry,
           isVerified: body.data.company.isVerified,
         });
-        toast.success("Account created! Welcome to HireX.");
+        toast.success("Account created. Welcome to HireX.");
         router.push("/dashboard");
       }
     } catch (err) {
@@ -139,164 +137,145 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="w-full max-w-[400px]">
-      {/* Heading */}
-      <div className="mb-7">
-        <p className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.25em] mb-3">
-          Get started free
+    <div className="w-full max-w-[420px]">
+      <div className="mb-4">
+        <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300">
+          Create workspace
         </p>
-        <h1 className="text-[1.85rem] font-black text-white tracking-tight leading-tight mb-2">
-          Start hiring smarter
+        <h1 className="text-[1.7rem] font-black leading-tight tracking-tight text-white">
+          Start hiring with a cleaner candidate pipeline.
         </h1>
-        <p className="text-[14px] text-gray-600 leading-relaxed">
-          Set up HireX for your company in under two minutes.
+        <p className="mt-2 text-[13.5px] leading-6 text-gray-500">
+          Create your company account, post your first role, and start receiving
+          scored CVs.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3.5">
-        {/* Company name */}
+      <form onSubmit={handleSubmit} className="space-y-2.5">
         <Field label="Company name" error={errors.name}>
-          <input
-            type="text"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            required
-            placeholder="Acme Corp"
-            className={baseInput}
-            style={{ ...baseStyle }}
-            {...focusHandlers}
-          />
-        </Field>
-
-        {/* Work email */}
-        <Field label="Work email" error={errors.email}>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            autoComplete="email"
-            placeholder="you@company.com"
-            className={baseInput}
-            style={{ ...baseStyle }}
-            {...focusHandlers}
-          />
-        </Field>
-
-        {/* Industry + Size — two columns */}
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Industry">
-            <select
-              name="industry"
-              value={form.industry}
+          <div className="relative">
+            <Building2 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" />
+            <input
+              type="text"
+              name="name"
+              value={form.name}
               onChange={handleChange}
-              className={baseInput + " appearance-none cursor-pointer"}
-              style={{ ...baseStyle }}
-              {...focusHandlers}
-            >
-              <option value="">Select…</option>
-              {INDUSTRIES.map((i) => (
-                <option key={i} value={i}>
-                  {i}
-                </option>
-              ))}
-            </select>
+              required
+              placeholder="TechNova Solutions"
+              className={`${inputClass} pl-11`}
+            />
+          </div>
+        </Field>
+
+        <Field label="Work email" error={errors.email}>
+          <div className="relative">
+            <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" />
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              autoComplete="email"
+              placeholder="you@company.com"
+              className={`${inputClass} pl-11`}
+            />
+          </div>
+        </Field>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Industry">
+            <SelectShell icon={<Briefcase className="h-4 w-4" />}>
+              <select
+                name="industry"
+                value={form.industry}
+                onChange={handleChange}
+                className={`${inputClass} appearance-none pl-11 pr-10`}
+              >
+                <option value="">Select</option>
+                {INDUSTRIES.map((industry) => (
+                  <option key={industry} value={industry}>
+                    {industry}
+                  </option>
+                ))}
+              </select>
+            </SelectShell>
           </Field>
 
           <Field label="Company size">
-            <select
-              name="size"
-              value={form.size}
-              onChange={handleChange}
-              className={baseInput + " appearance-none cursor-pointer"}
-              style={{ ...baseStyle }}
-              {...focusHandlers}
-            >
-              <option value="">Select…</option>
-              {COMPANY_SIZES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
+            <SelectShell icon={<Users className="h-4 w-4" />}>
+              <select
+                name="size"
+                value={form.size}
+                onChange={handleChange}
+                className={`${inputClass} appearance-none pl-11 pr-10`}
+              >
+                <option value="">Select</option>
+                {COMPANY_SIZES.map((size) => (
+                  <option key={size.value} value={size.value}>
+                    {size.label}
+                  </option>
+                ))}
+              </select>
+            </SelectShell>
           </Field>
         </div>
 
-        {/* Password */}
         <Field label="Password" error={errors.password}>
-          <input
-            type="password"
+          <PasswordInput
             name="password"
             value={form.password}
+            placeholder="At least 8 characters"
+            visible={showPassword}
+            onToggle={() => setShowPassword((value) => !value)}
             onChange={handleChange}
-            required
-            autoComplete="new-password"
-            placeholder="Min. 8 characters"
-            className={baseInput}
-            style={{ ...baseStyle }}
-            {...focusHandlers}
           />
         </Field>
 
-        {/* Confirm password */}
         <Field label="Confirm password" error={errors.confirmPassword}>
-          <input
-            type="password"
+          <PasswordInput
             name="confirmPassword"
             value={form.confirmPassword}
-            onChange={handleChange}
-            required
-            autoComplete="new-password"
             placeholder="Repeat your password"
-            className={baseInput}
-            style={{ ...baseStyle }}
-            {...focusHandlers}
+            visible={showConfirmPassword}
+            onToggle={() => setShowConfirmPassword((value) => !value)}
+            onChange={handleChange}
           />
         </Field>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 text-white font-bold py-3.5 rounded-xl transition-all mt-1 disabled:opacity-50 disabled:cursor-not-allowed text-[14px]"
-          style={{
-            background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
-            boxShadow:
-              "0 4px 20px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
-          }}
+          className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 py-3.5 text-[14px] font-black text-white shadow-lg shadow-violet-950/40 transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-55"
         >
           {loading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" /> Creating account…
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Creating account
             </>
           ) : (
             <>
-              Create account <ArrowRight className="w-4 h-4" />
+              Create company account
+              <ArrowRight className="h-4 w-4" />
             </>
           )}
         </button>
 
-        <p
-          className="text-[11px] text-center leading-relaxed"
-          style={{ color: "rgba(255,255,255,0.2)" }}
-        >
-          By creating an account you agree to our Terms of Service and Privacy
+        <p className="hidden text-center text-[11px] leading-5 text-gray-700 sm:block">
+          By creating an account, you agree to the HireX Terms and Privacy
           Policy.
         </p>
       </form>
 
-      {/* Sign in link */}
       <div
-        className="mt-6 pt-6 border-t text-center"
-        style={{ borderColor: "rgba(255,255,255,0.05)" }}
+        className="mt-4 border-t pt-4 text-center"
+        style={{ borderColor: "rgba(255,255,255,0.06)" }}
       >
-        <p className="text-[13px] text-gray-600">
+        <p className="text-[13px] text-gray-500">
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-brand-400 hover:text-brand-300 font-semibold transition-colors"
+            className="font-bold text-white transition hover:text-violet-200"
           >
             Sign in
           </Link>
@@ -306,7 +285,6 @@ export default function RegisterPage() {
   );
 }
 
-/* Field wrapper */
 function Field({
   label,
   error,
@@ -318,11 +296,69 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-[10px] font-bold text-gray-600 uppercase tracking-[0.18em] mb-2">
+      <label className="mb-1.5 block text-[10.5px] font-bold uppercase tracking-[0.16em] text-gray-500">
         {label}
       </label>
       {children}
       {error && <p className="mt-1.5 text-[11px] text-red-400">{error}</p>}
+    </div>
+  );
+}
+
+function SelectShell({
+  icon,
+  children,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative">
+      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-600">
+        {icon}
+      </span>
+      <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" />
+      {children}
+    </div>
+  );
+}
+
+function PasswordInput({
+  name,
+  value,
+  placeholder,
+  visible,
+  onToggle,
+  onChange,
+}: {
+  name: "password" | "confirmPassword";
+  value: string;
+  placeholder: string;
+  visible: boolean;
+  onToggle: () => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <div className="relative">
+      <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" />
+      <input
+        type={visible ? "text" : "password"}
+        name={name}
+        value={value}
+        onChange={onChange}
+        required
+        autoComplete="new-password"
+        placeholder={placeholder}
+        className={`${inputClass} px-11`}
+      />
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-label={visible ? "Hide password" : "Show password"}
+        className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-gray-600 transition hover:bg-white/[0.06] hover:text-gray-300"
+      >
+        {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
     </div>
   );
 }

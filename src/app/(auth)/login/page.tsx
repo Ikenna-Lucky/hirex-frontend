@@ -4,15 +4,26 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Loader2, ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  Mail,
+} from "lucide-react";
 import { authApi } from "@/lib/api";
 import { setStoredCompany } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/utils";
 import type { ApiResponse, Company } from "@/types";
 
+const inputClass =
+  "w-full rounded-xl border border-white/[0.08] bg-white/[0.045] px-4 py-3.5 text-[14px] text-white outline-none transition placeholder:text-gray-700 focus:border-violet-400/55 focus:bg-white/[0.065] focus:shadow-[0_0_0_3px_rgba(124,58,237,0.1)]";
+
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -44,126 +55,109 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-[380px]">
-      {/* Heading */}
-      <div className="mb-8">
-        <p className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.25em] mb-3">
+    <div className="w-full max-w-[410px] lg:-mt-8">
+      <div className="mb-6">
+        <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300">
           Welcome back
         </p>
-        <h1 className="text-[1.85rem] font-black text-white tracking-tight leading-tight mb-2">
-          Sign in to HireX
+        <h1 className="text-[1.85rem] font-black leading-tight tracking-tight text-white">
+          Sign in to your hiring workspace.
         </h1>
-        <p className="text-[14px] text-gray-600 leading-relaxed">
-          Your hiring pipeline is waiting.
+        <p className="mt-2 text-[14px] leading-6 text-gray-500">
+          Pick up where you left off: active roles, scored CVs, and candidates
+          waiting for review.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Email */}
+      <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
-          <label className="block text-[10px] font-bold text-gray-600 uppercase tracking-[0.18em] mb-2">
+          <label className="mb-2 block text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
             Work email
           </label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            autoComplete="email"
-            placeholder="you@company.com"
-            className="w-full rounded-xl px-4 py-3.5 text-[14px] text-white placeholder-gray-700 focus:outline-none transition"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.border = "1px solid rgba(124,58,237,0.5)";
-              e.currentTarget.style.boxShadow =
-                "0 0 0 3px rgba(124,58,237,0.08)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          />
+          <div className="relative">
+            <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" />
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              autoComplete="email"
+              placeholder="you@company.com"
+              className={`${inputClass} pl-11`}
+            />
+          </div>
         </div>
 
-        {/* Password */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-[10px] font-bold text-gray-600 uppercase tracking-[0.18em]">
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <label className="block text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
               Password
             </label>
             <Link
               href="/forgot-password"
-              className="text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition-colors"
+              className="text-[12px] font-semibold text-violet-300 transition hover:text-violet-200"
             >
               Forgot password?
             </Link>
           </div>
-          <input
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            autoComplete="current-password"
-            placeholder="Enter your password"
-            className="w-full rounded-xl px-4 py-3.5 text-[14px] text-white placeholder-gray-700 focus:outline-none transition"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.border = "1px solid rgba(124,58,237,0.5)";
-              e.currentTarget.style.boxShadow =
-                "0 0 0 3px rgba(124,58,237,0.08)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          />
+          <div className="relative">
+            <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" />
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              className={`${inputClass} px-11`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((value) => !value)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-gray-600 transition hover:bg-white/[0.06] hover:text-gray-300"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 text-white font-bold py-3.5 rounded-xl transition-all mt-2 disabled:opacity-50 disabled:cursor-not-allowed text-[14px]"
-          style={{
-            background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
-            boxShadow:
-              "0 4px 20px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
-          }}
+          className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 py-3.5 text-[14px] font-black text-white shadow-lg shadow-violet-950/40 transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-55"
         >
           {loading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Signing in…
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Signing in
             </>
           ) : (
             <>
-              Sign in
-              <ArrowRight className="w-4 h-4" />
+              Continue to dashboard
+              <ArrowRight className="h-4 w-4" />
             </>
           )}
         </button>
       </form>
 
-      {/* Divider + register link */}
       <div
-        className="mt-8 pt-7 border-t text-center"
-        style={{ borderColor: "rgba(255,255,255,0.05)" }}
+        className="mt-6 border-t pt-5 text-center"
+        style={{ borderColor: "rgba(255,255,255,0.06)" }}
       >
-        <p className="text-[13px] text-gray-600">
-          Don&apos;t have an account?{" "}
+        <p className="text-[13px] text-gray-500">
+          New to HireX?{" "}
           <Link
             href="/register"
-            className="text-brand-400 hover:text-brand-300 font-semibold transition-colors"
+            className="font-bold text-white transition hover:text-violet-200"
           >
-            Create one free
+            Create a free company account
           </Link>
         </p>
       </div>
