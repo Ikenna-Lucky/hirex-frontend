@@ -4,14 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-} from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { authApi } from "@/lib/api";
 import { setStoredCompany } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/utils";
@@ -55,7 +48,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-[410px] lg:-mt-8">
+    <div className="w-full max-w-[420px]">
       <div className="mb-6">
         <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300">
           Welcome back

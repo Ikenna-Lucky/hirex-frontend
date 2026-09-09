@@ -1,5 +1,24 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText } from "lucide-react";
+
+const proofStats = [
+  { value: "3", label: "CVs scored" },
+  { value: "1", label: "Top fit found" },
+  { value: "2", label: "Emails ready" },
+];
+
+const activity = [
+  {
+    icon: CheckCircle2,
+    title: "Amara Okafor shortlisted",
+    detail: "92% fit for Backend Engineer",
+  },
+  {
+    icon: FileText,
+    title: "Daniel King needs review",
+    detail: "Strong React and dashboard experience",
+  },
+];
 
 export default function AuthLayout({
   children,
@@ -22,8 +41,7 @@ export default function AuthLayout({
               href="/"
               className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-gray-500 transition hover:text-white"
             >
-              Back home
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
@@ -58,32 +76,78 @@ export default function AuthLayout({
 
             <div className="mt-6">
               <h2 className="max-w-lg text-[2rem] font-black leading-[1.08] tracking-tight text-white xl:text-[2.25rem]">
-                Your hiring command center, ready when you are.
+                Pick up with the hiring work already organized.
               </h2>
               <p className="mt-3 max-w-md text-[14px] leading-7 text-gray-500">
-                Review roles, candidate volume, scoring queues, and plan limits
-                without leaving the dashboard.
+                A focused snapshot of roles, scored CVs, shortlists, and
+                messages waiting for your next decision.
               </p>
 
-              <div className="mt-7 overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0b0d14] p-2 shadow-2xl shadow-black/40">
-                <div className="flex items-center justify-between border-b border-white/[0.07] px-3 py-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-yellow-400/80" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
+              <div className="mt-8 max-w-xl">
+                <div className="rounded-lg border border-white/[0.09] bg-[#0b0d14]/85 p-5 shadow-2xl shadow-black/30">
+                  <div className="flex items-start justify-between gap-5">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-600">
+                        Active role
+                      </p>
+                      <h3 className="mt-2 text-[19px] font-black text-white">
+                        Backend Engineer
+                      </h3>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {["Lagos", "Full time", "12 Jun 2026"].map((item) => (
+                          <span
+                            key={item}
+                            className="rounded-md border border-white/[0.07] bg-white/[0.035] px-2.5 py-1 text-[11px] font-semibold text-gray-500"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-right">
+                      <p className="text-3xl font-black text-white">92%</p>
+                      <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">
+                        top fit
+                      </p>
+                    </div>
                   </div>
-                  <span className="text-[11px] font-semibold text-gray-600">
-                    HireX dashboard
-                  </span>
+
+                  <div className="mt-5 grid grid-cols-3 gap-3">
+                    {proofStats.map((stat) => (
+                      <div
+                        key={stat.label}
+                        className="rounded-lg border border-white/[0.06] bg-white/[0.025] px-3 py-4"
+                      >
+                        <p className="text-2xl font-black text-white">
+                          {stat.value}
+                        </p>
+                        <p className="mt-1 text-[11px] font-semibold leading-4 text-gray-500">
+                          {stat.label}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-[#090a10]">
-                  <img
-                    src="/images/hirex-dashboard.png"
-                    alt="HireX dashboard preview"
-                    className="h-full w-full object-cover object-left-top"
-                  />
-                  <div className="absolute inset-0 ring-1 ring-inset ring-white/[0.05]" />
-                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#070813] to-transparent" />
+
+                <div className="mt-4 space-y-3">
+                  {activity.map(({ icon: Icon, title, detail }) => (
+                    <div
+                      key={title}
+                      className="flex items-center gap-3 rounded-lg border border-white/[0.07] bg-white/[0.025] px-4 py-3"
+                    >
+                      <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white/[0.05]">
+                        <Icon className="h-4 w-4 text-violet-200" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-[12px] font-bold text-white">
+                          {title}
+                        </p>
+                        <p className="truncate text-[11px] text-gray-600">
+                          {detail}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
