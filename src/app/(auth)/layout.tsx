@@ -1,5 +1,24 @@
 import Link from "next/link";
-import { Brain, BarChart3, Mail } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText } from "lucide-react";
+
+const proofStats = [
+  { value: "3", label: "CVs scored" },
+  { value: "1", label: "Top fit found" },
+  { value: "2", label: "Emails ready" },
+];
+
+const activity = [
+  {
+    icon: CheckCircle2,
+    title: "Amara Okafor shortlisted",
+    detail: "92% fit for Backend Engineer",
+  },
+  {
+    icon: FileText,
+    title: "Daniel King needs review",
+    detail: "Strong React and dashboard experience",
+  },
+];
 
 export default function AuthLayout({
   children,
@@ -8,160 +27,160 @@ export default function AuthLayout({
 }) {
   return (
     <div
-      className="min-h-screen flex items-start md:items-center justify-center p-4 md:p-8"
-      style={{ backgroundColor: "#04040e" }}
+      className="min-h-screen px-4 py-6 text-gray-100 sm:px-6 md:flex md:items-center md:justify-center md:p-8"
+      style={{ backgroundColor: "#05060a" }}
     >
-      {/* Floating centered card */}
       <div
-        className="w-full max-w-[1040px] flex rounded-3xl overflow-hidden md:h-[680px] md:max-h-[85vh]"
-        style={{
-          border: "1px solid rgba(255,255,255,0.07)",
-          boxShadow:
-            "0 0 0 1px rgba(255,255,255,0.02) inset, 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(124,58,237,0.06)",
-        }}
+        className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/50 lg:grid-cols-[0.86fr_1.14fr]"
+        style={{ backgroundColor: "#080910" }}
       >
-        {/* Left — Form panel */}
-        <div
-          className="flex-1 flex flex-col min-w-0 min-h-0"
-          style={{ backgroundColor: "#08081a" }}
-        >
-          {/* Logo */}
-          <div className="px-8 md:px-10 pt-8 flex-shrink-0">
-            <Link href="/">
-              <span
-                style={{
-                  fontSize: "20px",
-                  fontWeight: 800,
-                  letterSpacing: "-0.03em",
-                  color: "#fff",
-                  fontFamily: "'Syne', system-ui, sans-serif",
-                  lineHeight: 1,
-                }}
-              >
-                Hire
-                <span
-                  style={{
-                    color: "#a78bfa",
-                    fontFamily: "'Syne', system-ui, sans-serif",
-                  }}
-                >
-                  X
-                </span>
-              </span>
+        <div className="flex min-h-[620px] flex-col bg-[#080910]">
+          <div className="flex items-center justify-between px-6 pt-6 md:px-10 md:pt-8">
+            <Logo />
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-gray-500 transition hover:text-white"
+            >
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
-          {/* Form content — scrollable when taller than panel */}
-          <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center px-8 md:px-12 py-10 min-h-0">
+          <div className="flex flex-1 items-start justify-center overflow-y-auto px-6 py-8 md:px-10">
             {children}
           </div>
 
-          {/* Footer */}
-          <div className="px-8 md:px-10 pb-6 flex-shrink-0">
-            <p className="text-[11px]" style={{ color: "#1e1e2e" }}>
-              © {new Date().getFullYear()} HireX · All rights reserved
+          <div className="px-6 pb-5 md:px-10 md:pb-6">
+            <p className="text-[12px] text-gray-700">
+              Copyright {new Date().getFullYear()} HireX. All rights reserved.
             </p>
           </div>
         </div>
 
-        {/* Right — Visual panel */}
-        <div
-          className="hidden lg:flex w-[460px] xl:w-[500px] flex-shrink-0 relative overflow-hidden"
-          style={{ backgroundColor: "#06061a" }}
-        >
-          {/* Soft static glows — brand + accent, matching the landing hero */}
+        <aside className="relative hidden min-h-[620px] overflow-hidden border-l border-white/[0.07] bg-[#070813] lg:block">
           <div
-            className="absolute -top-[15%] -right-[20%] w-[420px] h-[420px] rounded-full pointer-events-none"
+            className="absolute inset-0 opacity-70"
             style={{
-              background:
-                "radial-gradient(circle, rgba(124,58,237,0.16) 0%, transparent 60%)",
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+              backgroundSize: "48px 48px",
             }}
           />
-          <div
-            className="absolute bottom-[-10%] -left-[15%] w-[360px] h-[360px] rounded-full pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 60%)",
-            }}
-          />
+          <div className="absolute -right-24 top-10 h-72 w-72 rounded-full bg-violet-600/20 blur-3xl" />
+          <div className="absolute -bottom-20 left-4 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
 
-          {/* Dark gradient overlay so text reads clearly */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(6,6,26,0.55) 0%, rgba(6,6,26,0.3) 60%, rgba(6,6,26,0.6) 100%)",
-            }}
-          />
-
-          {/* Left edge separator */}
-          <div
-            className="absolute inset-y-0 left-0 w-px pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to bottom, transparent, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.06) 70%, transparent)",
-            }}
-          />
-
-          {/* Content */}
-          <div className="relative z-10 flex flex-col justify-between h-full p-10">
-            {/* Top badge */}
-            <div
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand-600/20 self-start"
-              style={{ backgroundColor: "rgba(124,58,237,0.08)" }}
-            >
-              <div className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse" />
-              <span className="text-[10px] font-bold text-brand-400 tracking-widest uppercase">
-                AI Recruitment
-              </span>
+          <div className="relative z-10 flex h-full flex-col p-8 xl:p-10">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              Recruiter workspace
             </div>
 
-            {/* Center — typographic statement */}
-            <div>
-              <h2 className="text-[2.4rem] xl:text-[2.75rem] font-black text-white leading-[1.08] tracking-tight mb-5">
-                Every great hire
-                <br />
-                starts with one{" "}
-                <span className="shimmer-gradient">decision.</span>
+            <div className="mt-6">
+              <h2 className="max-w-lg text-[2rem] font-black leading-[1.08] tracking-tight text-white xl:text-[2.25rem]">
+                Pick up with the hiring work already organized.
               </h2>
-              <p
-                className="text-[14px] leading-relaxed max-w-[300px]"
-                style={{ color: "rgba(255,255,255,0.38)" }}
-              >
-                Stop drowning in CVs. HireX scores every applicant and tells you
-                exactly who to call first.
+              <p className="mt-3 max-w-md text-[14px] leading-7 text-gray-500">
+                A focused snapshot of roles, scored CVs, shortlists, and
+                messages waiting for your next decision.
               </p>
-            </div>
 
-            {/* Bottom — proof points */}
-            <div className="space-y-3">
-              {[
-                { Icon: Brain, text: "AI scores every CV in under 60 seconds" },
-                {
-                  Icon: BarChart3,
-                  text: "Ranked pipeline — highest fit first",
-                },
-                { Icon: Mail, text: "Candidates notified at every stage" },
-              ].map(({ Icon, text }) => (
-                <div key={text} className="flex items-center gap-3">
-                  <div
-                    className="w-8 h-8 rounded-lg border border-brand-600/20 flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: "rgba(124,58,237,0.1)" }}
-                  >
-                    <Icon className="w-[14px] h-[14px] text-brand-400" />
+              <div className="mt-8 max-w-xl">
+                <div className="rounded-lg border border-white/[0.09] bg-[#0b0d14]/85 p-5 shadow-2xl shadow-black/30">
+                  <div className="flex items-start justify-between gap-5">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-600">
+                        Active role
+                      </p>
+                      <h3 className="mt-2 text-[19px] font-black text-white">
+                        Backend Engineer
+                      </h3>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {["Lagos", "Full time", "12 Jun 2026"].map((item) => (
+                          <span
+                            key={item}
+                            className="rounded-md border border-white/[0.07] bg-white/[0.035] px-2.5 py-1 text-[11px] font-semibold text-gray-500"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-right">
+                      <p className="text-3xl font-black text-white">92%</p>
+                      <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">
+                        top fit
+                      </p>
+                    </div>
                   </div>
-                  <span
-                    className="text-[12px]"
-                    style={{ color: "rgba(255,255,255,0.35)" }}
-                  >
-                    {text}
-                  </span>
+
+                  <div className="mt-5 grid grid-cols-3 gap-3">
+                    {proofStats.map((stat) => (
+                      <div
+                        key={stat.label}
+                        className="rounded-lg border border-white/[0.06] bg-white/[0.025] px-3 py-4"
+                      >
+                        <p className="text-2xl font-black text-white">
+                          {stat.value}
+                        </p>
+                        <p className="mt-1 text-[11px] font-semibold leading-4 text-gray-500">
+                          {stat.label}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
+
+                <div className="mt-4 space-y-3">
+                  {activity.map(({ icon: Icon, title, detail }) => (
+                    <div
+                      key={title}
+                      className="flex items-center gap-3 rounded-lg border border-white/[0.07] bg-white/[0.025] px-4 py-3"
+                    >
+                      <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white/[0.05]">
+                        <Icon className="h-4 w-4 text-violet-200" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-[12px] font-bold text-white">
+                          {title}
+                        </p>
+                        <p className="truncate text-[11px] text-gray-600">
+                          {detail}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
+  );
+}
+
+function Logo() {
+  return (
+    <Link href="/">
+      <span
+        style={{
+          fontSize: "22px",
+          fontWeight: 800,
+          letterSpacing: "-0.03em",
+          color: "#fff",
+          fontFamily: "'Syne', system-ui, sans-serif",
+          lineHeight: 1,
+        }}
+      >
+        Hire
+        <span
+          style={{
+            color: "#a78bfa",
+            fontFamily: "'Syne', system-ui, sans-serif",
+          }}
+        >
+          X
+        </span>
+      </span>
+    </Link>
   );
 }
