@@ -1,80 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { ArrowLeft, PencilSimple, BriefcaseMetal } from "@phosphor-icons/react";
-import { jobsApi } from "@/lib/api";
+import { ArrowLeft, BriefcaseMetal } from "@phosphor-icons/react";
 import JobForm, { type JobFormValues } from "@/components/JobForm";
+import { jobsApi } from "@/lib/api";
 import type { Job } from "@/types";
 import type { AxiosError } from "axios";
 
-/* ════════════════════════════════════════════════════════════
-   SKELETON
-════════════════════════════════════════════════════════════ */
-function Bone({ style }: { style?: React.CSSProperties }) {
+function Bone({ className }: { className?: string }) {
   return (
     <div
-      className="animate-pulse rounded-xl"
-      style={{ background: "rgba(255,255,255,0.06)", ...style }}
+      className={`animate-pulse rounded-lg ${className ?? ""}`}
+      style={{ background: "rgba(255,255,255,0.06)" }}
     />
   );
 }
 
 function SkeletonPage() {
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
-      {/* Back link skeleton */}
-      <Bone style={{ width: 120, height: 14 }} />
-
-      {/* Hero skeleton */}
-      <div
-        className="rounded-2xl p-7 flex items-center gap-5"
-        style={{
-          background: "#0e0e1a",
-          border: "1px solid rgba(124,58,237,0.12)",
-        }}
-      >
-        <Bone
-          style={{ width: 48, height: 48, borderRadius: 14, flexShrink: 0 }}
-        />
-        <div className="flex-1 space-y-2.5">
-          <Bone style={{ width: 200, height: 24 }} />
-          <Bone style={{ width: 280, height: 14 }} />
-        </div>
-      </div>
-
-      {/* Form sections */}
-      {[6, 4, 4, 3, 2, 1].map((_, ci) => (
-        <div
-          key={ci}
-          className="rounded-2xl overflow-hidden"
-          style={{
-            background: "#111118",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
-        >
-          <div
-            className="flex items-center gap-3 px-6 py-4"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-          >
-            <Bone style={{ width: 28, height: 28, borderRadius: 8 }} />
-            <Bone style={{ width: 140, height: 14 }} />
-          </div>
-          <div className="p-6 space-y-4">
-            <Bone style={{ width: "100%", height: 44 }} />
-            {ci < 2 && <Bone style={{ width: "100%", height: 120 }} />}
-          </div>
-        </div>
-      ))}
+    <div className="mx-auto max-w-3xl space-y-5">
+      <Bone className="h-4 w-28" />
+      <Bone className="h-28" />
+      <Bone className="h-44" />
+      <Bone className="h-64" />
     </div>
   );
 }
 
-/* ════════════════════════════════════════════════════════════
-   PAGE
-════════════════════════════════════════════════════════════ */
 export default function EditJobPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -87,30 +42,33 @@ export default function EditJobPage() {
     jobsApi
       .get(id)
       .then((res) => {
-        const j: Job = res.data.data?.job ?? res.data.data;
-        setJob(j);
+        const current: Job = res.data.data?.job ?? res.data.data;
+        setJob(current);
         setValues({
-          title: j.title ?? "",
-          description: j.description ?? "",
-          requirements: j.requirements ?? "",
-          responsibilities: j.responsibilities ?? "",
-          location: j.location ?? "",
-          type: j.type ?? "",
-          salaryMin: j.salaryMin ?? "",
-          salaryMax: j.salaryMax ?? "",
-          salaryCurrency: j.salaryCurrency ?? "NGN",
-          closesAt: j.closesAt ? j.closesAt.split("T")[0] : "",
+          title: current.title ?? "",
+          description: current.description ?? "",
+          requirements: current.requirements ?? "",
+          responsibilities: current.responsibilities ?? "",
+          location: current.location ?? "",
+          type: current.type ?? "",
+          salaryMin: current.salaryMin ?? "",
+          salaryMax: current.salaryMax ?? "",
+          salaryCurrency: current.salaryCurrency ?? "NGN",
+          closesAt: current.closesAt ? current.closesAt.split("T")[0] : "",
           status:
-            j.status === "active" || j.status === "draft" ? j.status : "draft",
+            current.status === "active" || current.status === "draft"
+              ? current.status
+              : "draft",
         });
       })
       .catch(() => toast.error("Role not found."))
       .finally(() => setFetching(false));
   }, [id]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!values) return;
+
     setLoading(true);
     try {
       await jobsApi.update(id, {
@@ -136,41 +94,22 @@ export default function EditJobPage() {
     }
   };
 
-  /* ── Loading ── */
   if (fetching) return <SkeletonPage />;
 
-  /* ── Not found ── */
   if (!job || !values) {
     return (
-      <div className="max-w-3xl mx-auto">
-        <div
-          className="rounded-2xl p-16 text-center"
-          style={{
-            background: "#111118",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
-        >
-          <BriefcaseMetal
-            weight="duotone"
-            size={48}
-            style={{ color: "rgba(255,255,255,0.15)", margin: "0 auto 16px" }}
-          />
-          <p className="text-[16px] font-semibold text-white mb-1">
-            Role not found
-          </p>
-          <p
-            className="text-[13px] mb-6"
-            style={{ color: "rgba(255,255,255,0.35)" }}
-          >
-            This role may have been deleted or you don't have access to it.
+      <div className="mx-auto max-w-3xl">
+        <div className="rounded-lg border border-white/[0.07] bg-[#0d0f16] px-5 py-20 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.035] text-slate-600">
+            <BriefcaseMetal weight="duotone" size={24} />
+          </div>
+          <p className="text-[16px] font-bold text-white">Role not found</p>
+          <p className="mt-2 text-[13px] text-slate-500">
+            This role may have been deleted or you may not have access to it.
           </p>
           <Link
             href="/dashboard/jobs"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white"
-            style={{
-              background: "rgba(124,58,237,0.2)",
-              border: "1px solid rgba(124,58,237,0.3)",
-            }}
+            className="mt-6 inline-flex items-center gap-2 rounded-lg border border-violet-400/20 bg-violet-400/10 px-4 py-2.5 text-[13px] font-bold text-violet-200 transition hover:bg-violet-400/[0.16]"
           >
             <ArrowLeft size={14} />
             Back to roles
@@ -181,99 +120,36 @@ export default function EditJobPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
-      {/* ── Back link ── */}
+    <div className="mx-auto max-w-3xl space-y-5">
       <Link
         href={`/dashboard/jobs/${id}`}
-        className="inline-flex items-center gap-2 text-[13px] font-medium transition-colors anim-1"
-        style={{ color: "rgba(255,255,255,0.35)" }}
-        onMouseEnter={(e) =>
-          ((e.currentTarget as HTMLElement).style.color =
-            "rgba(255,255,255,0.75)")
-        }
-        onMouseLeave={(e) =>
-          ((e.currentTarget as HTMLElement).style.color =
-            "rgba(255,255,255,0.35)")
-        }
+        className="inline-flex items-center gap-1.5 text-[13px] font-bold text-slate-500 transition hover:text-violet-300"
       >
         <ArrowLeft size={14} />
         Back to role
       </Link>
 
-      {/* ── Hero header ── */}
-      <div
-        className="relative rounded-2xl overflow-hidden px-5 py-5 md:px-8 md:py-7 anim-1"
-        style={{
-          background:
-            "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",
-          border: "1px solid rgba(124,58,237,0.22)",
-        }}
-      >
-        {/* Orb */}
-        <div
-          className="absolute -top-16 -right-16 w-64 h-64 rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle,rgba(124,58,237,0.18) 0%,transparent 65%)",
-          }}
-        />
+      <section className="rounded-lg border border-white/[0.07] bg-[#0d0f16] px-5 py-5 anim-1">
+        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-300">
+          Edit role
+        </p>
+        <h1 className="mt-2 text-[26px] font-black tracking-tight text-white">
+          {job.title}
+        </h1>
+        <p className="mt-2 max-w-xl text-[14px] leading-6 text-slate-500">
+          Update the public role details and scoring context candidates are
+          evaluated against.
+        </p>
+      </section>
 
-        <div className="relative flex items-center gap-5">
-          {/* Icon badge */}
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-            style={{
-              background:
-                "linear-gradient(135deg,rgba(124,58,237,0.3),rgba(109,40,217,0.2))",
-              border: "1px solid rgba(124,58,237,0.35)",
-              boxShadow: "0 0 20px rgba(124,58,237,0.25)",
-            }}
-          >
-            <PencilSimple
-              weight="duotone"
-              size={22}
-              style={{ color: "#a78bfa" }}
-            />
-          </div>
-
-          {/* Text */}
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2.5 flex-wrap mb-1">
-              <h1 className="text-[22px] font-extrabold text-white tracking-tight leading-none">
-                Edit role
-              </h1>
-              <span
-                className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
-                style={{
-                  color: "#a78bfa",
-                  background: "rgba(124,58,237,0.15)",
-                  border: "1px solid rgba(124,58,237,0.25)",
-                }}
-              >
-                {values.status === "active" ? "Active" : "Draft"}
-              </span>
-            </div>
-            <p
-              className="text-[14px] font-medium truncate"
-              style={{ color: "rgba(255,255,255,0.45)" }}
-            >
-              {job.title}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Form ── */}
-      <div className="anim-2">
-        <JobForm
-          values={values}
-          onChange={setValues}
-          onSubmit={handleSubmit}
-          loading={loading}
-          submitLabel="Save changes"
-          onCancel={() => router.push(`/dashboard/jobs/${id}`)}
-        />
-      </div>
+      <JobForm
+        values={values}
+        onChange={setValues}
+        onSubmit={handleSubmit}
+        loading={loading}
+        submitLabel="Save role"
+        onCancel={() => router.push(`/dashboard/jobs/${id}`)}
+      />
     </div>
   );
 }
