@@ -1,16 +1,16 @@
 "use client";
 
 import {
-  BriefcaseMetal,
   Article,
+  BriefcaseMetal,
+  CalendarBlank,
+  CheckCircle,
+  CircleNotch,
+  CurrencyDollar,
+  FileText,
   ListChecks,
   MapPin,
-  CurrencyDollar,
-  CalendarBlank,
-  CircleNotch,
   PaperPlaneTilt,
-  FileText,
-  CheckCircle,
 } from "@phosphor-icons/react";
 
 export type JobFormValues = {
@@ -44,7 +44,7 @@ export const JOB_FORM_DEFAULTS: JobFormValues = {
 type Props = {
   values: JobFormValues;
   onChange: (values: JobFormValues) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (event: React.FormEvent) => void;
   loading: boolean;
   submitLabel: string;
   onCancel?: () => void;
@@ -58,6 +58,9 @@ const JOB_TYPES = [
   { value: "hybrid", label: "Hybrid" },
 ];
 
+const inputClass =
+  "min-h-11 w-full rounded-lg border border-white/[0.07] bg-white/[0.035] px-3.5 text-[14px] text-white outline-none transition placeholder:text-slate-700 focus:border-violet-400/30 focus:bg-white/[0.055]";
+
 export default function JobForm({
   values,
   onChange,
@@ -66,40 +69,33 @@ export default function JobForm({
   submitLabel,
   onCancel,
 }: Props) {
-  const set = (field: keyof JobFormValues, value: string) =>
+  const set = (field: keyof JobFormValues, value: string) => {
     onChange({ ...values, [field]: value });
+  };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      {/* ── Section 1 · Role basics ───────────────────────── */}
+    <form onSubmit={onSubmit} className="space-y-5">
       <Section
-        icon={
-          <BriefcaseMetal
-            weight="duotone"
-            size={16}
-            style={{ color: "#a78bfa" }}
-          />
-        }
+        icon={<BriefcaseMetal weight="duotone" size={18} />}
         title="Role basics"
+        subtitle="Name the role candidates will apply for."
       >
         <Field label="Job title" required>
           <input
             type="text"
             value={values.title}
-            onChange={(e) => set("title", e.target.value)}
+            onChange={(event) => set("title", event.target.value)}
             required
-            placeholder="e.g. Senior Backend Engineer"
-            className="hirex-input"
+            placeholder="Senior Backend Engineer"
+            className={inputClass}
           />
         </Field>
       </Section>
 
-      {/* ── Section 2 · Description ───────────────────────── */}
       <Section
-        icon={
-          <Article weight="duotone" size={16} style={{ color: "#a78bfa" }} />
-        }
+        icon={<Article weight="duotone" size={18} />}
         title="Job description"
+        subtitle="Set the context the AI will score CVs against."
       >
         <Field
           label="Description"
@@ -108,145 +104,133 @@ export default function JobForm({
         >
           <textarea
             value={values.description}
-            onChange={(e) => set("description", e.target.value)}
+            onChange={(event) => set("description", event.target.value)}
             required
             rows={6}
-            placeholder="Tell candidates what this role is about…"
-            className="hirex-input resize-y"
+            placeholder="Tell candidates what this role is about."
+            className={`${inputClass} resize-y py-3 leading-6`}
           />
         </Field>
       </Section>
 
-      {/* ── Section 3 · Requirements & Responsibilities ───── */}
       <Section
-        icon={
-          <ListChecks weight="duotone" size={16} style={{ color: "#a78bfa" }} />
-        }
-        title="Requirements & responsibilities"
+        icon={<ListChecks weight="duotone" size={18} />}
+        title="Requirements and responsibilities"
+        subtitle="Help candidates understand the real work."
       >
-        <Field
-          label="Requirements"
-          hint="Skills, experience, and qualifications you're looking for."
-        >
-          <textarea
-            value={values.requirements}
-            onChange={(e) => set("requirements", e.target.value)}
-            rows={5}
-            placeholder={
-              "• 3+ years of TypeScript experience\n• Familiarity with distributed systems…"
-            }
-            className="hirex-input resize-y"
-          />
-        </Field>
-        <Field
-          label="Responsibilities"
-          hint="What will this person own day-to-day?"
-        >
-          <textarea
-            value={values.responsibilities}
-            onChange={(e) => set("responsibilities", e.target.value)}
-            rows={5}
-            placeholder={
-              "• Design and ship new API endpoints\n• Lead code reviews…"
-            }
-            className="hirex-input resize-y"
-          />
-        </Field>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Field
+            label="Requirements"
+            hint="Skills, experience, and qualifications you are looking for."
+          >
+            <textarea
+              value={values.requirements}
+              onChange={(event) => set("requirements", event.target.value)}
+              rows={6}
+              placeholder={
+                "3+ years of TypeScript experience\nAPI design experience"
+              }
+              className={`${inputClass} resize-y py-3 leading-6`}
+            />
+          </Field>
+          <Field
+            label="Responsibilities"
+            hint="What this person will own day to day."
+          >
+            <textarea
+              value={values.responsibilities}
+              onChange={(event) => set("responsibilities", event.target.value)}
+              rows={6}
+              placeholder={
+                "Design and ship API endpoints\nReview candidates in HireX"
+              }
+              className={`${inputClass} resize-y py-3 leading-6`}
+            />
+          </Field>
+        </div>
       </Section>
 
-      {/* ── Section 4 · Job details ───────────────────────── */}
       <Section
-        icon={
-          <MapPin weight="duotone" size={16} style={{ color: "#a78bfa" }} />
-        }
-        title="Job details"
+        icon={<MapPin weight="duotone" size={18} />}
+        title="Role details"
+        subtitle="Add location, work mode, pay range, and deadline."
       >
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid gap-4 md:grid-cols-2">
           <Field label="Location">
             <input
               type="text"
               value={values.location}
-              onChange={(e) => set("location", e.target.value)}
-              placeholder="Lagos, Nigeria · Remote OK"
-              className="hirex-input"
+              onChange={(event) => set("location", event.target.value)}
+              placeholder="Lagos, Nigeria or Remote"
+              className={inputClass}
             />
           </Field>
           <Field label="Job type">
             <select
               value={values.type}
-              onChange={(e) => set("type", e.target.value)}
-              className="hirex-input appearance-none cursor-pointer"
+              onChange={(event) => set("type", event.target.value)}
+              className={`${inputClass} cursor-pointer`}
             >
-              <option value="">Select type…</option>
-              {JOB_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
+              <option value="" className="bg-[#0d0f16]">
+                Select type
+              </option>
+              {JOB_TYPES.map((type) => (
+                <option
+                  key={type.value}
+                  value={type.value}
+                  className="bg-[#0d0f16]"
+                >
+                  {type.label}
                 </option>
               ))}
             </select>
           </Field>
         </div>
-      </Section>
 
-      {/* ── Section 5 · Compensation ──────────────────────── */}
-      <Section
-        icon={
-          <CurrencyDollar
-            weight="duotone"
-            size={16}
-            style={{ color: "#a78bfa" }}
-          />
-        }
-        title="Compensation"
-      >
-        <div className="grid sm:grid-cols-3 gap-4">
+        <div className="grid gap-4 md:grid-cols-3">
           <Field label="Min salary">
             <input
               type="number"
               value={values.salaryMin}
-              onChange={(e) => set("salaryMin", e.target.value)}
-              placeholder="500,000"
+              onChange={(event) => set("salaryMin", event.target.value)}
+              placeholder="500000"
               min={0}
-              className="hirex-input"
+              className={inputClass}
             />
           </Field>
           <Field label="Max salary">
             <input
               type="number"
               value={values.salaryMax}
-              onChange={(e) => set("salaryMax", e.target.value)}
-              placeholder="800,000"
+              onChange={(event) => set("salaryMax", event.target.value)}
+              placeholder="800000"
               min={0}
-              className="hirex-input"
+              className={inputClass}
             />
           </Field>
           <Field label="Currency">
             <select
               value={values.salaryCurrency}
-              onChange={(e) => set("salaryCurrency", e.target.value)}
-              className="hirex-input appearance-none cursor-pointer"
+              onChange={(event) => set("salaryCurrency", event.target.value)}
+              className={`${inputClass} cursor-pointer`}
             >
-              <option value="NGN">NGN (₦)</option>
-              <option value="USD">USD ($)</option>
-              <option value="GBP">GBP (£)</option>
-              <option value="EUR">EUR (€)</option>
+              <option value="NGN" className="bg-[#0d0f16]">
+                NGN
+              </option>
+              <option value="USD" className="bg-[#0d0f16]">
+                USD
+              </option>
+              <option value="GBP" className="bg-[#0d0f16]">
+                GBP
+              </option>
+              <option value="EUR" className="bg-[#0d0f16]">
+                EUR
+              </option>
             </select>
           </Field>
         </div>
-      </Section>
 
-      {/* ── Section 6 · Publishing ────────────────────────── */}
-      <Section
-        icon={
-          <CalendarBlank
-            weight="duotone"
-            size={16}
-            style={{ color: "#a78bfa" }}
-          />
-        }
-        title="Publishing"
-      >
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid gap-4 md:grid-cols-2">
           <Field
             label="Application deadline"
             hint="Leave blank to accept applications indefinitely."
@@ -254,149 +238,63 @@ export default function JobForm({
             <input
               type="date"
               value={values.closesAt}
-              onChange={(e) => set("closesAt", e.target.value)}
+              onChange={(event) => set("closesAt", event.target.value)}
               min={new Date().toISOString().split("T")[0]}
-              className="hirex-input"
+              className={inputClass}
             />
           </Field>
-
           <Field label="Initial status">
-            {/* Toggle buttons instead of <select> */}
-            <div
-              className="flex rounded-xl overflow-hidden"
-              style={{
-                border: "1px solid rgba(255,255,255,0.09)",
-                background: "rgba(255,255,255,0.03)",
-              }}
-            >
-              <button
-                type="button"
+            <div className="grid h-11 grid-cols-2 overflow-hidden rounded-lg border border-white/[0.07] bg-white/[0.035] p-1">
+              <StatusButton
+                active={values.status === "draft"}
+                icon={
+                  <FileText
+                    size={14}
+                    weight={values.status === "draft" ? "fill" : "regular"}
+                  />
+                }
+                label="Draft"
                 onClick={() => set("status", "draft")}
-                className="flex-1 flex items-center justify-center gap-2 py-[11px] text-[13px] font-medium transition-all"
-                style={
-                  values.status === "draft"
-                    ? {
-                        background: "rgba(124,58,237,0.18)",
-                        color: "#a78bfa",
-                        borderRight: "1px solid rgba(124,58,237,0.25)",
-                      }
-                    : {
-                        color: "rgba(255,255,255,0.35)",
-                        borderRight: "1px solid rgba(255,255,255,0.06)",
-                      }
+              />
+              <StatusButton
+                active={values.status === "active"}
+                icon={
+                  <CheckCircle
+                    size={14}
+                    weight={values.status === "active" ? "fill" : "regular"}
+                  />
                 }
-              >
-                <FileText
-                  weight={values.status === "draft" ? "fill" : "regular"}
-                  size={14}
-                />
-                Draft
-              </button>
-              <button
-                type="button"
+                label="Active"
                 onClick={() => set("status", "active")}
-                className="flex-1 flex items-center justify-center gap-2 py-[11px] text-[13px] font-medium transition-all"
-                style={
-                  values.status === "active"
-                    ? {
-                        background: "rgba(124,58,237,0.18)",
-                        color: "#a78bfa",
-                      }
-                    : {
-                        color: "rgba(255,255,255,0.35)",
-                      }
-                }
-              >
-                <CheckCircle
-                  weight={values.status === "active" ? "fill" : "regular"}
-                  size={14}
-                />
-                Active
-              </button>
+              />
             </div>
-            <p
-              className="text-[12px] mt-2"
-              style={{ color: "rgba(255,255,255,0.3)" }}
-            >
+            <p className="mt-2 text-[12px] text-slate-600">
               {values.status === "draft"
-                ? "Draft — not visible to applicants yet."
-                : "Active — open for applications immediately."}
+                ? "Draft roles are not visible to applicants yet."
+                : "Active roles are open for applications immediately."}
             </p>
           </Field>
         </div>
       </Section>
 
-      {/* ── Actions ───────────────────────────────────────── */}
-      <div className="flex items-center gap-3 pt-2 pb-1">
-        {/* Submit */}
+      <div className="flex flex-col gap-3 border-t border-white/[0.06] pt-5 sm:flex-row sm:items-center">
         <button
           type="submit"
           disabled={loading}
-          className="flex items-center gap-2.5 px-7 py-3 rounded-xl text-[14px] font-semibold text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{
-            background: loading
-              ? "rgba(124,58,237,0.5)"
-              : "linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)",
-            boxShadow: loading
-              ? "none"
-              : "0 0 24px rgba(124,58,237,0.35), 0 4px 12px rgba(0,0,0,0.3)",
-          }}
-          onMouseEnter={(e) => {
-            if (!loading) {
-              (e.currentTarget as HTMLElement).style.boxShadow =
-                "0 0 32px rgba(124,58,237,0.55), 0 4px 16px rgba(0,0,0,0.4)";
-              (e.currentTarget as HTMLElement).style.transform =
-                "translateY(-1px)";
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!loading) {
-              (e.currentTarget as HTMLElement).style.boxShadow =
-                "0 0 24px rgba(124,58,237,0.35), 0 4px 12px rgba(0,0,0,0.3)";
-              (e.currentTarget as HTMLElement).style.transform = "";
-            }
-          }}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-violet-600 px-5 py-2.5 text-[13px] font-bold text-white shadow-lg shadow-violet-950/30 transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? (
-            <>
-              <CircleNotch size={15} className="animate-spin" />
-              Saving…
-            </>
+            <CircleNotch size={15} className="animate-spin" />
           ) : (
-            <>
-              <PaperPlaneTilt weight="fill" size={15} />
-              {submitLabel}
-            </>
+            <PaperPlaneTilt weight="fill" size={15} />
           )}
+          {loading ? "Saving" : submitLabel}
         </button>
-
-        {/* Cancel */}
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="px-5 py-3 rounded-xl text-[14px] font-medium transition-all"
-            style={{
-              color: "rgba(255,255,255,0.4)",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color =
-                "rgba(255,255,255,0.75)";
-              (e.currentTarget as HTMLElement).style.background =
-                "rgba(255,255,255,0.07)";
-              (e.currentTarget as HTMLElement).style.borderColor =
-                "rgba(255,255,255,0.13)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color =
-                "rgba(255,255,255,0.4)";
-              (e.currentTarget as HTMLElement).style.background =
-                "rgba(255,255,255,0.04)";
-              (e.currentTarget as HTMLElement).style.borderColor =
-                "rgba(255,255,255,0.08)";
-            }}
+            className="inline-flex items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.035] px-5 py-2.5 text-[13px] font-bold text-slate-400 transition hover:bg-white/[0.06] hover:text-white"
           >
             Cancel
           </button>
@@ -406,49 +304,33 @@ export default function JobForm({
   );
 }
 
-/* ── Section card ───────────────────────────────────────── */
 function Section({
   icon,
   title,
+  subtitle,
   children,
 }: {
   icon: React.ReactNode;
   title: string;
+  subtitle: string;
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className="rounded-2xl p-6 space-y-5"
-      style={{
-        background: "#111118",
-        border: "1px solid rgba(255,255,255,0.06)",
-      }}
-    >
-      {/* Section header */}
-      <div className="flex items-center gap-2.5">
-        <div
-          className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{
-            background: "rgba(124,58,237,0.15)",
-            border: "1px solid rgba(124,58,237,0.2)",
-          }}
-        >
+    <section className="overflow-hidden rounded-lg border border-white/[0.07] bg-[#0d0f16]">
+      <div className="flex items-center gap-3 border-b border-white/[0.06] px-5 py-4">
+        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-violet-400/20 bg-violet-400/10 text-violet-300">
           {icon}
         </div>
-        <h3
-          className="text-[13px] font-semibold tracking-wide uppercase"
-          style={{ color: "rgba(255,255,255,0.5)" }}
-        >
-          {title}
-        </h3>
+        <div>
+          <h2 className="text-[15px] font-bold text-white">{title}</h2>
+          <p className="mt-0.5 text-[12px] text-slate-600">{subtitle}</p>
+        </div>
       </div>
-
-      {children}
-    </div>
+      <div className="space-y-4 p-5">{children}</div>
+    </section>
   );
 }
 
-/* ── Field label + hint ─────────────────────────────────── */
 function Field({
   label,
   hint,
@@ -462,23 +344,39 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label
-        className="block text-[13px] font-medium"
-        style={{ color: "rgba(255,255,255,0.65)" }}
-      >
+      <label className="block text-[12px] font-bold uppercase tracking-[0.14em] text-slate-500">
         {label}
-        {required && (
-          <span className="ml-0.5" style={{ color: "#a78bfa" }}>
-            *
-          </span>
-        )}
+        {required && <span className="ml-1 text-violet-300">*</span>}
       </label>
-      {hint && (
-        <p className="text-[12px]" style={{ color: "rgba(255,255,255,0.28)" }}>
-          {hint}
-        </p>
-      )}
       {children}
+      {hint && <p className="text-[12px] leading-5 text-slate-600">{hint}</p>}
     </div>
+  );
+}
+
+function StatusButton({
+  active,
+  icon,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center justify-center gap-2 rounded-md text-[13px] font-bold transition ${
+        active
+          ? "bg-violet-400/[0.14] text-violet-200"
+          : "text-slate-600 hover:bg-white/[0.04] hover:text-slate-300"
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
   );
 }

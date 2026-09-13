@@ -192,7 +192,7 @@ function SkeletonPage() {
       </div>
 
       {/* 2-col */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-6">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
         {/* jobs */}
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -355,96 +355,46 @@ export default function OverviewPage() {
     <div className="space-y-6">
       {/* ══ HERO GREETING ══ */}
       <div
-        className="relative rounded-2xl overflow-hidden px-5 py-5 md:px-8 md:py-7 anim-1"
+        className="rounded-lg border border-white/[0.07] bg-[#0d0f16] px-5 py-5 anim-1 md:px-6 md:py-6"
         style={{
-          background:
-            "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",
-          border: "1px solid rgba(124,58,237,0.22)",
+          boxShadow: "0 14px 40px rgba(0,0,0,0.22)",
         }}
       >
-        <div
-          className="absolute -top-20 -right-20 w-72 h-72 rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle,rgba(124,58,237,0.18) 0%,transparent 65%)",
-          }}
-        />
-        <div
-          className="absolute -bottom-12 left-24 w-56 h-32 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse,rgba(124,58,237,0.09) 0%,transparent 70%)",
-          }}
-        />
-
-        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
-            <div className="flex items-center gap-2 mb-2.5">
+            <div className="mb-2.5 flex items-center gap-2">
               <Sparkle weight="fill" size={14} style={{ color: "#a78bfa" }} />
-              <span
-                className="text-[12px] font-semibold tracking-wide uppercase"
-                style={{ color: "#a78bfa" }}
-              >
-                AI-Powered Recruitment
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-300">
+                AI-powered recruitment
               </span>
             </div>
-            <h1 className="text-[30px] font-extrabold text-white tracking-tight leading-tight">
-              {greeting}, {firstName} 👋
+            <h1 className="text-[26px] font-black leading-tight tracking-tight text-white md:text-[30px]">
+              {greeting}, {firstName}
             </h1>
-            <p
-              className="text-[15px] mt-2"
-              style={{ color: "rgba(255,255,255,0.38)" }}
-            >
+            <p className="mt-2 text-[14px] leading-6 text-slate-500">
               {activeJobs > 0
-                ? `${activeJobs} active posting${activeJobs !== 1 ? "s" : ""} · ${totalCVs} total application${totalCVs !== 1 ? "s" : ""} received`
+                ? `${activeJobs} active posting${activeJobs !== 1 ? "s" : ""} - ${totalCVs} total application${totalCVs !== 1 ? "s" : ""} received`
                 : "Ready to find your next great hire? Post your first job."}
             </p>
           </div>
 
-          <div className="flex items-center gap-3 flex-shrink-0">
-            {/* Show upgrade nudge when not subscribed */}
+          <div className="flex flex-shrink-0 flex-col gap-2 sm:flex-row sm:items-center">
             {!sub?.isActive && (
               <Link
                 href="/dashboard/billing"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-all"
-                style={{
-                  background: "rgba(124,58,237,0.14)",
-                  border: "1px solid rgba(124,58,237,0.28)",
-                  color: "#a78bfa",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background =
-                    "rgba(124,58,237,0.24)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background =
-                    "rgba(124,58,237,0.14)";
-                }}
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-violet-400/20 bg-violet-400/10 px-4 py-2.5 text-[13px] font-bold text-violet-200 transition hover:bg-violet-400/[0.16]"
               >
                 <Lightning weight="fill" size={14} />
                 {sub?.quotaExhausted ? "Upgrade to post" : "Upgrade"}
               </Link>
             )}
-            {/* Primary CTA — links to billing when quota is exhausted */}
             <Link
               href={
                 sub?.quotaExhausted
                   ? "/dashboard/billing"
                   : "/dashboard/jobs/new"
               }
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[14px] font-bold text-white transition-all"
-              style={{
-                background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-                boxShadow: "0 0 24px rgba(124,58,237,0.38)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 0 36px rgba(124,58,237,0.55)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 0 24px rgba(124,58,237,0.38)";
-              }}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-[13px] font-bold text-white shadow-lg shadow-violet-950/30 transition hover:bg-violet-500"
             >
               {sub?.quotaExhausted ? (
                 <>
@@ -462,35 +412,27 @@ export default function OverviewPage() {
 
       {/* ══ STAT CARDS — staggered entrance ══ */}
       {stats && (
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           {STAT_CARDS.map(({ label, value, icon: Icon, sub: subText }, i) => (
             <div
               key={label}
-              className="relative rounded-2xl p-5 flex flex-col gap-4 overflow-hidden"
+              className="relative flex min-h-[148px] flex-col justify-between overflow-hidden rounded-lg border border-white/[0.07] bg-[#0d0f16] p-5"
               style={{
-                background: "#111118",
-                border: "1px solid rgba(255,255,255,0.07)",
                 animation: `fade-up-in 0.5s cubic-bezier(0.16,1,0.3,1) ${i * 80 + 100}ms both`,
               }}
             >
               <div
-                className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
+                className="absolute left-0 right-0 top-0 h-px"
                 style={{
                   background:
-                    "linear-gradient(90deg,rgba(124,58,237,0.7),transparent)",
+                    "linear-gradient(90deg,rgba(124,58,237,0.55),transparent)",
                 }}
               />
               <div className="flex items-center justify-between">
-                <p
-                  className="text-[13px] font-medium"
-                  style={{ color: "rgba(255,255,255,0.38)" }}
-                >
+                <p className="text-[12px] font-semibold text-slate-500">
                   {label}
                 </p>
-                <div
-                  className="w-8 h-8 rounded-xl flex items-center justify-center"
-                  style={{ background: "rgba(124,58,237,0.1)" }}
-                >
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-400/10">
                   <Icon
                     weight="duotone"
                     size={18}
@@ -499,15 +441,10 @@ export default function OverviewPage() {
                 </div>
               </div>
               <div>
-                <p className="text-[40px] font-black leading-none tracking-tight text-white tabular-nums">
+                <p className="text-[36px] font-black leading-none tracking-tight text-white tabular-nums">
                   {value.toLocaleString()}
                 </p>
-                <p
-                  className="text-[12px] mt-2"
-                  style={{ color: "rgba(255,255,255,0.28)" }}
-                >
-                  {subText}
-                </p>
+                <p className="mt-2 text-[12px] text-slate-600">{subText}</p>
               </div>
             </div>
           ))}
@@ -515,50 +452,28 @@ export default function OverviewPage() {
       )}
 
       {/* ══ MAIN 2-COLUMN ══ */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-6">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
         {/* ── Recent Jobs ── */}
         <div className="anim-3">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-[19px] font-bold text-white">Recent Jobs</h2>
-              <p
-                className="text-[13px] mt-0.5"
-                style={{ color: "rgba(255,255,255,0.3)" }}
-              >
+              <h2 className="text-[18px] font-bold text-white">Recent jobs</h2>
+              <p className="mt-0.5 text-[13px] text-slate-600">
                 Your latest role postings
               </p>
             </div>
             <Link
               href="/dashboard/jobs"
-              className="flex items-center gap-1.5 text-[13px] font-semibold px-3 py-1.5 rounded-lg transition-all"
-              style={{
-                color: "#a78bfa",
-                background: "rgba(124,58,237,0.1)",
-                border: "1px solid rgba(124,58,237,0.2)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background =
-                  "rgba(124,58,237,0.18)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background =
-                  "rgba(124,58,237,0.1)";
-              }}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.035] px-3 py-1.5 text-[13px] font-bold text-violet-200 transition hover:bg-white/[0.06]"
             >
               View all <ArrowRight weight="bold" size={13} />
             </Link>
           </div>
 
           {recent.length === 0 ? (
-            <div
-              className="rounded-2xl flex flex-col items-center justify-center py-20 text-center"
-              style={{
-                background: "#111118",
-                border: "1px dashed rgba(255,255,255,0.08)",
-              }}
-            >
+            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/[0.08] bg-[#0d0f16] py-20 text-center">
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+                className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg"
                 style={{
                   background: "rgba(124,58,237,0.1)",
                   border: "1px solid rgba(124,58,237,0.2)",
@@ -585,11 +500,7 @@ export default function OverviewPage() {
               </p>
               <Link
                 href="/dashboard/jobs/new"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[14px] font-bold text-white"
-                style={{
-                  background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-                  boxShadow: "0 0 20px rgba(124,58,237,0.3)",
-                }}
+                className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-[13px] font-bold text-white shadow-lg shadow-violet-950/30 transition hover:bg-violet-500"
               >
                 <Plus weight="bold" size={16} /> Post your first job
               </Link>
@@ -604,40 +515,23 @@ export default function OverviewPage() {
                   <Link
                     key={job.id}
                     href={`/dashboard/jobs/${job.id}`}
-                    className="flex items-center gap-4 p-4 rounded-2xl transition-all group"
+                    className="group flex items-center gap-4 rounded-lg border border-white/[0.07] bg-[#0d0f16] p-4 transition hover:border-violet-400/20 hover:bg-violet-400/[0.035]"
                     style={{
-                      background: "#111118",
-                      border: "1px solid rgba(255,255,255,0.07)",
                       animation: `fade-up-in 0.45s cubic-bezier(0.16,1,0.3,1) ${i * 60 + 300}ms both`,
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor =
-                        "rgba(124,58,237,0.28)";
-                      (e.currentTarget as HTMLElement).style.background =
-                        "rgba(124,58,237,0.04)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor =
-                        "rgba(255,255,255,0.07)";
-                      (e.currentTarget as HTMLElement).style.background =
-                        "#111118";
                     }}
                   >
                     <div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center text-[13px] font-extrabold text-white flex-shrink-0"
+                      className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-[12px] font-extrabold text-white"
                       style={{ background: gradient }}
                     >
                       {initials}
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p
-                        className="text-[15px] font-semibold truncate"
-                        style={{ color: "rgba(255,255,255,0.9)" }}
-                      >
+                      <p className="truncate text-[14px] font-semibold text-slate-100">
                         {job.title}
                       </p>
-                      <div className="flex items-center gap-3 mt-1 flex-wrap">
+                      <div className="mt-1 flex flex-wrap items-center gap-3">
                         {job.location && (
                           <span
                             className="flex items-center gap-1 text-[12px]"
@@ -726,18 +620,18 @@ export default function OverviewPage() {
 
         {/* ── RIGHT SIDEBAR ── */}
         <div
-          className="space-y-4 xl:sticky xl:top-0 xl:overflow-y-auto anim-4"
+          className="space-y-3 xl:sticky xl:top-0 xl:overflow-y-auto anim-4"
           style={{
             maxHeight: "520px",
             scrollbarWidth: "thin",
-            scrollbarColor: "rgba(124,58,237,0.3) transparent",
+            scrollbarColor: "rgba(124,58,237,0.22) transparent",
           }}
         >
           {/* ── Plan / quota card ── */}
           <div
-            className="rounded-2xl p-5"
+            className="rounded-lg p-5"
             style={{
-              background: "#111118",
+              background: "#0d0f16",
               border: sub?.isActive
                 ? "1px solid rgba(52,211,153,0.15)"
                 : sub?.quotaExhausted
@@ -918,9 +812,9 @@ export default function OverviewPage() {
           {/* Getting Started — only shown for brand-new accounts */}
           {totalJobs === 0 && (
             <div
-              className="rounded-2xl p-5"
+              className="rounded-lg p-5"
               style={{
-                background: "#111118",
+                background: "#0d0f16",
                 border: "1px solid rgba(124,58,237,0.18)",
               }}
             >
@@ -1013,9 +907,9 @@ export default function OverviewPage() {
           {/* Pipeline — bars fill on mount */}
           {totalJobs > 0 && (
             <div
-              className="rounded-2xl p-5"
+              className="rounded-lg p-5"
               style={{
-                background: "#111118",
+                background: "#0d0f16",
                 border: "1px solid rgba(255,255,255,0.07)",
               }}
             >
@@ -1069,9 +963,9 @@ export default function OverviewPage() {
 
           {/* Quick Actions */}
           <div
-            className="rounded-2xl p-5"
+            className="rounded-lg p-5"
             style={{
-              background: "#111118",
+              background: "#0d0f16",
               border: "1px solid rgba(255,255,255,0.07)",
             }}
           >

@@ -1,30 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import toast from "react-hot-toast";
 import {
-  CaretLeft,
-  EnvelopeSimple,
-  Phone,
-  LinkedinLogo,
-  Globe,
-  CircleNotch,
   ArrowSquareOut,
-  CheckCircle,
-  XCircle,
-  Warning,
-  Clock,
-  Robot,
+  Briefcase,
+  CalendarBlank,
   CaretDown,
+  CaretLeft,
+  CheckCircle,
+  CircleNotch,
+  Clock,
+  EnvelopeSimple,
+  Globe,
+  LinkedinLogo,
+  Phone,
+  Robot,
   UserCircle,
+  Warning,
+  XCircle,
 } from "@phosphor-icons/react";
 import { applicationsApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import type { Application, ApplicationStage } from "@/types";
 
-/* ── Constants ──────────────────────────────────────────── */
 const ALL_STAGES: ApplicationStage[] = [
   "applied",
   "screening",
@@ -55,48 +56,73 @@ const STAGE_COLORS: Record<ApplicationStage, string> = {
   withdrawn: "#6b7280",
 };
 
-/* ── Helpers ────────────────────────────────────────────── */
-function hue(name: string) {
-  return name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
-}
-
 function parseJsonArray(raw: string | null | undefined): string[] {
   if (!raw) return [];
   try {
-    const p = JSON.parse(raw);
-    return Array.isArray(p) ? p : [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 }
 
 function scoreColor(score: number) {
-  return score >= 75 ? "#34d399" : score >= 50 ? "#fbbf24" : "#f87171";
+  if (score >= 75) return "#34d399";
+  if (score >= 50) return "#fbbf24";
+  return "#f87171";
 }
 
-/* ── Avatar ─────────────────────────────────────────────── */
+function hue(name: string) {
+  return name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % 360;
+}
+
+function initials(name: string) {
+  const parts = name.trim().split(" ").filter(Boolean);
+  return (parts.length > 1 ? `${parts[0][0]}${parts.at(-1)?.[0]}` : name.slice(0, 2)).toUpperCase();
+}
+
 function Avatar({ name }: { name: string }) {
   const h = hue(name);
-  const parts = name.trim().split(" ");
-  const initials =
-    parts.length >= 2
-      ? parts[0][0] + parts[parts.length - 1][0]
-      : name.slice(0, 2);
   return (
     <div
-      className="w-16 h-16 rounded-2xl flex items-center justify-center text-[20px] font-bold text-white flex-shrink-0"
+      className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg text-[20px] font-black text-white"
       style={{
-        background: `linear-gradient(135deg, hsl(${h},60%,45%), hsl(${(h + 40) % 360},70%,35%))`,
+        background: `linear-gradient(135deg, hsl(${h},60%,42%), hsl(${(h + 42) % 360},70%,32%))`,
       }}
     >
-      {initials.toUpperCase()}
+      {initials(name)}
     </div>
   );
 }
 
-/* ════════════════════════════════════════════════════════
-   PAGE
-════════════════════════════════════════════════════════ */
+function Bone({ className }: { className?: string }) {
+  return (
+    <div
+      className={`animate-pulse rounded-lg ${className ?? ""}`}
+      style={{ background: "rgba(255,255,255,0.06)" }}
+    />
+  );
+}
+
+function SkeletonPage() {
+  return (
+    <div className="mx-auto max-w-4xl space-y-5">
+      <Bone className="h-4 w-32" />
+      <Bone className="h-48" />
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="space-y-5">
+          <Bone className="h-56" />
+          <Bone className="h-40" />
+        </div>
+        <div className="space-y-5">
+          <Bone className="h-52" />
+          <Bone className="h-44" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ApplicationDetailPage() {
   const { id: jobId, appId } = useParams<{ id: string; appId: string }>();
   const [app, setApp] = useState<Application | null>(null);
@@ -151,283 +177,118 @@ export default function ApplicationDetailPage() {
 
   if (!app) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 gap-3">
-        <Warning
-          weight="duotone"
-          size={36}
-          style={{ color: "rgba(255,255,255,0.2)" }}
-        />
-        <p className="text-[15px]" style={{ color: "rgba(255,255,255,0.35)" }}>
-          Application not found.
-        </p>
+      <div className="flex flex-col items-center justify-center py-28 text-center">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.035] text-slate-600">
+          <Warning weight="duotone" size={24} />
+        </div>
+        <p className="text-[16px] font-bold text-white">Application not found</p>
         <Link
           href={`/dashboard/jobs/${jobId}`}
-          className="text-[13px] mt-1"
-          style={{ color: "#a78bfa" }}
+          className="mt-5 inline-flex items-center gap-2 rounded-lg border border-violet-400/20 bg-violet-400/10 px-4 py-2.5 text-[13px] font-bold text-violet-200 transition hover:bg-violet-400/[0.16]"
         >
-          ← Back to pipeline
+          <CaretLeft weight="bold" size={14} />
+          Back to pipeline
         </Link>
       </div>
     );
   }
 
-  const candidateName = `${app.candidate.firstName} ${app.candidate.lastName}`;
+  const name = `${app.candidate.firstName} ${app.candidate.lastName}`.trim();
   const stageColor = STAGE_COLORS[app.stage];
   const hasAi = app.scoringStatus === "completed" && app.aiScore != null;
   const strengths = parseJsonArray(app.aiStrengths);
   const weaknesses = parseJsonArray(app.aiWeaknesses);
-  const otherStages = ALL_STAGES.filter((s) => s !== app.stage);
+  const otherStages = ALL_STAGES.filter((stage) => stage !== app.stage);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-5">
-      {/* ── Breadcrumb ── */}
-      <div
-        className="flex items-center gap-2 text-[13px]"
-        style={{ color: "rgba(255,255,255,0.3)" }}
-      >
+    <div className="mx-auto max-w-4xl space-y-5">
+      <div className="flex flex-wrap items-center gap-2 text-[13px] text-slate-600">
         <Link
           href={`/dashboard/jobs/${jobId}`}
-          className="flex items-center gap-1.5 transition-colors"
-          onMouseEnter={(e) =>
-            ((e.currentTarget as HTMLElement).style.color = "#a78bfa")
-          }
-          onMouseLeave={(e) =>
-            ((e.currentTarget as HTMLElement).style.color =
-              "rgba(255,255,255,0.3)")
-          }
+          className="inline-flex items-center gap-1.5 font-bold transition hover:text-violet-300"
         >
-          <CaretLeft weight="bold" size={14} /> Pipeline
+          <CaretLeft weight="bold" size={14} />
+          Pipeline
         </Link>
         <span>/</span>
-        <span className="text-white/50">{candidateName}</span>
+        <span className="text-slate-400">{name}</span>
       </div>
 
-      {/* ── Hero header ── */}
-      <div
-        className="relative rounded-2xl overflow-hidden px-5 py-5 md:px-8 md:py-7"
-        style={{
-          background:
-            "linear-gradient(135deg,#0e0e1a 0%,#13102a 45%,#0e0e1a 100%)",
-          border: "1px solid rgba(124,58,237,0.22)",
-        }}
-      >
-        {/* Orb */}
-        <div
-          className="absolute -top-16 -right-16 w-64 h-64 rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle,rgba(124,58,237,0.18) 0%,transparent 65%)",
-          }}
-        />
-
-        <div className="relative flex items-start gap-6 flex-wrap">
-          <Avatar name={candidateName} />
-
-          <div className="flex-1 min-w-0">
-            {/* Name + stage badge */}
-            <div className="flex items-center gap-3 flex-wrap mb-1">
-              <span
-                className="text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full"
-                style={{
-                  color: stageColor,
-                  background: stageColor + "18",
-                  border: `1px solid ${stageColor}30`,
-                }}
-              >
-                {STAGE_LABELS[app.stage]}
-              </span>
-            </div>
-            <h1 className="text-[24px] font-extrabold text-white tracking-tight">
-              {candidateName}
-            </h1>
-
-            {/* Contact info */}
-            <div className="flex flex-wrap gap-x-5 gap-y-2 mt-2">
-              <span
-                className="flex items-center gap-1.5 text-[13px]"
-                style={{ color: "rgba(255,255,255,0.45)" }}
-              >
-                <EnvelopeSimple
-                  weight="duotone"
-                  size={13}
-                  style={{ color: "#a78bfa" }}
-                />
-                {app.candidate.email}
-              </span>
-              {app.candidate.phone && (
-                <span
-                  className="flex items-center gap-1.5 text-[13px]"
-                  style={{ color: "rgba(255,255,255,0.45)" }}
-                >
-                  <Phone
-                    weight="duotone"
-                    size={13}
-                    style={{ color: "#a78bfa" }}
-                  />
-                  {app.candidate.phone}
-                </span>
-              )}
-              {app.candidate.linkedinUrl && (
-                <a
-                  href={app.candidate.linkedinUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-[13px] transition-colors"
-                  style={{ color: "rgba(255,255,255,0.45)" }}
-                  onMouseEnter={(e) =>
-                    ((e.currentTarget as HTMLElement).style.color = "#a78bfa")
-                  }
-                  onMouseLeave={(e) =>
-                    ((e.currentTarget as HTMLElement).style.color =
-                      "rgba(255,255,255,0.45)")
-                  }
-                >
-                  <LinkedinLogo
-                    weight="fill"
-                    size={13}
-                    style={{ color: "#a78bfa" }}
-                  />{" "}
-                  LinkedIn
-                </a>
-              )}
-              {app.candidate.portfolioUrl && (
-                <a
-                  href={app.candidate.portfolioUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-[13px] transition-colors"
-                  style={{ color: "rgba(255,255,255,0.45)" }}
-                  onMouseEnter={(e) =>
-                    ((e.currentTarget as HTMLElement).style.color = "#a78bfa")
-                  }
-                  onMouseLeave={(e) =>
-                    ((e.currentTarget as HTMLElement).style.color =
-                      "rgba(255,255,255,0.45)")
-                  }
-                >
-                  <Globe weight="bold" size={13} style={{ color: "#a78bfa" }} />{" "}
-                  Portfolio
-                </a>
-              )}
-            </div>
-
-            {/* Stats */}
-            <div className="flex flex-wrap gap-6 mt-5">
-              <StatChip label="Applied" value={formatDate(app.createdAt)} />
-              {app.scoredAt && (
-                <StatChip label="Scored" value={formatDate(app.scoredAt)} />
-              )}
-              {hasAi && (
-                <StatChip
-                  label="AI score"
-                  value={String(app.aiScore)}
-                  color={scoreColor(app.aiScore!)}
-                  large
-                />
-              )}
+      <section className="rounded-lg border border-white/[0.07] bg-[#0d0f16] px-5 py-5">
+        <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-start">
+          <div className="flex min-w-0 gap-4">
+            <Avatar name={name} />
+            <div className="min-w-0">
+              <StagePill stage={app.stage} />
+              <h1 className="mt-3 text-[26px] font-black tracking-tight text-white">
+                {name}
+              </h1>
+              <p className="mt-1 text-[13px] text-slate-500">
+                {app.job?.title ?? "Application review"}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-slate-500">
+                <Contact icon={<EnvelopeSimple weight="duotone" size={13} />} text={app.candidate.email} />
+                {app.candidate.phone && <Contact icon={<Phone weight="duotone" size={13} />} text={app.candidate.phone} />}
+                {app.candidate.linkedinUrl && (
+                  <ContactLink href={app.candidate.linkedinUrl} icon={<LinkedinLogo weight="fill" size={13} />} text="LinkedIn" />
+                )}
+                {app.candidate.portfolioUrl && (
+                  <ContactLink href={app.candidate.portfolioUrl} icon={<Globe weight="bold" size={13} />} text="Portfolio" />
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* View CV */}
+          <div className="flex flex-wrap items-center gap-2">
             <a
               href={app.cvUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all"
-              style={{
-                color: "rgba(255,255,255,0.6)",
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.1)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = "#fff";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  "rgba(255,255,255,0.6)";
-              }}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/[0.07] bg-white/[0.035] px-4 py-2.5 text-[13px] font-bold text-slate-300 transition hover:bg-white/[0.06] hover:text-white"
             >
-              <ArrowSquareOut weight="bold" size={14} /> View CV
+              <ArrowSquareOut weight="bold" size={14} />
+              View CV
             </a>
-
-            {/* View candidate profile */}
             <Link
               href={`/dashboard/candidates/${app.candidate.id}`}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all"
-              style={{
-                color: "#a78bfa",
-                background: "rgba(124,58,237,0.1)",
-                border: "1px solid rgba(124,58,237,0.25)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background =
-                  "rgba(124,58,237,0.18)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background =
-                  "rgba(124,58,237,0.1)";
-              }}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-violet-400/20 bg-violet-400/10 px-4 py-2.5 text-[13px] font-bold text-violet-200 transition hover:bg-violet-400/[0.16]"
             >
-              <UserCircle weight="duotone" size={14} /> Profile
+              <UserCircle weight="duotone" size={14} />
+              Profile
             </Link>
-
-            {/* Move stage */}
             <div className="relative">
               <button
-                onClick={() => setShowStageMenu((v) => !v)}
+                type="button"
+                onClick={() => setShowStageMenu((current) => !current)}
                 disabled={movingStage}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all disabled:opacity-40"
-                style={{
-                  color: "rgba(255,255,255,0.55)",
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
+                className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.035] px-4 py-2.5 text-[13px] font-bold text-slate-300 transition hover:bg-white/[0.06] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {movingStage ? (
                   <>
-                    <CircleNotch size={13} className="animate-spin" /> Moving…
+                    <CircleNotch size={13} className="animate-spin" />
+                    Moving
                   </>
                 ) : (
                   <>
-                    Move stage <CaretDown weight="bold" size={11} />
+                    Move stage
+                    <CaretDown weight="bold" size={11} />
                   </>
                 )}
               </button>
               {showStageMenu && (
-                <div
-                  className="absolute right-0 top-full mt-1.5 z-20 w-44 rounded-xl overflow-hidden py-1"
-                  style={{
-                    background: "#1a1a28",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    boxShadow: "0 16px 40px rgba(0,0,0,0.5)",
-                  }}
-                  onMouseLeave={() => setShowStageMenu(false)}
-                >
-                  {otherStages.map((s) => (
+                <div className="absolute right-0 top-full z-30 mt-2 w-44 overflow-hidden rounded-lg border border-white/[0.09] bg-[#121420] py-1 shadow-2xl shadow-black/60">
+                  {otherStages.map((stage) => (
                     <button
-                      key={s}
-                      onClick={() => moveStage(s)}
-                      className="w-full text-left px-3.5 py-2.5 text-[12px] font-medium transition-colors flex items-center gap-2.5"
-                      style={{ color: "rgba(255,255,255,0.55)" }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.background =
-                          "rgba(255,255,255,0.05)";
-                        (e.currentTarget as HTMLElement).style.color =
-                          STAGE_COLORS[s];
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.background = "";
-                        (e.currentTarget as HTMLElement).style.color =
-                          "rgba(255,255,255,0.55)";
-                      }}
+                      key={stage}
+                      type="button"
+                      onClick={() => moveStage(stage)}
+                      className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-[12px] font-semibold text-slate-400 transition hover:bg-white/[0.05] hover:text-white"
                     >
                       <span
-                        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                        style={{ background: STAGE_COLORS[s] }}
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ background: STAGE_COLORS[stage] }}
                       />
-                      {STAGE_LABELS[s]}
+                      {STAGE_LABELS[stage]}
                     </button>
                   ))}
                 </div>
@@ -435,234 +296,177 @@ export default function ApplicationDetailPage() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ── 2-col layout ── */}
-      <div className="grid lg:grid-cols-[1fr_340px] gap-5 items-start">
-        {/* LEFT: AI + cover letter */}
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <Stat label="Applied" value={formatDate(app.createdAt)} />
+          <Stat label="Scored" value={app.scoredAt ? formatDate(app.scoredAt) : "Pending"} />
+          <Stat
+            label="AI score"
+            value={hasAi ? String(app.aiScore) : app.scoringStatus}
+            color={hasAi ? scoreColor(app.aiScore!) : undefined}
+          />
+        </div>
+      </section>
+
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-5">
-          {/* AI analysis */}
-          <Section
-            title="AI Analysis"
-            icon={
-              <Robot weight="duotone" size={16} style={{ color: "#a78bfa" }} />
-            }
-          >
+          <Section title="AI analysis" icon={<Robot weight="duotone" size={16} />}>
             {hasAi ? (
               <div className="space-y-4">
                 {app.aiSummary && (
-                  <p
-                    className="text-[14px] leading-relaxed"
-                    style={{ color: "rgba(255,255,255,0.65)" }}
-                  >
+                  <p className="text-[14px] leading-6 text-slate-400">
                     {app.aiSummary}
                   </p>
                 )}
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid gap-3 md:grid-cols-2">
                   {strengths.length > 0 && (
-                    <div
-                      className="rounded-xl p-4"
-                      style={{
-                        background: "rgba(52,211,153,0.05)",
-                        border: "1px solid rgba(52,211,153,0.12)",
-                      }}
-                    >
-                      <p
-                        className="text-[11px] font-bold uppercase tracking-widest mb-3"
-                        style={{ color: "#34d399" }}
-                      >
-                        Strengths
-                      </p>
-                      <ul className="space-y-2">
-                        {strengths.map((s, i) => (
-                          <li
-                            key={i}
-                            className="flex items-start gap-2 text-[13px]"
-                            style={{ color: "rgba(255,255,255,0.6)" }}
-                          >
-                            <CheckCircle
-                              weight="fill"
-                              size={14}
-                              style={{
-                                color: "#34d399",
-                                flexShrink: 0,
-                                marginTop: 2,
-                              }}
-                            />
-                            {s}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <AnalysisList tone="good" title="Strengths" items={strengths} />
                   )}
                   {weaknesses.length > 0 && (
-                    <div
-                      className="rounded-xl p-4"
-                      style={{
-                        background: "rgba(248,113,113,0.05)",
-                        border: "1px solid rgba(248,113,113,0.12)",
-                      }}
-                    >
-                      <p
-                        className="text-[11px] font-bold uppercase tracking-widest mb-3"
-                        style={{ color: "#f87171" }}
-                      >
-                        Gaps
-                      </p>
-                      <ul className="space-y-2">
-                        {weaknesses.map((w, i) => (
-                          <li
-                            key={i}
-                            className="flex items-start gap-2 text-[13px]"
-                            style={{ color: "rgba(255,255,255,0.6)" }}
-                          >
-                            <XCircle
-                              weight="fill"
-                              size={14}
-                              style={{
-                                color: "#f87171",
-                                flexShrink: 0,
-                                marginTop: 2,
-                              }}
-                            />
-                            {w}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <AnalysisList tone="risk" title="Gaps" items={weaknesses} />
                   )}
                 </div>
               </div>
             ) : (
-              <div
-                className="flex items-center gap-3 py-4"
-                style={{ color: "rgba(255,255,255,0.35)" }}
-              >
+              <div className="flex items-center gap-3 py-3 text-[13px] text-slate-500">
                 {app.scoringStatus === "processing" ? (
-                  <>
-                    <CircleNotch
-                      size={16}
-                      className="animate-spin"
-                      style={{ color: "#a78bfa" }}
-                    />{" "}
-                    <span className="text-[13px]">AI scoring in progress…</span>
-                  </>
+                  <CircleNotch size={16} className="animate-spin text-violet-300" />
                 ) : app.scoringStatus === "failed" ? (
-                  <>
-                    <Warning
-                      weight="fill"
-                      size={16}
-                      style={{ color: "#f87171" }}
-                    />{" "}
-                    <span className="text-[13px]">Scoring failed.</span>
-                  </>
+                  <Warning weight="fill" size={16} className="text-red-300" />
                 ) : (
-                  <>
-                    <Clock
-                      weight="duotone"
-                      size={16}
-                      style={{ color: "#6b7280" }}
-                    />{" "}
-                    <span className="text-[13px]">Scoring queued…</span>
-                  </>
+                  <Clock weight="duotone" size={16} className="text-slate-600" />
                 )}
+                {app.scoringStatus === "processing"
+                  ? "AI scoring in progress."
+                  : app.scoringStatus === "failed"
+                    ? "AI scoring failed."
+                    : "AI scoring is queued."}
               </div>
             )}
           </Section>
 
-          {/* Cover letter */}
           {app.coverLetter && (
-            <Section title="Cover Letter">
-              <p
-                className="text-[14px] leading-relaxed whitespace-pre-line"
-                style={{ color: "rgba(255,255,255,0.65)" }}
-              >
+            <Section title="Cover letter">
+              <p className="whitespace-pre-line text-[14px] leading-6 text-slate-400">
                 {app.coverLetter}
               </p>
             </Section>
           )}
         </div>
 
-        {/* RIGHT: sidebar */}
-        <div className="space-y-5">
-          {/* Recruiter notes */}
-          <Section title="Recruiter Notes">
+        <aside className="space-y-5">
+          <Section title="Recruiter notes">
             <textarea
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(event) => setNotes(event.target.value)}
               rows={5}
-              placeholder="Add internal notes about this candidate…"
-              className="w-full rounded-xl px-4 py-3 text-[13px] text-white placeholder-gray-600 resize-y focus:outline-none transition"
-              style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = "rgba(124,58,237,0.4)";
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = "rgba(255,255,255,0.08)";
-              }}
+              placeholder="Add internal notes about this candidate."
+              className="w-full resize-y rounded-lg border border-white/[0.07] bg-white/[0.035] px-3.5 py-3 text-[13px] leading-6 text-white outline-none transition placeholder:text-slate-700 focus:border-violet-400/30 focus:bg-white/[0.055]"
             />
             <button
+              type="button"
               onClick={saveNotes}
               disabled={savingNotes || notes === (app.notes ?? "")}
-              className="mt-2 w-full py-2.5 rounded-xl text-[13px] font-semibold transition-all disabled:opacity-40"
-              style={{
-                background: "rgba(124,58,237,0.15)",
-                color: "#a78bfa",
-                border: "1px solid rgba(124,58,237,0.25)",
-              }}
+              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-[13px] font-bold text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {savingNotes ? "Saving…" : "Save notes"}
+              {savingNotes && <CircleNotch size={13} className="animate-spin" />}
+              {savingNotes ? "Saving" : "Save notes"}
             </button>
           </Section>
 
-          {/* Application info */}
-          <Section title="Application Info">
+          <Section title="Application info" icon={<Briefcase weight="duotone" size={16} />}>
             <dl className="space-y-3">
-              <InfoRow label="Status">
-                <span
-                  className="text-[12px] font-semibold px-2.5 py-1 rounded-full capitalize"
-                  style={{
-                    color: stageColor,
-                    background: stageColor + "18",
-                    border: `1px solid ${stageColor}30`,
-                  }}
-                >
-                  {STAGE_LABELS[app.stage]}
-                </span>
+              <InfoRow label="Stage">
+                <StagePill stage={app.stage} />
               </InfoRow>
+              <InfoRow label="Role">{app.job?.title ?? "Role"}</InfoRow>
               <InfoRow label="Applied">{formatDate(app.createdAt)}</InfoRow>
-              {app.scoredAt && (
-                <InfoRow label="AI scored">{formatDate(app.scoredAt)}</InfoRow>
-              )}
+              {app.scoredAt && <InfoRow label="Scored">{formatDate(app.scoredAt)}</InfoRow>}
               <InfoRow label="CV">
                 <a
                   href={app.cvUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-[13px] transition-colors"
-                  style={{ color: "#a78bfa" }}
-                  onMouseEnter={(e) =>
-                    ((e.currentTarget as HTMLElement).style.color = "#c4b5fd")
-                  }
-                  onMouseLeave={(e) =>
-                    ((e.currentTarget as HTMLElement).style.color = "#a78bfa")
-                  }
+                  className="inline-flex items-center gap-1 text-violet-300 transition hover:text-violet-200"
                 >
-                  Open CV <ArrowSquareOut size={12} />
+                  Open CV
+                  <ArrowSquareOut size={12} />
                 </a>
               </InfoRow>
             </dl>
           </Section>
-        </div>
+        </aside>
       </div>
     </div>
   );
 }
 
-/* ── Shared components ──────────────────────────────────── */
+function Contact({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <span className="inline-flex min-w-0 items-center gap-1.5">
+      <span className="text-violet-300">{icon}</span>
+      <span className="truncate">{text}</span>
+    </span>
+  );
+}
+
+function ContactLink({
+  href,
+  icon,
+  text,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  text: string;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 transition hover:text-violet-300"
+    >
+      <span className="text-violet-300">{icon}</span>
+      {text}
+    </a>
+  );
+}
+
+function StagePill({ stage }: { stage: ApplicationStage }) {
+  const color = STAGE_COLORS[stage];
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-bold"
+      style={{ color, background: `${color}12`, borderColor: `${color}28` }}
+    >
+      <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+      {STAGE_LABELS[stage]}
+    </span>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: string;
+  color?: string;
+}) {
+  return (
+    <div className="rounded-lg border border-white/[0.06] bg-white/[0.025] p-3">
+      <p className="text-[12px] font-semibold text-slate-600">{label}</p>
+      <p
+        className="mt-1 truncate text-[20px] font-black text-white tabular-nums capitalize"
+        style={color ? { color } : undefined}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
 function Section({
   title,
   icon,
@@ -673,53 +477,15 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className="rounded-2xl p-6"
-      style={{
-        background: "#111118",
-        border: "1px solid rgba(255,255,255,0.06)",
-      }}
-    >
-      <div className="flex items-center gap-2 mb-4">
+    <section className="rounded-lg border border-white/[0.07] bg-[#0d0f16] p-5">
+      <div className="mb-4 flex items-center gap-2 text-violet-300">
         {icon}
-        <h2
-          className="text-[13px] font-bold uppercase tracking-widest"
-          style={{ color: "rgba(255,255,255,0.4)" }}
-        >
+        <h2 className="text-[12px] font-bold uppercase tracking-[0.16em] text-slate-500">
           {title}
         </h2>
       </div>
       {children}
-    </div>
-  );
-}
-
-function StatChip({
-  label,
-  value,
-  color,
-  large,
-}: {
-  label: string;
-  value: string;
-  color?: string;
-  large?: boolean;
-}) {
-  return (
-    <div>
-      <p
-        className={`font-extrabold leading-none ${large ? "text-[22px]" : "text-[14px] font-semibold"}`}
-        style={{ color: color ?? "rgba(255,255,255,0.55)" }}
-      >
-        {value}
-      </p>
-      <p
-        className="text-[11px] mt-1 uppercase tracking-wide font-medium"
-        style={{ color: "rgba(255,255,255,0.28)" }}
-      >
-        {label}
-      </p>
-    </div>
+    </section>
   );
 }
 
@@ -732,58 +498,51 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <dt
-        className="text-[12px] font-medium"
-        style={{ color: "rgba(255,255,255,0.3)" }}
-      >
-        {label}
-      </dt>
-      <dd className="text-[13px] text-white">{children}</dd>
+      <dt className="text-[12px] font-semibold text-slate-600">{label}</dt>
+      <dd className="text-right text-[13px] font-medium text-slate-300">
+        {children}
+      </dd>
     </div>
   );
 }
 
-/* ── Skeleton ───────────────────────────────────────────── */
-function Bone({ style }: { style?: React.CSSProperties }) {
+function AnalysisList({
+  tone,
+  title,
+  items,
+}: {
+  tone: "good" | "risk";
+  title: string;
+  items: string[];
+}) {
+  const good = tone === "good";
   return (
     <div
-      className="animate-pulse rounded-xl"
-      style={{ background: "rgba(255,255,255,0.06)", ...style }}
-    />
-  );
-}
-
-function SkeletonPage() {
-  return (
-    <div className="max-w-4xl mx-auto space-y-5">
-      <Bone style={{ width: 100, height: 18 }} />
-      <div
-        className="rounded-2xl p-8 space-y-4"
-        style={{
-          background: "#0e0e1a",
-          border: "1px solid rgba(124,58,237,0.12)",
-        }}
+      className={`rounded-lg border p-4 ${
+        good
+          ? "border-emerald-400/15 bg-emerald-400/[0.05]"
+          : "border-red-400/15 bg-red-400/[0.05]"
+      }`}
+    >
+      <p
+        className={`mb-3 text-[11px] font-bold uppercase tracking-[0.16em] ${
+          good ? "text-emerald-300" : "text-red-300"
+        }`}
       >
-        <div className="flex items-start gap-6">
-          <Bone style={{ width: 64, height: 64, borderRadius: 16 }} />
-          <div className="flex-1 space-y-3">
-            <Bone style={{ width: 60, height: 20, borderRadius: 999 }} />
-            <Bone style={{ width: 240, height: 26 }} />
-            <Bone style={{ width: 180, height: 14 }} />
-          </div>
-        </div>
-      </div>
-      <div className="grid lg:grid-cols-[1fr_340px] gap-5">
-        <div className="space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <Bone key={i} style={{ height: 120 + i * 40 }} />
-          ))}
-        </div>
-        <div className="space-y-4">
-          <Bone style={{ height: 180 }} />
-          <Bone style={{ height: 150 }} />
-        </div>
-      </div>
+        {title}
+      </p>
+      <ul className="space-y-2">
+        {items.map((item, index) => (
+          <li key={`${item}-${index}`} className="flex gap-2 text-[13px] leading-5 text-slate-400">
+            {good ? (
+              <CheckCircle weight="fill" size={14} className="mt-0.5 flex-shrink-0 text-emerald-300" />
+            ) : (
+              <XCircle weight="fill" size={14} className="mt-0.5 flex-shrink-0 text-red-300" />
+            )}
+            {item}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

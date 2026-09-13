@@ -5,32 +5,30 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import {
-  Plus,
+  ArrowRight,
   BriefcaseMetal,
-  DotsThree,
-  PencilSimple,
-  Trash,
-  Eye,
-  MapPin,
   CalendarBlank,
+  CaretRight,
+  CircleNotch,
+  DotsThree,
+  Eye,
+  FunnelSimple,
+  Lock,
+  MapPin,
+  PencilSimple,
+  Plus,
+  Trash,
   Users,
   ToggleLeft,
   ToggleRight,
-  CircleNotch,
-  FunnelSimple,
-  Lock,
-  ArrowRight,
 } from "@phosphor-icons/react";
+import ConfirmModal from "@/components/ConfirmModal";
 import { jobsApi, subscriptionsApi } from "@/lib/api";
 import type { SubStatus } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import type { Job } from "@/types";
 import type { AxiosError } from "axios";
-import ConfirmModal from "@/components/ConfirmModal";
 
-/* ─────────────────────────────────────────
-   TYPES & CONSTANTS
-───────────────────────────────────────── */
 type StatusFilter = "all" | "active" | "draft" | "closed" | "archived";
 
 const STATUS_TABS: { key: StatusFilter; label: string }[] = [
@@ -43,55 +41,47 @@ const STATUS_TABS: { key: StatusFilter; label: string }[] = [
 
 const STATUS_MAP: Record<
   string,
-  { label: string; color: string; bg: string; dot: string }
+  { label: string; color: string; bg: string; border: string; dot: string }
 > = {
   active: {
     label: "Active",
     color: "#34d399",
-    bg: "rgba(52,211,153,0.12)",
+    bg: "rgba(52,211,153,0.1)",
+    border: "rgba(52,211,153,0.18)",
     dot: "#34d399",
   },
   draft: {
     label: "Draft",
     color: "#94a3b8",
     bg: "rgba(148,163,184,0.08)",
+    border: "rgba(148,163,184,0.14)",
     dot: "#94a3b8",
   },
   closed: {
     label: "Closed",
     color: "#f87171",
-    bg: "rgba(248,113,113,0.12)",
+    bg: "rgba(248,113,113,0.1)",
+    border: "rgba(248,113,113,0.16)",
     dot: "#f87171",
   },
   archived: {
     label: "Archived",
     color: "#6b7280",
     bg: "rgba(107,114,128,0.08)",
+    border: "rgba(107,114,128,0.13)",
     dot: "#6b7280",
   },
 };
-
-const JOB_GRADIENTS = [
-  "linear-gradient(135deg,#7c3aed,#6d28d9)",
-  "linear-gradient(135deg,#6d28d9,#5b21b6)",
-  "linear-gradient(135deg,#8b5cf6,#7c3aed)",
-  "linear-gradient(135deg,#5b21b6,#4c1d95)",
-  "linear-gradient(135deg,#7c3aed,#8b5cf6)",
-  "linear-gradient(135deg,#6d28d9,#7c3aed)",
-];
 
 function getInitials(title: string) {
   return title
     .split(" ")
     .slice(0, 2)
-    .map((w) => w[0])
+    .map((word) => word[0])
     .join("")
     .toUpperCase();
 }
 
-/* ─────────────────────────────────────────
-   SKELETON
-───────────────────────────────────────── */
 function Bone({
   className,
   style,
@@ -101,7 +91,7 @@ function Bone({
 }) {
   return (
     <div
-      className={`animate-pulse rounded-xl ${className ?? ""}`}
+      className={`animate-pulse rounded-lg ${className ?? ""}`}
       style={{ background: "rgba(255,255,255,0.06)", ...style }}
     />
   );
@@ -109,51 +99,52 @@ function Bone({
 
 function SkeletonPage() {
   return (
-    <div className="space-y-6">
-      {/* header */}
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <Bone className="h-7 w-24 rounded-lg" />
-          <Bone className="h-4 w-32 rounded-md" />
+          <Bone className="h-7 w-28" />
+          <Bone className="h-4 w-52" />
         </div>
-        <Bone className="h-10 w-32 rounded-xl" />
+        <Bone className="h-10 w-32" />
       </div>
-      {/* tabs */}
-      <Bone className="h-10 w-80 rounded-xl" />
-      {/* cards */}
-      <div className="space-y-3">
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-4 p-5 rounded-2xl"
-            style={{
-              background: "#111118",
-              border: "1px solid rgba(255,255,255,0.07)",
-            }}
-          >
-            <Bone className="w-12 h-12 rounded-xl flex-shrink-0" />
-            <div className="flex-1 space-y-2">
-              <Bone
-                className="h-4 rounded-md"
-                style={{ width: `${50 + (i % 4) * 12}%` }}
-              />
-              <Bone className="h-3 w-40 rounded-md" />
-            </div>
-            <div className="hidden sm:flex items-center gap-4">
-              <Bone className="h-8 w-16 rounded-lg" />
-              <Bone className="h-8 w-20 rounded-lg" />
-            </div>
-            <Bone className="w-8 h-8 rounded-lg flex-shrink-0" />
-          </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {[0, 1, 2].map((item) => (
+          <Bone key={item} className="h-24" />
+        ))}
+      </div>
+      <Bone className="h-11 w-full max-w-xl" />
+      <div className="space-y-2">
+        {[0, 1, 2, 3, 4].map((item) => (
+          <Bone key={item} className="h-[86px]" />
         ))}
       </div>
     </div>
   );
 }
 
-/* ─────────────────────────────────────────
-   ACTION MENU BUTTON
-───────────────────────────────────────── */
+function StatusBadge({ status }: { status: Job["status"] }) {
+  const state = STATUS_MAP[status] ?? STATUS_MAP.draft;
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[12px] font-bold capitalize"
+      style={{
+        color: state.color,
+        background: state.bg,
+        borderColor: state.border,
+      }}
+    >
+      <span
+        className="h-1.5 w-1.5 rounded-full"
+        style={{
+          background: state.dot,
+          boxShadow: status === "active" ? `0 0 7px ${state.dot}` : "none",
+        }}
+      />
+      {state.label}
+    </span>
+  );
+}
+
 function MenuBtn({
   icon: Icon,
   label,
@@ -169,62 +160,34 @@ function MenuBtn({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium transition-all"
-      style={{ color: danger ? "#f87171" : "rgba(255,255,255,0.55)" }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.background = danger
-          ? "rgba(248,113,113,0.08)"
-          : "rgba(124,58,237,0.07)";
-        (e.currentTarget as HTMLElement).style.color = danger
-          ? "#f87171"
-          : "white";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.background = "transparent";
-        (e.currentTarget as HTMLElement).style.color = danger
-          ? "#f87171"
-          : "rgba(255,255,255,0.55)";
-      }}
+      className={`flex w-full items-center gap-3 px-3.5 py-2.5 text-left text-[13px] font-semibold transition ${
+        danger
+          ? "text-red-300 hover:bg-red-400/[0.08]"
+          : "text-slate-400 hover:bg-white/[0.05] hover:text-white"
+      }`}
     >
-      <Icon weight={iconWeight} size={14} className="flex-shrink-0" />
+      <Icon weight={iconWeight} size={15} className="flex-shrink-0" />
       {label}
     </button>
   );
 }
 
-/* ─────────────────────────────────────────
-   EMPTY STATE
-───────────────────────────────────────── */
 function EmptyState({ filter }: { filter: StatusFilter }) {
   return (
-    <div
-      className="rounded-2xl flex flex-col items-center justify-center py-20 text-center anim-2"
-      style={{
-        background: "#111118",
-        border: "1px dashed rgba(255,255,255,0.08)",
-      }}
-    >
-      <div
-        className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-        style={{
-          background: "rgba(124,58,237,0.1)",
-          border: "1px solid rgba(124,58,237,0.2)",
-        }}
-      >
+    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/[0.08] bg-[#0d0f16] px-5 py-20 text-center anim-2">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-violet-400/20 bg-violet-400/10">
         <BriefcaseMetal
           weight="duotone"
-          size={26}
-          style={{ color: "#a78bfa" }}
+          size={24}
+          className="text-violet-300"
         />
       </div>
-      <p className="text-[17px] font-bold mb-2 text-white">
+      <p className="text-[16px] font-bold text-white">
         {filter === "all" ? "No roles posted yet" : `No ${filter} roles`}
       </p>
-      <p
-        className="text-[14px] max-w-xs mb-6"
-        style={{ color: "rgba(255,255,255,0.3)" }}
-      >
+      <p className="mt-2 max-w-xs text-[13px] leading-6 text-slate-500">
         {filter === "all"
           ? "Post your first role and start receiving AI-scored applications."
           : "Try a different filter or post a new role."}
@@ -232,22 +195,180 @@ function EmptyState({ filter }: { filter: StatusFilter }) {
       {filter === "all" && (
         <Link
           href="/dashboard/jobs/new"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[14px] font-bold text-white"
-          style={{
-            background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-            boxShadow: "0 0 20px rgba(124,58,237,0.3)",
-          }}
+          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-[13px] font-bold text-white shadow-lg shadow-violet-950/30 transition hover:bg-violet-500"
         >
-          <Plus weight="bold" size={16} /> Post your first role
+          <Plus weight="bold" size={16} />
+          Post your first role
         </Link>
       )}
     </div>
   );
 }
 
-/* ─────────────────────────────────────────
-   PAGE
-───────────────────────────────────────── */
+function SummaryCard({
+  label,
+  value,
+  detail,
+}: {
+  label: string;
+  value: number;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-lg border border-white/[0.07] bg-[#0d0f16] p-4">
+      <p className="text-[12px] font-semibold text-slate-500">{label}</p>
+      <p className="mt-3 text-[28px] font-black leading-none text-white tabular-nums">
+        {value.toLocaleString()}
+      </p>
+      <p className="mt-2 text-[12px] text-slate-600">{detail}</p>
+    </div>
+  );
+}
+
+function RoleRow({
+  job,
+  actionLoading,
+  isMenuOpen,
+  menuRef,
+  onOpenMenu,
+  onCloseMenu,
+  onView,
+  onEdit,
+  onToggleStatus,
+  onDelete,
+}: {
+  job: Job;
+  actionLoading: boolean;
+  isMenuOpen: boolean;
+  menuRef?: React.RefObject<HTMLDivElement | null>;
+  onOpenMenu: () => void;
+  onCloseMenu: () => void;
+  onView: () => void;
+  onEdit: () => void;
+  onToggleStatus: () => void;
+  onDelete: () => void;
+}) {
+  const initials = getInitials(job.title);
+
+  return (
+    <article className="group relative grid gap-4 rounded-lg border border-white/[0.07] bg-[#0d0f16] p-4 transition hover:border-violet-400/20 hover:bg-violet-400/[0.035] md:grid-cols-[minmax(0,1fr)_88px_110px_96px_36px] md:items-center">
+      <div className="flex min-w-0 items-start gap-3">
+        <Link
+          href={`/dashboard/jobs/${job.id}`}
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-violet-600 text-[12px] font-black text-white"
+          aria-label={`Open ${job.title}`}
+        >
+          {initials}
+        </Link>
+
+        <div className="min-w-0">
+          <Link
+            href={`/dashboard/jobs/${job.id}`}
+            className="block truncate text-[15px] font-bold text-slate-100 transition hover:text-violet-200"
+          >
+            {job.title}
+          </Link>
+          <div className="mt-1.5 flex flex-wrap items-center gap-2.5">
+            {job.location && (
+              <span className="inline-flex items-center gap-1 text-[12px] text-slate-600">
+                <MapPin weight="fill" size={11} />
+                {job.location}
+              </span>
+            )}
+            {job.type && (
+              <span className="rounded-md bg-white/[0.055] px-2 py-0.5 text-[11px] font-semibold capitalize text-slate-500">
+                {job.type.replace("-", " ")}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-3 md:block">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-700 md:hidden">
+          CVs
+        </p>
+        <div className="flex items-center gap-1.5 md:justify-end">
+          <Users weight="duotone" size={14} className="text-slate-600" />
+          <span className="text-[15px] font-bold text-white tabular-nums">
+            {job.applicationCount ?? 0}
+          </span>
+        </div>
+      </div>
+
+      <div className="hidden text-right text-[12px] text-slate-600 md:block">
+        <span className="inline-flex items-center gap-1">
+          <CalendarBlank weight="fill" size={11} />
+          {formatDate(job.createdAt)}
+        </span>
+      </div>
+
+      <div className="flex md:justify-end">
+        <StatusBadge status={job.status} />
+      </div>
+
+      <div
+        className="absolute right-4 top-4 md:static"
+        ref={isMenuOpen ? menuRef : undefined}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onOpenMenu}
+          disabled={actionLoading}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-transparent text-slate-600 transition hover:border-white/[0.08] hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label={`Open actions for ${job.title}`}
+        >
+          {actionLoading ? (
+            <CircleNotch size={15} className="animate-spin" />
+          ) : (
+            <DotsThree weight="bold" size={20} />
+          )}
+        </button>
+
+        {isMenuOpen && (
+          <div className="absolute right-0 top-full z-30 mt-2 w-48 overflow-hidden rounded-lg border border-white/[0.09] bg-[#121420] py-1 shadow-2xl shadow-black/60">
+            <MenuBtn
+              icon={Eye}
+              label="View pipeline"
+              onClick={() => {
+                onCloseMenu();
+                onView();
+              }}
+            />
+            <MenuBtn
+              icon={PencilSimple}
+              label="Edit role"
+              onClick={() => {
+                onCloseMenu();
+                onEdit();
+              }}
+            />
+            <MenuBtn
+              icon={job.status === "active" ? ToggleLeft : ToggleRight}
+              label={job.status === "active" ? "Close role" : "Activate role"}
+              onClick={() => {
+                onCloseMenu();
+                onToggleStatus();
+              }}
+            />
+            <div className="my-1 h-px bg-white/[0.06]" />
+            <MenuBtn
+              icon={Trash}
+              label="Delete role"
+              danger
+              onClick={() => {
+                onCloseMenu();
+                onDelete();
+              }}
+            />
+          </div>
+        )}
+      </div>
+    </article>
+  );
+}
+
 export default function JobsPage() {
   const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -261,16 +382,15 @@ export default function JobsPage() {
 
   useEffect(() => {
     fetchJobs();
-    // Fetch subscription status in parallel — used for the upgrade banner
     subscriptionsApi
       .status()
-      .then((r) => setSub(r.data.data))
+      .then((res) => setSub(res.data.data))
       .catch(() => {});
   }, []);
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+    const handler = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setOpenMenu(null);
       }
     };
@@ -284,7 +404,7 @@ export default function JobsPage() {
       const data = res.data.data;
       setJobs(Array.isArray(data) ? data : (data?.jobs ?? []));
     } catch {
-      toast.error("Failed to load jobs.");
+      toast.error("Failed to load roles.");
     } finally {
       setLoading(false);
     }
@@ -296,13 +416,15 @@ export default function JobsPage() {
     try {
       await jobsApi.updateStatus(job.id, next);
       setJobs((prev) =>
-        prev.map((j) =>
-          j.id === job.id ? { ...j, status: next as Job["status"] } : j,
+        prev.map((item) =>
+          item.id === job.id
+            ? { ...item, status: next as Job["status"] }
+            : item,
         ),
       );
-      toast.success(`Job ${next === "active" ? "activated" : "closed"}.`);
+      toast.success(`Role ${next === "active" ? "activated" : "closed"}.`);
     } catch {
-      toast.error("Failed to update status.");
+      toast.error("Failed to update role status.");
     } finally {
       setActionLoading(null);
     }
@@ -310,16 +432,18 @@ export default function JobsPage() {
 
   async function confirmDelete() {
     if (!deleteTarget) return;
+
     const job = deleteTarget;
     setDeleteTarget(null);
     setActionLoading(job.id);
+
     try {
       await jobsApi.delete(job.id);
-      setJobs((prev) => prev.filter((j) => j.id !== job.id));
-      toast.success("Job deleted.");
+      setJobs((prev) => prev.filter((item) => item.id !== job.id));
+      toast.success("Role deleted.");
     } catch (err) {
       const error = err as AxiosError<{ message?: string }>;
-      toast.error(error.response?.data?.message ?? "Failed to delete job.");
+      toast.error(error.response?.data?.message ?? "Failed to delete role.");
     } finally {
       setActionLoading(null);
     }
@@ -328,158 +452,122 @@ export default function JobsPage() {
   if (loading) return <SkeletonPage />;
 
   const filtered =
-    filter === "all" ? jobs : jobs.filter((j) => j.status === filter);
+    filter === "all" ? jobs : jobs.filter((job) => job.status === filter);
 
-  const activeCount = jobs.filter((j) => j.status === "active").length;
-  const totalCVs = jobs.reduce((s, j) => s + (j.applicationCount ?? 0), 0);
+  const activeCount = jobs.filter((job) => job.status === "active").length;
+  const draftCount = jobs.filter((job) => job.status === "draft").length;
+  const totalCVs = jobs.reduce(
+    (sum, job) => sum + (job.applicationCount ?? 0),
+    0,
+  );
 
   return (
     <>
       <ConfirmModal
         open={!!deleteTarget}
-        title="Delete this job?"
+        title="Delete this role?"
         message={`"${deleteTarget?.title}" and all its applications will be permanently removed. This cannot be undone.`}
-        confirmLabel="Delete job"
+        confirmLabel="Delete role"
         danger
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />
 
-      <div className="space-y-6">
-        {/* ══ UPGRADE BANNER — shown when free quota is exhausted ══ */}
+      <div className="space-y-5">
         {sub?.quotaExhausted && (
-          <div
-            className="flex items-center gap-4 px-5 py-4 rounded-2xl anim-1"
-            style={{
-              background:
-                "linear-gradient(135deg,rgba(124,58,237,0.1) 0%,rgba(109,40,217,0.06) 100%)",
-              border: "1px solid rgba(124,58,237,0.25)",
-            }}
-          >
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{
-                background: "rgba(124,58,237,0.15)",
-                border: "1px solid rgba(124,58,237,0.2)",
-              }}
-            >
-              <Lock weight="fill" size={16} style={{ color: "#a78bfa" }} />
+          <div className="flex flex-col gap-4 rounded-lg border border-amber-400/20 bg-amber-400/[0.06] px-4 py-4 anim-1 sm:flex-row sm:items-center">
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-amber-400/20 bg-amber-400/10 text-amber-300">
+              <Lock weight="fill" size={16} />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-semibold text-white">
-                Free post used
-              </p>
-              <p
-                className="text-[13px]"
-                style={{ color: "rgba(255,255,255,0.4)" }}
-              >
-                You've used your 1 free role post. Upgrade to post more and
-                scale your hiring.
+            <div className="min-w-0 flex-1">
+              <p className="text-[14px] font-bold text-white">Free post used</p>
+              <p className="mt-0.5 text-[13px] leading-5 text-slate-500">
+                You have used your 1 free role post. Upgrade to post more roles
+                and keep hiring.
               </p>
             </div>
             <Link
               href="/dashboard/billing"
-              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-[13px] font-semibold text-white transition-all"
-              style={{
-                background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-                boxShadow: "0 0 16px rgba(124,58,237,0.3)",
-              }}
+              className="inline-flex flex-shrink-0 items-center justify-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2.5 text-[13px] font-bold text-white transition hover:bg-violet-500"
             >
-              Upgrade <ArrowRight size={13} />
+              Upgrade
+              <ArrowRight size={13} />
             </Link>
           </div>
         )}
 
-        {/* ══ HEADER ══ */}
-        <div className="flex items-start justify-between gap-4 anim-1">
+        <div className="flex flex-col justify-between gap-4 anim-1 sm:flex-row sm:items-start">
           <div>
-            <h1 className="text-[22px] md:text-[28px] font-extrabold text-white tracking-tight">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-300">
               Roles
+            </p>
+            <h1 className="mt-2 text-[26px] font-black leading-tight tracking-tight text-white">
+              Manage open roles
             </h1>
-            <p
-              className="text-[14px] mt-1"
-              style={{ color: "rgba(255,255,255,0.35)" }}
-            >
-              {jobs.length} role{jobs.length !== 1 ? "s" : ""} · {activeCount}{" "}
-              active · {totalCVs} CVs received
+            <p className="mt-1 text-[14px] text-slate-500">
+              {jobs.length} role{jobs.length !== 1 ? "s" : ""} - {activeCount}{" "}
+              active - {totalCVs} CVs received
             </p>
           </div>
           <Link
             href="/dashboard/jobs/new"
-            className="flex-shrink-0 flex items-center gap-2 text-white text-[14px] font-bold px-5 py-2.5 rounded-xl transition-all"
-            style={{
-              background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-              boxShadow: "0 0 24px rgba(124,58,237,0.35)",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.boxShadow =
-                "0 0 36px rgba(124,58,237,0.52)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.boxShadow =
-                "0 0 24px rgba(124,58,237,0.35)";
-            }}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-[13px] font-bold text-white shadow-lg shadow-violet-950/30 transition hover:bg-violet-500"
           >
             <Plus weight="bold" size={16} />
             Post a role
           </Link>
         </div>
 
-        {/* ══ FILTER TABS ══ */}
-        <div
-          className="flex items-center gap-2 overflow-x-auto pb-1 anim-2"
-          style={{ scrollbarWidth: "none" }}
-        >
+        <div className="grid gap-3 sm:grid-cols-3 anim-2">
+          <SummaryCard
+            label="Total roles"
+            value={jobs.length}
+            detail="All roles in this workspace"
+          />
+          <SummaryCard
+            label="Active postings"
+            value={activeCount}
+            detail={`${draftCount} draft${draftCount !== 1 ? "s" : ""} waiting`}
+          />
+          <SummaryCard
+            label="Applications"
+            value={totalCVs}
+            detail="CVs received across roles"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 anim-2">
           <FunnelSimple
             weight="duotone"
             size={15}
-            style={{ color: "rgba(255,255,255,0.25)" }}
+            className="hidden flex-shrink-0 text-slate-600 sm:block"
           />
-          <div
-            className="flex gap-1 p-1 rounded-xl"
-            style={{
-              background: "#111118",
-              border: "1px solid rgba(255,255,255,0.07)",
-            }}
-          >
+          <div className="flex min-w-max gap-1 rounded-lg border border-white/[0.07] bg-[#0d0f16] p-1">
             {STATUS_TABS.map((tab) => {
               const count =
                 tab.key === "all"
                   ? jobs.length
-                  : jobs.filter((j) => j.status === tab.key).length;
+                  : jobs.filter((job) => job.status === tab.key).length;
               const isActive = filter === tab.key;
+
               return (
                 <button
                   key={tab.key}
+                  type="button"
                   onClick={() => setFilter(tab.key)}
-                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-[13px] font-semibold transition-all"
-                  style={
+                  className={`flex items-center gap-2 rounded-md border px-3 py-1.5 text-[13px] font-bold transition ${
                     isActive
-                      ? {
-                          background: "rgba(124,58,237,0.18)",
-                          color: "#a78bfa",
-                          border: "1px solid rgba(124,58,237,0.28)",
-                        }
-                      : {
-                          color: "rgba(255,255,255,0.38)",
-                          border: "1px solid transparent",
-                        }
-                  }
+                      ? "border-violet-400/20 bg-violet-400/[0.14] text-violet-200"
+                      : "border-transparent text-slate-500 hover:bg-white/[0.045] hover:text-slate-300"
+                  }`}
                 >
                   {tab.label}
                   <span
-                    className="text-[11px] font-bold px-1.5 py-0.5 rounded-full tabular-nums"
-                    style={
+                    className={`rounded-full px-1.5 py-0.5 text-[11px] tabular-nums ${
                       isActive
-                        ? {
-                            background: "rgba(124,58,237,0.25)",
-                            color: "#a78bfa",
-                          }
-                        : {
-                            background: "rgba(255,255,255,0.07)",
-                            color: "rgba(255,255,255,0.3)",
-                          }
-                    }
+                        ? "bg-violet-400/15 text-violet-200"
+                        : "bg-white/[0.06] text-slate-600"
+                    }`}
                   >
                     {count}
                   </span>
@@ -489,249 +577,27 @@ export default function JobsPage() {
           </div>
         </div>
 
-        {/* ══ JOB CARDS ══ */}
         {filtered.length === 0 ? (
           <EmptyState filter={filter} />
         ) : (
-          <div className="space-y-3">
-            {filtered.map((job, i) => {
-              const s = STATUS_MAP[job.status] ?? STATUS_MAP.draft;
-              const gradient = JOB_GRADIENTS[i % JOB_GRADIENTS.length];
-              const initials = getInitials(job.title);
-              const isMenuOpen = openMenu === job.id;
-
-              return (
-                <div
-                  key={job.id}
-                  className="group flex items-center gap-4 p-5 rounded-2xl transition-all"
-                  style={{
-                    background: "#111118",
-                    border: "1px solid rgba(255,255,255,0.07)",
-                    animation: `fade-up-in 0.45s cubic-bezier(0.16,1,0.3,1) ${i * 55 + 80}ms both`,
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor =
-                      "rgba(124,58,237,0.22)";
-                    (e.currentTarget as HTMLElement).style.background =
-                      "rgba(124,58,237,0.03)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor =
-                      "rgba(255,255,255,0.07)";
-                    (e.currentTarget as HTMLElement).style.background =
-                      "#111118";
-                  }}
-                >
-                  {/* Gradient avatar */}
-                  <Link
-                    href={`/dashboard/jobs/${job.id}`}
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-[13px] font-extrabold text-white flex-shrink-0 transition-transform"
-                    style={{ background: gradient }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.transform =
-                        "scale(1.05)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.transform =
-                        "scale(1)";
-                    }}
-                  >
-                    {initials}
-                  </Link>
-
-                  {/* Job info */}
-                  <div className="flex-1 min-w-0">
-                    <Link
-                      href={`/dashboard/jobs/${job.id}`}
-                      className="text-[15px] font-semibold truncate block transition-colors"
-                      style={{ color: "rgba(255,255,255,0.9)" }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.color =
-                          "#a78bfa";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.color =
-                          "rgba(255,255,255,0.9)";
-                      }}
-                    >
-                      {job.title}
-                    </Link>
-                    <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                      {job.location && (
-                        <span
-                          className="flex items-center gap-1 text-[12px]"
-                          style={{ color: "rgba(255,255,255,0.28)" }}
-                        >
-                          <MapPin weight="fill" size={11} /> {job.location}
-                        </span>
-                      )}
-                      {job.type && (
-                        <span
-                          className="text-[11px] font-medium px-2 py-0.5 rounded-md capitalize"
-                          style={{
-                            color: "rgba(255,255,255,0.38)",
-                            background: "rgba(255,255,255,0.06)",
-                          }}
-                        >
-                          {job.type.replace("-", " ")}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* CV count */}
-                  <div className="hidden sm:flex flex-col items-center flex-shrink-0 min-w-[56px]">
-                    <div className="flex items-center gap-1.5">
-                      <Users
-                        weight="duotone"
-                        size={13}
-                        style={{ color: "rgba(255,255,255,0.3)" }}
-                      />
-                      <span className="text-[16px] font-bold text-white tabular-nums">
-                        {job.applicationCount ?? 0}
-                      </span>
-                    </div>
-                    <span
-                      className="text-[10px] mt-0.5"
-                      style={{ color: "rgba(255,255,255,0.2)" }}
-                    >
-                      CVs
-                    </span>
-                  </div>
-
-                  {/* Date */}
-                  <div className="hidden lg:flex flex-col items-end flex-shrink-0 min-w-[96px]">
-                    <span
-                      className="flex items-center gap-1 text-[12px]"
-                      style={{ color: "rgba(255,255,255,0.25)" }}
-                    >
-                      <CalendarBlank weight="fill" size={11} />
-                      {formatDate(job.createdAt)}
-                    </span>
-                  </div>
-
-                  {/* Status badge */}
-                  <div className="flex-shrink-0">
-                    <span
-                      className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-lg"
-                      style={{ color: s.color, background: s.bg }}
-                    >
-                      <span
-                        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                        style={{
-                          background: s.dot,
-                          boxShadow:
-                            job.status === "active"
-                              ? `0 0 6px ${s.dot}`
-                              : "none",
-                        }}
-                      />
-                      {s.label}
-                    </span>
-                  </div>
-
-                  {/* Actions */}
-                  <div
-                    className="relative flex-shrink-0"
-                    ref={isMenuOpen ? menuRef : undefined}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      onClick={() => setOpenMenu(isMenuOpen ? null : job.id)}
-                      disabled={actionLoading === job.id}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-40"
-                      style={{
-                        color: "rgba(255,255,255,0.3)",
-                        border: "1px solid transparent",
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.color = "white";
-                        (e.currentTarget as HTMLElement).style.background =
-                          "rgba(255,255,255,0.07)";
-                        (e.currentTarget as HTMLElement).style.borderColor =
-                          "rgba(255,255,255,0.1)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.color =
-                          "rgba(255,255,255,0.3)";
-                        (e.currentTarget as HTMLElement).style.background =
-                          "transparent";
-                        (e.currentTarget as HTMLElement).style.borderColor =
-                          "transparent";
-                      }}
-                    >
-                      {actionLoading === job.id ? (
-                        <CircleNotch size={14} className="animate-spin" />
-                      ) : (
-                        <DotsThree weight="bold" size={18} />
-                      )}
-                    </button>
-
-                    {isMenuOpen && (
-                      <div
-                        className="absolute right-0 top-full mt-2 z-30 w-48 rounded-2xl overflow-hidden py-1"
-                        style={{
-                          background: "#16162a",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          boxShadow: "0 20px 60px rgba(0,0,0,0.7)",
-                        }}
-                      >
-                        <MenuBtn
-                          icon={Eye}
-                          label="View pipeline"
-                          iconWeight="duotone"
-                          onClick={() => {
-                            setOpenMenu(null);
-                            router.push(`/dashboard/jobs/${job.id}`);
-                          }}
-                        />
-                        <MenuBtn
-                          icon={PencilSimple}
-                          label="Edit job"
-                          iconWeight="duotone"
-                          onClick={() => {
-                            setOpenMenu(null);
-                            router.push(`/dashboard/jobs/${job.id}/edit`);
-                          }}
-                        />
-                        <MenuBtn
-                          icon={
-                            job.status === "active" ? ToggleLeft : ToggleRight
-                          }
-                          label={
-                            job.status === "active"
-                              ? "Close job"
-                              : "Activate job"
-                          }
-                          iconWeight="duotone"
-                          onClick={() => {
-                            setOpenMenu(null);
-                            toggleStatus(job);
-                          }}
-                        />
-                        <div
-                          style={{
-                            height: "1px",
-                            background: "rgba(255,255,255,0.06)",
-                            margin: "4px 0",
-                          }}
-                        />
-                        <MenuBtn
-                          icon={Trash}
-                          label="Delete job"
-                          danger
-                          iconWeight="duotone"
-                          onClick={() => {
-                            setOpenMenu(null);
-                            setDeleteTarget(job);
-                          }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+          <div className="space-y-2 anim-3">
+            {filtered.map((job) => (
+              <RoleRow
+                key={job.id}
+                job={job}
+                actionLoading={actionLoading === job.id}
+                isMenuOpen={openMenu === job.id}
+                menuRef={menuRef}
+                onOpenMenu={() =>
+                  setOpenMenu((current) => (current === job.id ? null : job.id))
+                }
+                onCloseMenu={() => setOpenMenu(null)}
+                onView={() => router.push(`/dashboard/jobs/${job.id}`)}
+                onEdit={() => router.push(`/dashboard/jobs/${job.id}/edit`)}
+                onToggleStatus={() => toggleStatus(job)}
+                onDelete={() => setDeleteTarget(job)}
+              />
+            ))}
           </div>
         )}
       </div>
