@@ -373,9 +373,6 @@ function ProductPreview() {
             <span className="h-2.5 w-2.5 rounded-full bg-yellow-400/80" />
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
           </div>
-          <p className="hidden text-[11px] font-semibold text-gray-500 sm:block">
-            app.hirex.ai/dashboard
-          </p>
         </div>
 
         <div className="relative aspect-[16/11] overflow-hidden rounded-xl bg-[#090a10] sm:aspect-[16/9] lg:aspect-[16/8.7]">

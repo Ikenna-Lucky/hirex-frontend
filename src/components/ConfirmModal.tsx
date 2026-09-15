@@ -24,21 +24,21 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
 }: Props) {
-  // lock body scroll
   useEffect(() => {
-    if (open) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
+    document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [open]);
 
-  // close on Escape
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCancel();
+    if (!open) return;
+
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onCancel();
     };
-    if (open) window.addEventListener("keydown", handler);
+
+    window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [open, onCancel]);
 
@@ -46,90 +46,71 @@ export default function ConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{
-        backgroundColor: "rgba(0,0,0,0.7)",
-        backdropFilter: "blur(8px)",
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md"
       onClick={onCancel}
+      role="presentation"
     >
-      <div
-        className="w-full max-w-[400px] rounded-2xl p-6 relative"
-        style={{
-          backgroundColor: "#0e0e24",
-          border: "1px solid rgba(255,255,255,0.08)",
-          boxShadow:
-            "0 24px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.03) inset",
-        }}
-        onClick={(e) => e.stopPropagation()}
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-modal-title"
+        aria-describedby="confirm-modal-message"
+        className="relative w-full max-w-[420px] rounded-lg border border-white/[0.08] bg-[#0d0f16] p-5 shadow-2xl shadow-black/70"
+        onClick={(event) => event.stopPropagation()}
       >
-        {/* Close */}
         <button
+          type="button"
           onClick={onCancel}
-          className="absolute top-4 right-4 w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/[0.06] transition-all"
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition hover:bg-white/[0.06] hover:text-white"
+          aria-label="Close dialog"
         >
-          <X className="w-3.5 h-3.5" />
+          <X className="h-4 w-4" />
         </button>
 
-        {/* Icon */}
         <div
-          className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-          style={{
-            backgroundColor: danger
-              ? "rgba(239,68,68,0.1)"
-              : "rgba(124,58,237,0.1)",
-            border: danger
-              ? "1px solid rgba(239,68,68,0.2)"
-              : "1px solid rgba(124,58,237,0.2)",
-          }}
+          className={`mb-4 flex h-11 w-11 items-center justify-center rounded-lg border ${
+            danger
+              ? "border-red-400/20 bg-red-400/10 text-red-300"
+              : "border-violet-400/20 bg-violet-400/10 text-violet-300"
+          }`}
         >
-          <AlertTriangle
-            className="w-5 h-5"
-            style={{ color: danger ? "#f87171" : "#a78bfa" }}
-          />
+          <AlertTriangle className="h-5 w-5" />
         </div>
 
-        {/* Text */}
-        <h3 className="text-[15px] font-bold text-white mb-2">{title}</h3>
+        <h2
+          id="confirm-modal-title"
+          className="pr-8 text-[17px] font-bold leading-tight text-white"
+        >
+          {title}
+        </h2>
         <p
-          className="text-[13px] leading-relaxed mb-6"
-          style={{ color: "rgba(255,255,255,0.45)" }}
+          id="confirm-modal-message"
+          className="mt-2 text-[13px] leading-6 text-slate-500"
         >
           {message}
         </p>
 
-        {/* Actions */}
-        <div className="flex gap-2.5">
+        <div className="mt-6 grid gap-2 sm:grid-cols-2">
           <button
+            type="button"
             onClick={onCancel}
-            className="flex-1 py-2.5 rounded-xl text-[13px] font-semibold transition-all"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              color: "rgba(255,255,255,0.6)",
-            }}
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.035] px-4 text-[13px] font-bold text-slate-400 transition hover:bg-white/[0.06] hover:text-white"
           >
             {cancelLabel}
           </button>
           <button
+            type="button"
             onClick={onConfirm}
-            className="flex-1 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-all"
-            style={
+            className={`inline-flex h-10 items-center justify-center rounded-lg px-4 text-[13px] font-bold text-white shadow-lg transition ${
               danger
-                ? {
-                    background: "linear-gradient(135deg, #dc2626, #991b1b)",
-                    boxShadow: "0 4px 16px rgba(220,38,38,0.3)",
-                  }
-                : {
-                    background: "linear-gradient(135deg, #7c3aed, #5b21b6)",
-                    boxShadow: "0 4px 16px rgba(124,58,237,0.3)",
-                  }
-            }
+                ? "bg-red-600 shadow-red-950/25 hover:bg-red-500"
+                : "bg-violet-600 shadow-violet-950/30 hover:bg-violet-500"
+            }`}
           >
             {confirmLabel}
           </button>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

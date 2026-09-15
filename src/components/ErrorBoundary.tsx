@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Warning, ArrowCounterClockwise } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, Warning } from "@phosphor-icons/react";
 
 interface Props {
   children: React.ReactNode;
@@ -12,15 +12,6 @@ interface State {
   error: Error | null;
 }
 
-/**
- * Generic React class-based error boundary.
- * Wrap any client subtree to prevent a crash from blanking the whole page.
- *
- * Usage:
- *   <ErrorBoundary>
- *     <SomeComponent />
- *   </ErrorBoundary>
- */
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -42,48 +33,21 @@ export class ErrorBoundary extends React.Component<Props, State> {
       if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div
-          className="flex flex-col items-center justify-center py-24 text-center"
-          style={{ color: "rgba(255,255,255,0.6)" }}
-        >
-          <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-            style={{
-              background: "rgba(239,68,68,0.1)",
-              border: "1px solid rgba(239,68,68,0.2)",
-            }}
-          >
-            <Warning weight="duotone" size={24} style={{ color: "#f87171" }} />
+        <div className="flex flex-col items-center justify-center py-24 text-center text-slate-500">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-red-400/20 bg-red-400/10 text-red-300">
+            <Warning weight="duotone" size={24} />
           </div>
-          <p
-            className="text-[16px] font-semibold mb-1"
-            style={{ color: "rgba(255,255,255,0.85)" }}
-          >
+          <p className="mb-1 text-[16px] font-bold text-white">
             Something went wrong
           </p>
-          <p
-            className="text-[13px] mb-6 max-w-sm"
-            style={{ color: "rgba(255,255,255,0.35)" }}
-          >
-            This section couldn&apos;t load. Your data is safe — try again in
-            a moment.
+          <p className="mb-6 max-w-sm text-[13px] leading-6 text-slate-500">
+            This section could not load. Your data is safe. Try again in a
+            moment.
           </p>
           <button
+            type="button"
             onClick={this.reset}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all"
-            style={{
-              background: "rgba(124,58,237,0.15)",
-              border: "1px solid rgba(124,58,237,0.3)",
-              color: "#a78bfa",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background =
-                "rgba(124,58,237,0.25)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background =
-                "rgba(124,58,237,0.15)";
-            }}
+            className="inline-flex items-center gap-2 rounded-lg border border-violet-400/20 bg-violet-400/10 px-4 py-2.5 text-[13px] font-bold text-violet-200 transition hover:bg-violet-400/[0.16]"
           >
             <ArrowCounterClockwise weight="bold" size={14} />
             Try again

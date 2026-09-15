@@ -1,13 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { Warning, ArrowCounterClockwise, House } from "@phosphor-icons/react";
 import Link from "next/link";
+import { ArrowCounterClockwise, House, Warning } from "@phosphor-icons/react";
 
-/**
- * Next.js App Router error boundary for all /dashboard/* routes.
- * Rendered automatically when any dashboard page throws.
- */
 export default function DashboardError({
   error,
   reset,
@@ -20,52 +16,25 @@ export default function DashboardError({
   }, [error]);
 
   return (
-    <div
-      className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6"
-      style={{ color: "rgba(255,255,255,0.6)" }}
-    >
-      <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
-        style={{
-          background: "rgba(239,68,68,0.1)",
-          border: "1px solid rgba(239,68,68,0.2)",
-        }}
-      >
-        <Warning weight="duotone" size={28} style={{ color: "#f87171" }} />
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center text-slate-500">
+      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-lg border border-red-400/20 bg-red-400/10 text-red-300">
+        <Warning weight="duotone" size={28} />
       </div>
 
-      <h2
-        className="text-[22px] font-bold mb-2"
-        style={{ color: "rgba(255,255,255,0.9)" }}
-      >
+      <h2 className="mb-2 text-[22px] font-bold text-white">
         Something went wrong
       </h2>
 
-      <p
-        className="text-[14px] mb-8 max-w-sm leading-relaxed"
-        style={{ color: "rgba(255,255,255,0.35)" }}
-      >
-        This page ran into a problem loading. Your data is safe — this is
-        just a display issue. Try again, or head back to your overview.
+      <p className="mb-8 max-w-sm text-[14px] leading-6 text-slate-500">
+        This page ran into a problem loading. Your data is safe. Try again, or
+        head back to your overview.
       </p>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col items-center gap-3 sm:flex-row">
         <button
+          type="button"
           onClick={reset}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all"
-          style={{
-            background: "rgba(124,58,237,0.15)",
-            border: "1px solid rgba(124,58,237,0.3)",
-            color: "#a78bfa",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.background =
-              "rgba(124,58,237,0.25)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.background =
-              "rgba(124,58,237,0.15)";
-          }}
+          className="inline-flex items-center gap-2 rounded-lg border border-violet-400/20 bg-violet-400/10 px-5 py-2.5 text-[14px] font-bold text-violet-200 transition hover:bg-violet-400/[0.16]"
         >
           <ArrowCounterClockwise weight="bold" size={15} />
           Try again
@@ -73,24 +42,7 @@ export default function DashboardError({
 
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[14px] font-medium transition-all"
-          style={{
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            color: "rgba(255,255,255,0.5)",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.color =
-              "rgba(255,255,255,0.85)";
-            (e.currentTarget as HTMLElement).style.background =
-              "rgba(255,255,255,0.08)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.color =
-              "rgba(255,255,255,0.5)";
-            (e.currentTarget as HTMLElement).style.background =
-              "rgba(255,255,255,0.05)";
-          }}
+          className="inline-flex items-center gap-2 rounded-lg border border-white/[0.07] bg-white/[0.035] px-5 py-2.5 text-[14px] font-bold text-slate-400 transition hover:bg-white/[0.06] hover:text-white"
         >
           <House weight="duotone" size={15} />
           Go to overview
@@ -98,10 +50,7 @@ export default function DashboardError({
       </div>
 
       {error.digest && (
-        <p
-          className="mt-8 text-[11px] font-mono"
-          style={{ color: "rgba(255,255,255,0.15)" }}
-        >
+        <p className="mt-8 font-mono text-[11px] text-slate-700">
           Error ID: {error.digest}
         </p>
       )}

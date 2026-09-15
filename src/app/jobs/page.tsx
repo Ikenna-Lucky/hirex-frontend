@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
+  ArrowRight,
+  Briefcase,
+  Buildings,
+  Clock,
+  Funnel,
   MagnifyingGlass,
   MapPin,
-  Briefcase,
-  Clock,
-  Buildings,
-  ArrowRight,
-  Funnel,
 } from "@phosphor-icons/react";
 import { jobsApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
@@ -48,411 +48,247 @@ export default function PublicJobBoardPage() {
   }, [search, typeFilter]);
 
   useEffect(() => {
-    const t = setTimeout(fetchJobs, search ? 350 : 0);
-    return () => clearTimeout(t);
+    const timer = setTimeout(fetchJobs, search ? 350 : 0);
+    return () => clearTimeout(timer);
   }, [fetchJobs, search]);
 
   return (
-    <div
-      className="min-h-screen font-inter"
-      style={{ background: "#0a0a0f", color: "#e5e7eb" }}
-    >
-      {/* ── Navbar ──────────────────────────────────── */}
-      <nav
-        className="sticky top-0 z-50 flex items-center justify-between px-6 md:px-12"
-        style={{
-          height: "64px",
-          background: "rgba(10,10,15,0.85)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(255,255,255,0.05)",
-        }}
-      >
-        <Link href="/">
-          <span
-            style={{
-              fontSize: "20px",
-              fontWeight: 800,
-              letterSpacing: "-0.03em",
-              color: "#fff",
-              fontFamily: "'Syne', system-ui, sans-serif",
-            }}
-          >
-            Hire
-            <span
-              style={{
-                color: "#a78bfa",
-                fontFamily: "'Syne', system-ui, sans-serif",
-              }}
+    <div className="min-h-screen bg-[#07080d] font-inter text-slate-100">
+      <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#07080d]/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
+          <Logo />
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="text-[13px] font-bold text-slate-500 transition hover:text-white"
             >
-              X
-            </span>
-          </span>
-        </Link>
-
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="text-[13px] font-medium transition-colors"
-            style={{ color: "rgba(255,255,255,0.45)" }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLElement).style.color = "#fff")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLElement).style.color =
-                "rgba(255,255,255,0.45)")
-            }
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/register"
-            className="text-[13px] font-semibold px-4 py-2 rounded-xl transition-all"
-            style={{ background: "#7c3aed", color: "#fff" }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLElement).style.background = "#6d28d9")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLElement).style.background = "#7c3aed")
-            }
-          >
-            Post a job
-          </Link>
+              Sign in
+            </Link>
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-[13px] font-bold text-white shadow-lg shadow-violet-950/30 transition hover:bg-violet-500"
+            >
+              Post a role
+              <ArrowRight weight="bold" size={14} />
+            </Link>
+          </div>
         </div>
       </nav>
 
-      {/* ── Hero ────────────────────────────────────── */}
-      <div
-        className="relative overflow-hidden px-4 md:px-12 py-10 md:py-16"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-      >
-        {/* Background orbs */}
-        <div
-          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 65%)",
-          }}
-        />
-        <div
-          className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(109,40,217,0.08) 0%, transparent 65%)",
-          }}
-        />
-
-        <div className="relative max-w-4xl mx-auto text-center">
-          <div
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[12px] font-semibold mb-6"
-            style={{
-              background: "rgba(124,58,237,0.12)",
-              border: "1px solid rgba(124,58,237,0.25)",
-              color: "#a78bfa",
-            }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+      <header className="border-b border-white/[0.06] px-4 py-12 md:px-6 md:py-16">
+        <div className="mx-auto max-w-4xl text-center">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3.5 py-1.5 text-[12px] font-bold text-emerald-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
             {jobs.length > 0
-              ? `${jobs.length} open position${jobs.length !== 1 ? "s" : ""}`
-              : "Open positions"}
+              ? `${jobs.length} open role${jobs.length !== 1 ? "s" : ""}`
+              : "Open roles"}
           </div>
-
-          <h1 className="text-[36px] md:text-[52px] font-extrabold tracking-tight text-white mb-4 leading-tight">
-            Find your next
-            <br />
-            <span style={{ color: "#a78bfa" }}>great role.</span>
+          <h1 className="mx-auto max-w-3xl text-[38px] font-black leading-tight tracking-tight text-white md:text-[58px]">
+            Find roles from teams hiring with HireX.
           </h1>
-          <p
-            className="text-[16px] mb-10 max-w-lg mx-auto"
-            style={{ color: "rgba(255,255,255,0.45)" }}
-          >
-            Browse roles from companies using AI-powered hiring. Apply once, get
-            matched instantly.
+          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-7 text-slate-500 md:text-[16px]">
+            Browse open roles, understand the company, and apply with your CV in
+            one focused flow.
           </p>
 
-          {/* Search + filter */}
-          <div className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
+          <div className="mx-auto mt-9 flex max-w-2xl flex-col gap-3 rounded-lg border border-white/[0.07] bg-[#0d0f16] p-3 sm:flex-row">
             <div className="relative flex-1">
               <MagnifyingGlass
                 size={15}
-                className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ color: "rgba(255,255,255,0.25)" }}
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600"
               />
               <input
                 type="text"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by title or keyword…"
-                className="w-full pl-10 pr-4 py-3 rounded-xl text-[14px] text-white placeholder-gray-600 focus:outline-none transition"
-                style={{
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = "rgba(124,58,237,0.5)";
-                  e.target.style.background = "rgba(255,255,255,0.08)";
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = "rgba(255,255,255,0.1)";
-                  e.target.style.background = "rgba(255,255,255,0.06)";
-                }}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search by title or keyword"
+                className="h-11 w-full rounded-lg border border-white/[0.07] bg-white/[0.035] pl-10 pr-4 text-[14px] text-white outline-none transition placeholder:text-slate-700 focus:border-violet-400/30 focus:bg-white/[0.055]"
               />
             </div>
-
-            <div className="relative">
+            <div className="relative sm:w-[170px]">
               <Funnel
-                size={13}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ color: "rgba(255,255,255,0.25)" }}
+                size={14}
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600"
               />
               <select
                 value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="appearance-none pl-9 pr-8 py-3 rounded-xl text-[14px] text-white focus:outline-none transition cursor-pointer min-w-[150px]"
-                style={{
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                }}
+                onChange={(event) => setTypeFilter(event.target.value)}
+                className="h-11 w-full cursor-pointer rounded-lg border border-white/[0.07] bg-white/[0.035] pl-10 pr-4 text-[14px] text-white outline-none transition focus:border-violet-400/30 focus:bg-white/[0.055]"
               >
-                {JOB_TYPES.map((t) => (
-                  <option
-                    key={t.value}
-                    value={t.value}
-                    style={{ background: "#1a1a28" }}
-                  >
-                    {t.label}
+                {JOB_TYPES.map((type) => (
+                  <option key={type.value} value={type.value} className="bg-[#0d0f16]">
+                    {type.label}
                   </option>
                 ))}
               </select>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* ── Job list ─────────────────────────────────── */}
-      <div className="max-w-4xl mx-auto px-6 md:px-12 py-10">
+      <main className="mx-auto max-w-4xl px-4 py-10 md:px-6">
         {loading ? (
           <SkeletonList />
         ) : jobs.length === 0 ? (
           <EmptyState hasFilter={!!(search || typeFilter)} />
         ) : (
-          <div className="space-y-3">
-            {jobs.map((job, i) => (
-              <div
-                key={job.id}
-                style={{
-                  animation: `fade-up-in 0.4s cubic-bezier(0.16,1,0.3,1) ${i * 40}ms both`,
-                }}
-              >
-                <JobCard job={job} />
-              </div>
+          <div className="space-y-2">
+            {jobs.map((job) => (
+              <JobCard key={job.id} job={job} />
             ))}
           </div>
         )}
-      </div>
+      </main>
 
-      {/* ── Footer ───────────────────────────────────── */}
-      <footer
-        className="py-8 px-6 text-center text-[12px]"
-        style={{
-          borderTop: "1px solid rgba(255,255,255,0.05)",
-          color: "rgba(255,255,255,0.2)",
-        }}
-      >
-        © {new Date().getFullYear()} HireX — AI-powered hiring platform
+      <footer className="border-t border-white/[0.06] px-6 py-8 text-center text-[12px] text-slate-700">
+        Copyright {new Date().getFullYear()} HireX. AI-powered hiring platform.
       </footer>
-
-      <style>{`
-        @keyframes fade-up-in {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0);    }
-        }
-      `}</style>
     </div>
   );
 }
 
-/* ── Job card ───────────────────────────────────────────── */
+function Logo() {
+  return (
+    <Link href="/" className="inline-flex items-center" aria-label="HireX home">
+      <span
+        style={{
+          fontSize: "21px",
+          fontWeight: 800,
+          letterSpacing: "-0.03em",
+          color: "#fff",
+          fontFamily: "'Syne', system-ui, sans-serif",
+          lineHeight: 1,
+        }}
+      >
+        Hire
+        <span
+          style={{
+            color: "#a78bfa",
+            fontFamily: "'Syne', system-ui, sans-serif",
+          }}
+        >
+          X
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 function JobCard({ job }: { job: Job }) {
   const initial = job.company?.name?.charAt(0).toUpperCase();
   const h =
     (job.company?.name ?? "")
       .split("")
-      .reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0) % 360;
 
   return (
     <Link
       href={`/jobs/${job.id}`}
-      className="flex items-center gap-4 px-6 py-5 rounded-2xl group transition-all"
-      style={{
-        background: "#111118",
-        border: "1px solid rgba(255,255,255,0.06)",
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor =
-          "rgba(124,58,237,0.3)";
-        (e.currentTarget as HTMLElement).style.background = "#13101e";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor =
-          "rgba(255,255,255,0.06)";
-        (e.currentTarget as HTMLElement).style.background = "#111118";
-      }}
+      className="group grid gap-4 rounded-lg border border-white/[0.07] bg-[#0d0f16] p-4 transition hover:border-violet-400/20 hover:bg-violet-400/[0.035] sm:grid-cols-[minmax(0,1fr)_120px_32px] sm:items-center"
     >
-      {initial ? (
-        <div
-          className="w-11 h-11 rounded-xl flex items-center justify-center text-[14px] font-bold text-white flex-shrink-0"
-          style={{
-            background: `linear-gradient(135deg, hsl(${h},60%,40%), hsl(${(h + 40) % 360},60%,30%))`,
-          }}
-        >
-          {initial}
-        </div>
-      ) : (
-        <div
-          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{
-            background: "rgba(124,58,237,0.1)",
-            border: "1px solid rgba(124,58,237,0.2)",
-          }}
-        >
-          <Buildings weight="duotone" size={18} style={{ color: "#a78bfa" }} />
-        </div>
-      )}
-
-      <div className="flex-1 min-w-0">
-        <p className="text-[15px] font-semibold text-white transition-colors truncate group-hover:text-violet-300">
-          {job.title}
-        </p>
-        <p
-          className="text-[12px] mt-0.5 mb-2"
-          style={{ color: "rgba(255,255,255,0.4)" }}
-        >
-          {job.company?.name}
-        </p>
-        <div className="flex flex-wrap gap-x-4 gap-y-1">
-          {job.location && (
-            <span
-              className="flex items-center gap-1 text-[12px]"
-              style={{ color: "rgba(255,255,255,0.35)" }}
-            >
-              <MapPin weight="duotone" size={11} /> {job.location}
-            </span>
-          )}
-          {job.type && (
-            <span
-              className="flex items-center gap-1 text-[12px] capitalize"
-              style={{ color: "rgba(255,255,255,0.35)" }}
-            >
-              <Briefcase weight="duotone" size={11} />{" "}
-              {job.type.replace("-", " ")}
-            </span>
-          )}
-          <span
-            className="flex items-center gap-1 text-[12px]"
-            style={{ color: "rgba(255,255,255,0.25)" }}
+      <div className="flex min-w-0 items-start gap-3">
+        {initial ? (
+          <div
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-[14px] font-black text-white"
+            style={{
+              background: `linear-gradient(135deg, hsl(${h},60%,42%), hsl(${(h + 42) % 360},70%,32%))`,
+            }}
           >
-            <Clock weight="duotone" size={11} /> {formatDate(job.createdAt)}
-          </span>
+            {initial}
+          </div>
+        ) : (
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-violet-400/20 bg-violet-400/10 text-violet-300">
+            <Buildings weight="duotone" size={18} />
+          </div>
+        )}
+        <div className="min-w-0">
+          <p className="truncate text-[15px] font-bold text-white transition group-hover:text-violet-200">
+            {job.title}
+          </p>
+          <p className="mt-1 text-[12px] text-slate-600">
+            {job.company?.name ?? "Hiring company"}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+            {job.location && (
+              <Meta icon={<MapPin weight="duotone" size={11} />} text={job.location} />
+            )}
+            {job.type && (
+              <Meta icon={<Briefcase weight="duotone" size={11} />} text={job.type.replace("-", " ")} />
+            )}
+            <Meta icon={<Clock weight="duotone" size={11} />} text={formatDate(job.createdAt)} />
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 flex-shrink-0">
-        {job.closesAt && (
-          <div className="hidden sm:block text-right">
-            <p
-              className="text-[11px]"
-              style={{ color: "rgba(255,255,255,0.25)" }}
-            >
-              Closes
-            </p>
-            <p
-              className="text-[12px] font-medium"
-              style={{ color: "rgba(255,255,255,0.45)" }}
-            >
-              {formatDate(job.closesAt)}
-            </p>
-          </div>
-        )}
-        <div
-          className="w-8 h-8 rounded-xl flex items-center justify-center transition-transform group-hover:translate-x-0.5"
-          style={{ color: "rgba(255,255,255,0.2)" }}
-        >
-          <ArrowRight weight="bold" size={14} />
+      {job.closesAt && (
+        <div className="sm:text-right">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-700">
+            Closes
+          </p>
+          <p className="mt-1 text-[12px] font-bold text-slate-500">
+            {formatDate(job.closesAt)}
+          </p>
         </div>
+      )}
+
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 transition group-hover:translate-x-0.5 group-hover:text-violet-300">
+        <ArrowRight weight="bold" size={14} />
       </div>
     </Link>
   );
 }
 
-/* ── Empty state ────────────────────────────────────────── */
+function Meta({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 text-[12px] capitalize text-slate-600">
+      {icon}
+      {text}
+    </span>
+  );
+}
+
 function EmptyState({ hasFilter }: { hasFilter: boolean }) {
   return (
-    <div
-      className="rounded-2xl py-24 flex flex-col items-center gap-3"
-      style={{
-        background: "rgba(255,255,255,0.02)",
-        border: "1px dashed rgba(255,255,255,0.08)",
-      }}
-    >
-      <div
-        className="w-12 h-12 rounded-2xl flex items-center justify-center"
-        style={{
-          background: "rgba(124,58,237,0.1)",
-          border: "1px solid rgba(124,58,237,0.2)",
-        }}
-      >
-        <Briefcase weight="duotone" size={20} style={{ color: "#a78bfa" }} />
+    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/[0.08] bg-[#0d0f16] px-5 py-20 text-center">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-violet-400/20 bg-violet-400/10 text-violet-300">
+        <Briefcase weight="duotone" size={24} />
       </div>
-      <p className="text-[15px] font-semibold text-white">
-        {hasFilter
-          ? "No jobs match your search"
-          : "No open positions right now"}
+      <p className="text-[16px] font-bold text-white">
+        {hasFilter ? "No roles match your search" : "No open roles right now"}
       </p>
-      <p
-        className="text-[13px] text-center max-w-xs"
-        style={{ color: "rgba(255,255,255,0.3)" }}
-      >
+      <p className="mt-2 max-w-xs text-[13px] leading-6 text-slate-500">
         {hasFilter
           ? "Try broadening your filters."
-          : "Check back soon — new roles are added regularly."}
+          : "Check back soon. New roles are added as companies hire."}
       </p>
     </div>
   );
 }
 
-/* ── Skeleton ───────────────────────────────────────────── */
-function Bone({ style }: { style?: React.CSSProperties }) {
+function Bone({ className }: { className?: string }) {
   return (
     <div
-      className="animate-pulse rounded-xl"
-      style={{ background: "rgba(255,255,255,0.06)", ...style }}
+      className={`animate-pulse rounded-lg ${className ?? ""}`}
+      style={{ background: "rgba(255,255,255,0.06)" }}
     />
   );
 }
 
 function SkeletonList() {
   return (
-    <div className="space-y-3">
-      {[...Array(6)].map((_, i) => (
+    <div className="space-y-2">
+      {[0, 1, 2, 3, 4, 5].map((item) => (
         <div
-          key={i}
-          className="flex items-center gap-4 px-6 py-5 rounded-2xl"
-          style={{
-            background: "#111118",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
+          key={item}
+          className="flex items-center gap-4 rounded-lg border border-white/[0.07] bg-[#0d0f16] p-4"
         >
-          <Bone style={{ width: 44, height: 44, borderRadius: 12 }} />
+          <Bone className="h-10 w-10 flex-shrink-0" />
           <div className="flex-1 space-y-2">
-            <Bone style={{ width: "40%", height: 15 }} />
-            <Bone style={{ width: "25%", height: 12 }} />
-            <div className="flex gap-4 pt-1">
-              <Bone style={{ width: 80, height: 12 }} />
-              <Bone style={{ width: 70, height: 12 }} />
-            </div>
+            <Bone className="h-4 w-2/5" />
+            <Bone className="h-3 w-1/4" />
+            <Bone className="h-3 w-1/2" />
           </div>
-          <Bone style={{ width: 24, height: 24, borderRadius: 8 }} />
+          <Bone className="h-8 w-8" />
         </div>
       ))}
     </div>
